@@ -6,7 +6,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = "sumo-state"
+    bucket = "sumo-state-095732026120"
     key    = "terraform/sumo-infra"
     region = "us-west-2"
   }
@@ -42,27 +42,8 @@ resource "aws_kms_key" "s3_key" {
   deletion_window_in_days = 10
 }
 
-resource "aws_s3_bucket" "sumo-kops-state-logs" {
-  bucket = "sumo-kops-state-logs"
-  acl    = "log-delivery-write"
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = "${aws_kms_key.s3_key.arn}"
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
-
-  tags = {
-    "Environment" = "${var.environment}"
-    "app"         = "sumo"
-  }
-}
-
 resource "aws_s3_bucket" "sumo-kops-state" {
-  bucket = "sumo-kops-state"
+  bucket = "sumo-kops-state-095732026120"
   acl    = "private"
 
   versioning {
@@ -76,11 +57,6 @@ resource "aws_s3_bucket" "sumo-kops-state" {
         sse_algorithm     = "aws:kms"
       }
     }
-  }
-
-  logging {
-    target_bucket = "sumo-kops-state-logs"
-    target_prefix = "log/"
   }
 
   tags = {
