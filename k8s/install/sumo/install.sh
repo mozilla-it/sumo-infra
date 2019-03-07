@@ -15,4 +15,5 @@ kops create cluster ${KOPS_NAME} \
     --ssh-public-key=${KOPS_PUBLIC_KEY} \
     --target=terraform \
     --vpc=${KOPS_VPC_ID} \
-    --zones=${KOPS_ZONES}
+    --zones=${KOPS_ZONES} \
+    --subnets=${KOPS_SUBNETS}
