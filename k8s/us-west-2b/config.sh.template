@@ -12,6 +12,7 @@ export KOPS_K8S_VERSION="1.12.5"
 export KOPS_MASTER_VOLUME_SIZE_GB=250
 export KOPS_NODE_VOLUME_SIZE_GB=250
 export KOPS_VPC_ID=
+export KOPS_SUBNETS=
 # used to allow ssh access into the cluster
 export KOPS_SSH_IP=
 
