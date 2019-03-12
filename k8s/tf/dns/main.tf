@@ -42,3 +42,10 @@ module "us-west-2a" {
   domain_name = "${var.domain_name}"
   zone_id     = "${aws_route53_zone.master-zone.id}"
 }
+
+module "us-west-2b" {
+  source      = "./hosted_zone"
+  region      = "us-west-2b"
+  domain_name = "${var.domain_name}"
+  zone_id     = "${aws_route53_zone.master-zone.id}"
+}
