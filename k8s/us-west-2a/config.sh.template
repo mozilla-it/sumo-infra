@@ -1,26 +1,36 @@
-export KOPS_SHORT_NAME=sumo
-export KOPS_DOMAIN=mozit.cloud
-export KOPS_NAME="${KOPS_SHORT_NAME}.${KOPS_DOMAIN}"
-export KOPS_REGION=us-west-2
-export KOPS_NODE_COUNT=2
-export KOPS_NODE_SIZE=m4.xlarge
-export KOPS_MASTER_SIZE=m4.large
-export KOPS_PUBLIC_KEY=
-export KOPS_ZONES="us-west-2a"
-export KOPS_MASTER_ZONES="us-west-2a"
-export KOPS_K8S_VERSION="1.12.5"
-export KOPS_MASTER_VOLUME_SIZE_GB=250
-export KOPS_NODE_VOLUME_SIZE_GB=250
-export KOPS_VPC_ID=
-export KOPS_SUBNETS=
-# used to allow ssh access into the cluster
-export KOPS_SSH_IP=
+#!/bin/bash
+set -e
 
-# s3 buckets
-export KOPS_STATE_BUCKET="${KOPS_SHORT_NAME}-kops-state-095732026120"
-export KOPS_STATE_STORE="s3://${KOPS_STATE_BUCKET}"
+source ../common.sh
+
+export KOPS_REGION="us-west-2"
+export CLUSTER_ALT_NAME="oregon-a"
+export KOPS_SHORTNAME="k8s.${KOPS_REGION}a"
+export KOPS_CLUSTER="${KOPS_SHORTNAME}.${KOPS_DOMAIN}"
+# This var is referenced by kops command
+export KOPS_CLUSTER_NAME="${KOPS_CLUSTER}"
+
+export KOPS_MASTER_ZONES="us-west-2a"
+export KOPS_MASTER_COUNT=1
+export KOPS_ZONES="us-west-2a"
+
+export KOPS_NODE_COUNT=10
+
+# Created externally by terraform
+export KOPS_SUBNETS="<Public VPC tied to KOPS_ZONES>"
+
+# SSH Access
+export KOPS_SSH_PUB_KEY="</path/to/your/id_rsa.pub>"
+export KOPS_SSH_IP="<your.public.internet.ip>"
+
+# This is the path of of your services manifests
+export KOPS_INSTALLER="../install"
+
+# secrets path
+#export SECRETS_PATH="${HOME}/scm/mdn-k8s-private"
+#export TF_SECRETS_PATH="${SECRETS_PATH}/terraform/k8s"
 
 #populate these if installing FluentD->PaperTrail DaemonSet
-export SYSLOG_HOST=""
-export SYSLOG_PORT=""
-export STAGE2_ETC_PATH=/path/to/private/repo/k8s/install/etc
+#export SYSLOG_HOST=""
+#export SYSLOG_PORT=""
+#export STAGE2_ETC_PATH=/path/to/private/repo/k8s/install/etc
