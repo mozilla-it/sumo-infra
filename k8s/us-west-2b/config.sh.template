@@ -1,6 +1,4 @@
 #!/bin/bash
-set -e
-
 source ../common.sh
 
 export KOPS_REGION="us-west-2"
