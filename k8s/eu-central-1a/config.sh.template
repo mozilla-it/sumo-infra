@@ -12,14 +12,12 @@ export KOPS_MASTER_ZONES="eu-central-1a"
 export KOPS_MASTER_COUNT=1
 export KOPS_ZONES="eu-central-1a"
 
-export KOPS_NODE_COUNT=10
-
 # Created externally by terraform
 export KOPS_SUBNETS="<Public VPC tied to KOPS_ZONES>"
 
-# SSH Access
+# SSH and API Access
 export KOPS_SSH_PUB_KEY="</path/to/your/id_rsa.pub>"
-export KOPS_SSH_IP="<your.public.internet.ip>"
+export KOPS_ADMIN_IP="<your.public.internet.ip>/32"
 
 # This is the path of of your services manifests
 export KOPS_INSTALLER="../install"
