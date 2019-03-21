@@ -22,7 +22,7 @@ export KOPS_SSH_PUB_KEY="</path/to/your/id_rsa.pub>"
 export KOPS_SSH_IP="<your.public.internet.ip>"
 
 # This is the path of of your services manifests
-export KOPS_INSTALLER="../install"
+export KOPS_INSTALLER="../install/services"
 
 # secrets path
 #export SECRETS_PATH="${HOME}/scm/mdn-k8s-private"

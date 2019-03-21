@@ -155,7 +155,7 @@ install_ark() {
     echo "Install ark"
     kubectl apply -f "${KOPS_INSTALLER}/ark/ark-prereqs.yaml"
     kubectl -n heptio-ark create secret generic cloud-credentials \
-        --from-file cloud="${SECRETS_PATH}/k8s/secret/${CLUSTER_ALT_NAME}/credentials-ark"
+        --from-file cloud="${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-ark"
 
     export AWS_REGION=${KOPS_REGION}
     export ARK_BUCKET=$(terraform output ark_bucket)
@@ -175,3 +175,5 @@ install_services() {
     install_block-aws
     install_ark
 }
+
+install_ark

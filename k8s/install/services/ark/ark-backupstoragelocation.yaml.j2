@@ -21,6 +21,6 @@ metadata:
 spec:
   provider: aws
   objectStorage:
-    bucket: {{ ARK_BUCKET }}
+    bucket: {{ env.ARK_BUCKET }}
   config:
-    region: {{ AWS_REGION }}
+    region: {{ env.AWS_REGION }}
