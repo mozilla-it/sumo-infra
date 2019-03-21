@@ -46,7 +46,7 @@
       ],
       "Condition": {
         "StringEquals": {
-          "ec2:ResourceTag/KubernetesCluster": "us-west-2b.sumo.mozit.cloud"
+          "ec2:ResourceTag/KubernetesCluster": "k8s.us-west-2b.sumo.mozit.cloud"
         }
       }
     },
@@ -73,7 +73,7 @@
       ],
       "Condition": {
         "StringEquals": {
-          "autoscaling:ResourceTag/KubernetesCluster": "us-west-2b.sumo.mozit.cloud"
+          "autoscaling:ResourceTag/KubernetesCluster": "k8s.us-west-2b.sumo.mozit.cloud"
         }
       }
     },
@@ -142,7 +142,7 @@
         "s3:ListBucket"
       ],
       "Resource": [
-        "arn:aws:s3:::kops-us-west-2b-0f25ba3a795e20a3f"
+        "arn:aws:s3:::sumo-kops-state-095732026120"
       ]
     },
     {
@@ -150,7 +150,7 @@
       "Action": [
         "s3:Get*"
       ],
-      "Resource": "arn:aws:s3:::kops-us-west-2b-0f25ba3a795e20a3f/us-west-2b.sumo.mozit.cloud/*"
+      "Resource": "arn:aws:s3:::sumo-kops-state-095732026120/k8s.us-west-2b.sumo.mozit.cloud/*"
     },
     {
       "Effect": "Allow",
