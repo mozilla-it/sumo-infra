@@ -75,16 +75,12 @@ install_mig() {
     kubectl create -f "${KOPS_INSTALLER}/services/mig/mig-namespace.yaml"
 
     # Export mqpassword
-    MQPASSWORD=$(cat ${SECRETS_PATH}/k8s/secrets/mig/mqpassword)
-    ( cd ${KOPS_INSTALLER}/services/mig && make MQPASSWORD=${MQPASSWORD} )
     kubectl -n mig create secret generic mig-agent-secrets \
-        --from-file=${SECRETS_PATH}/k8s/secrets/mig/agent.key \
-        --from-file=${SECRETS_PATH}/k8s/secrets/mig/agent.crt \
-        --from-file=${SECRETS_PATH}/k8s/secrets/mig/ca.crt \
-        --from-file=${KOPS_INSTALLER}/services/mig/mig-agent.cfg
+        --from-file=${SECRETS_PATH}/services/mig/agent.key \
+        --from-file=${SECRETS_PATH}/services/mig/agent.crt \
+        --from-file=${SECRETS_PATH}/services/mig/ca.crt \
+        --from-file=${SECRETS_PATH}/services/mig/mig-agent.cfg
     kubectl -n mig create -f ${KOPS_INSTALLER}/services/mig/migdaemonset.yaml
-    rm -f "${KOPS_INSTALLER}/services/mig/mig-agent.cfg"
-    unset MQPASSWORD
 }
 
 install_newrelic() {
@@ -153,7 +149,7 @@ install_metrics-server() {
 
 install_ark() {
     echo "Install ark"
-    kubectl apply -f "${KOPS_INSTALLER}/ark/ark-prereqs.yaml"
+    kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-prereqs.yaml"
     kubectl -n heptio-ark create secret generic cloud-credentials \
         --from-file cloud="${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-ark"
 
@@ -161,7 +157,7 @@ install_ark() {
     export ARK_BUCKET=$(terraform output ark_bucket)
     (cd "${KOPS_INSTALLER}/ark" && make deploy)
 
-    kubectl apply -f "${KOPS_INSTALLER}/ark/ark-deployment.yaml"
+    kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-deployment.yaml"
 
 }
 
@@ -176,4 +172,5 @@ install_services() {
     install_ark
 }
 
-install_ark
+#install_ark
+install_mig
