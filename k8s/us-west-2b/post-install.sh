@@ -100,9 +100,9 @@ install_calico_rbac() {
 
 install_fluentd() {
 
-    PAPERTRAIL_CONFIG="${SECRETS_PATH}/k8s/secrets/${CLUSTER_ALT_NAME}/papertrail.sh"
+    PAPERTRAIL_CONFIG="${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/papertrail.env"
     if [ ! -f "${PAPERTRAIL_CONFIG}" ]; then
-        echo "Can't find papertrail.sh"
+        echo "Can't find Papertrail config (${PAPERTRAIL_CONFIG})"
         exit 1
     fi
 
@@ -172,5 +172,3 @@ install_services() {
     install_ark
 }
 
-#install_ark
-install_mig
