@@ -183,7 +183,7 @@ resource "aws_autoscaling_group" "master-us-west-2b-3-masters-k8s-us-west-2b-sum
 resource "aws_autoscaling_group" "nodes-k8s-us-west-2b-sumo-mozit-cloud" {
   name                 = "nodes.k8s.us-west-2b.sumo.mozit.cloud"
   launch_configuration = "${aws_launch_configuration.nodes-k8s-us-west-2b-sumo-mozit-cloud.id}"
-  max_size             = 3
+  max_size             = 12
   min_size             = 3
   vpc_zone_identifier  = ["subnet-0017f5099a2316c03"]
 
