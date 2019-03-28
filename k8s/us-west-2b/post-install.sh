@@ -111,10 +111,6 @@ install_fluentd() {
     (cd ${KOPS_INSTALLER}/services/fluentd && make FLUENTD_SYSLOG_HOST=${SYSLOG_HOST} FLUENTD_SYSLOG_PORT=${SYSLOG_PORT})
 }
 
-install_redirector_service() {
-    (cd ${KOPS_INSTALLER}/services/http_to_https_redirector && make deploy)
-}
-
 install_cluster_autoscaler() {
     MAX_NODES=20
 
