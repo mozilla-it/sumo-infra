@@ -485,7 +485,7 @@ resource "aws_security_group_rule" "all-node-to-node" {
   protocol                 = "-1"
 }
 
-resource "aws_security_group_rule" "https-external-to-master-0-0-0-0--0" {
+resource "aws_security_group_rule" "https-external-to-master-97-120-19-209--32" {
   type              = "ingress"
   security_group_id = "${aws_security_group.masters-k8s-us-west-2b-sumo-mozit-cloud.id}"
   from_port         = 443
