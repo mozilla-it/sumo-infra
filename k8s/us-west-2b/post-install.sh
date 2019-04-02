@@ -140,7 +140,7 @@ install_block-aws() {
 
 install_metrics-server() {
     echo "Install metrics-server"
-    kubectl apply -f "${KOPS_INSTALLER}/services/metrics-server/"
+    kubectl apply -f "${KOPS_INSTALLER}/services/metrics-server/metrics-server.yaml"
 }
 
 install_ark() {
