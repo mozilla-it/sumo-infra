@@ -133,7 +133,8 @@ install_datadog() {
 install_block-aws() {
     echo "Install block-aws"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-namespace.yaml"
-    kubectl apply -f "${SECRETS_PATH}/k8s/secrets/${CLUSTER_ALT_NAME}/block-aws-secrets.yaml"
+    kubectl -n sumo-cron create secret generic blockaws-secrets \
+        --from-env-file "${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-cron.yaml"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-networkpolicy.yaml"
 }
