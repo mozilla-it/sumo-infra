@@ -85,8 +85,10 @@ install_mig() {
 
 install_newrelic() {
     echo "Installing New Relic"
-    kubectl create -f "${KOPS_INSTALLER}/services/newrelic/newrelic-namespace.yaml"
-    ( cd ${KOPS_INSTALLER}/services/newrelic && make CLUSTER_NAME=${KOPS_SHORTNAME} )
+    NR_DIR=${KOPS_INSTALLER}/services/newrelic/
+    kubectl apply -f "${NR_DIR}/newrelic-namespace.yaml"
+    kubectl apply -f ${SECRETS_PATH}/services/newrelic/newrelic-config.yaml
+    cat ${NR_DIR}/newrelic-daemonset.yaml.tmpl | envsubst | kubectl apply -f -
 }
 
 install_calico_rbac() {
