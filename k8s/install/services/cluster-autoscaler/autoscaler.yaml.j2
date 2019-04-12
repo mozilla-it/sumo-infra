@@ -120,25 +120,25 @@ spec:
     spec:
       serviceAccountName: cluster-autoscaler
       containers:
-        - image: {{ env.AUTOSCALER_IMAGE }}
+        - image: {{ AUTOSCALER_IMAGE }}
           name: cluster-autoscaler
           resources:
             limits:
-              cpu: {{ env.AUTOSCALER_CPU_LIMIT }}
-              memory: {{ env.AUTOSCALER_MEMORY_LIMIT }}
+              cpu: {{ AUTOSCALER_CPU_LIMIT }}
+              memory: {{ AUTOSCALER_MEMORY_LIMIT }}
             requests:
-              cpu: {{ env.AUTOSCALER_CPU_LIMIT }}
-              memory: {{ env.AUTOSCALER_MEMORY_LIMIT }}
+              cpu: {{ AUTOSCALER_CPU_LIMIT }}
+              memory: {{ AUTOSCALER_MEMORY_LIMIT }}
           command:
             - ./cluster-autoscaler
             - --v=4
             - --stderrthreshold=info
             - --cloud-provider=aws
             - --skip-nodes-with-local-storage=false
-            - --nodes=1:{{ env.MAX_NODES }}:nodes.{{ env.KOPS_CLUSTER_NAME }}
+            - --nodes=1:{{ MAX_NODES }}:nodes.{{ KOPS_CLUSTER_NAME }}
           env:
             - name: AWS_REGION
-              value: {{ env.AWS_REGION }}
+              value: {{ AWS_REGION }}
           volumeMounts:
             - name: ssl-certs
               mountPath: /etc/ssl/certs/ca-certificates.crt
