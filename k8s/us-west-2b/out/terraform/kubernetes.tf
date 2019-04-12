@@ -491,7 +491,7 @@ resource "aws_security_group_rule" "https-external-to-master-97-120-19-209--32" 
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
-  cidr_blocks       = ["97.120.19.209/32"]
+  cidr_blocks       = ["63.245.220.198/32", "97.120.19.209/32"]
 }
 
 resource "aws_security_group_rule" "master-egress" {
