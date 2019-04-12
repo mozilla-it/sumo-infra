@@ -1,4 +1,5 @@
 #!/bin/bash
+# Requires GNU sed vs BSD sed.  `brew install gnu-sed`
 
 set -u
 
@@ -31,6 +32,7 @@ generate_cluster_autoscaler_tf() {
     # we can now specify the exact ASG instead of "*" for the autoscaler policy
     # https://github.com/kubernetes/autoscaler/pull/527
     # https://docs.aws.amazon.com/autoscaling/latest/userguide/control-access-using-iam.html#policy-auto-scaling-resources
+    echo "Generating ./out/terraform/cluster_autoscaler.tf"
     cat <<BASHEOF > ./out/terraform/cluster_autoscaler.tf
 # This file is generated via post-install.sh
 resource "aws_iam_policy" "nodes-${TF_RESOURCE_NAME}-autoscaler-policy" {
@@ -66,13 +68,20 @@ BASHEOF
     DEFAULT_MAX=$(echo "$((4 * ${KOPS_NODE_COUNT}))")
     # set ASG max size so to allow the cluster autoscaler to scale up
     # retains whitespace for easier reading :-)
-    echo "Editing kubernetes.tf to increase max_size"
+    echo "Editing ./out/terraform/kubernetes.tf to increase max_size"
     sed -ri "s/max_size(\s*)=(\s*)$KOPS_NODE_COUNT/max_size\\1=\2$DEFAULT_MAX/" ./out/terraform/kubernetes.tf
+    echo "*** Applying cluster_autoscaler terraform, press enter then read all proposed changes carefully before continuing ***"
+    read
+    cd ./out/terraform
+    terraform init > /dev/null
+    terraform apply
+    cd - > /dev/null
+    echo "Done"
 }
 
 install_mig() {
     echo "Install mig"
-    kubectl create -f "${KOPS_INSTALLER}/services/mig/mig-namespace.yaml"
+    kubectl apply -f "${KOPS_INSTALLER}/services/mig/mig-namespace.yaml"
 
     # Export mqpassword
     kubectl -n mig create secret generic mig-agent-secrets \
@@ -80,7 +89,7 @@ install_mig() {
         --from-file=${SECRETS_PATH}/services/mig/agent.crt \
         --from-file=${SECRETS_PATH}/services/mig/ca.crt \
         --from-file=${SECRETS_PATH}/services/mig/mig-agent.cfg
-    kubectl -n mig create -f ${KOPS_INSTALLER}/services/mig/migdaemonset.yaml
+    kubectl -n mig apply -f ${KOPS_INSTALLER}/services/mig/migdaemonset.yaml
 }
 
 install_newrelic() {
@@ -121,7 +130,7 @@ install_cluster_autoscaler() {
     kubectl create clusterrolebinding \
         --user system:serviceaccount:kube-system:default \
         kube-system-cluster-admin --clusterrole cluster-admin
-    (cd ${KOPS_INSTALLER}/services/cluster-autoscaler && make MAX_NODES=${MAX_NODES} KOPS_CLUSTER_NAME=${KOPS_CLUSTER_NAME} AWS_REGION=${KOPS_REGION})
+    j2 ${KOPS_INSTALLER}/services/cluster-autoscaler | kubectl apply -f -
 }
 
 install_block-aws() {
@@ -145,13 +154,13 @@ install_ark() {
         --from-file cloud="${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-ark"
 
     export AWS_REGION=${KOPS_REGION}
-    export ARK_BUCKET=$(terraform output ark_bucket)
+    export ARK_BUCKET=$(cd out/terraform && terraform output ark_bucket)
     (cd "${KOPS_INSTALLER}/services/ark" && make deploy)
 
     kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-deployment.yaml"
 }
 
-install_services() {
+install_all() {
     install_cluster_autoscaler
     install_calico_rbac
     install_fluentd
@@ -160,6 +169,7 @@ install_services() {
     install_redirector_service
     install_block-aws
     install_ark
+    install_newrelic
 }
 
 # Turn off annoying set -u in case someone sources this script
@@ -176,6 +186,7 @@ usage() {
     echo "  block-aws               install the AWS metadata block"
     echo "  ark                     install ark/velero for backups"
     echo "  metrics-server          install metrics-server"
+    echo "  all                     install all of the above components"
 }
 
 # Allow us to run this script one function at a time
@@ -197,6 +208,8 @@ if [ $# -eq 1 ]; then
             install_ark;;
         metrics-server)
             install_metrics-server;;
+        all)
+            install_all;;
         default)
             echo "Unknown argument ${1}, exiting"
             echo
