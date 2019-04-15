@@ -16,15 +16,15 @@ Secrets are stored in a private location, but to aid in future discoverability t
     discoverawsmeta = on
     checkin         = off
     relay           = "amqps://username:password@url:port/path"
-    socket          = "127.0.0.1:51664"
+    socket          = "host:port"
     heartbeatfreq   = "30s"
     moduletimeout   = "1200s"
-    api             = "https://api.mig.mozilla.org/api/v1/"
+    api             = "url"
 
 [certs]
-    ca  = "/etc/mig/ca.crt"
-    cert= "/etc/mig/agent.crt"
-    key = "/etc/mig/agent.key"
+    ca  = "<ca cert path>"
+    cert= "<agent cert path>"
+    key = "<agent key path>"
 
 [logging]
     mode    = "stdout" ; stdout | file | syslog
