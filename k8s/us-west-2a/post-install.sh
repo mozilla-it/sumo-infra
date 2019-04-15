@@ -1,4 +1,5 @@
 #!/bin/bash
+# Configure various bits of a SUMO Kubernetes cluster including secrets and cluster services like fluentd, mig, calico, autoscalers, etc.
 # Requires GNU sed vs BSD sed.  `brew install gnu-sed`
 
 set -u
@@ -196,7 +197,7 @@ usage() {
     echo "  all                     install all of the above components"
 }
 
-# Allow us to run this script one function at a time
+# Allow us to install one component at a time (or all of them)
 if [ $# -eq 1 ]; then
     case $1 in
         cluster_autoscaler)
