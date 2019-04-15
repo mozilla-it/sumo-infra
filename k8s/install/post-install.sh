@@ -223,7 +223,11 @@ if [ $# -eq 1 ]; then
             install_fluentd;;
         all)
             install_all;;
-        default)
+        -h|--help)
+            usage
+            exit
+            ;;
+        *)
             echo "Unknown argument ${1}, exiting"
             echo
             usage
