@@ -1,4 +1,4 @@
-# Creating kubernetes cluster
+# Creating a SUMO kubernetes cluster
 Kubernetes clusters are configured using kops, each cluster created right now will have 1 master and 3 nodes in a singular AZ
 
 ## Requirements
@@ -14,9 +14,29 @@ You will need the following tools to get kubernetes installed
 - choose AWS region + AZ
 - choose an external DNS name
     - Create external DNS name
-- choose cluster name
 
+## Create cluster infra in a specific AZ
+Kubernetes and Kops require some infrastructure to get going, primarily a VPC and some S3 buckets
 
-## Post install
-- Run post-install.sh script
-- Login to AWS console and edit security group for `master` and `node` delete the ssh rule that allows access from `0.0.0.0/0`
+- Ensure your AWS_PROFILE is set correctly and authenticate to AWS if necessary
+- In the `k8s/tf/00_aws-vpc/<your_AZ>` directory, run `terraform apply` 
+- In the `k8s/tf/01_dns` directory, run `terraform apply` 
+- In the `k8s/tf/10_ark/<your_AZ>` directory, run `terraform apply` 
+- Edit `k8s/common.sh` and put real values form your terraform output into `KOPS_VPC_ID`, `KOPS_STATE_BUCKET` and `STATE_BUCKET`.  Ensure all the sizing and k8s version is as you desire.
+- cd to the directory under `k8s/` for the Availability Zone(AZ) you want to build a k8s cluster in such as `us-west-2a`:
+- Copy config.sh.template to config.sh and put real values in it for:
+    - `KOPS_SUBNETS` which should be set to a public subnet created by the terraform earlier
+    - `KOPS_SSH_PUB_KEY` which should point to a copy of SSH public key
+    - `KOPS_ADMIN_IP` which should be your IP
+    - `SECRETS_PATH` which should point to a checkout of sumo's private repo
+
+## Create the cluster with kops
+- `source config.sh`
+- run `install.sh` to have kops generate terraform for your k8s cluster
+- In the resulting `out/terraform` directory, run `terraform apply`
+- Wait several minutes for the kubernetes cluster to start or the next step will fail
+- `kops validate cluster` until it shows the cluster is ready
+
+## Configure the kubernetes cluster
+- Run the post-install configuration script like `./post-install.sh all` and follow any prompts, or if it is more comfortable you can install one component at a time, see `./post-install` for more details
+
