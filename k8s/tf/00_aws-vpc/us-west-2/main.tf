@@ -40,7 +40,6 @@ module "vpc" {
 resource "aws_s3_bucket" "sumo-kops-state" {
   bucket = "sumo-kops-state-095732026120"
   acl    = "private"
-  force_destroy = true
 
   versioning {
     enabled = true
