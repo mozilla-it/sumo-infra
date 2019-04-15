@@ -76,11 +76,12 @@ BASHEOF
     terraform init > /dev/null
     terraform apply
     cd - > /dev/null
-    echo "Done"
+    echo "Done applying cluster_autoscaler terraform"
+    echo "You may want to git commit the modified ./out/terraform/kubernetes.tf with increased max_size"
 }
 
 install_mig() {
-    echo "Install mig"
+    echo "Installing mig"
     kubectl apply -f "${KOPS_INSTALLER}/services/mig/mig-namespace.yaml"
 
     # Export mqpassword
@@ -90,6 +91,7 @@ install_mig() {
         --from-file=${SECRETS_PATH}/services/mig/ca.crt \
         --from-file=${SECRETS_PATH}/services/mig/mig-agent.cfg
     kubectl -n mig apply -f ${KOPS_INSTALLER}/services/mig/migdaemonset.yaml
+    echo "Done installing mig"
 }
 
 install_newrelic() {
@@ -98,19 +100,22 @@ install_newrelic() {
     kubectl apply -f "${NR_DIR}/newrelic-namespace.yaml"
     kubectl apply -f ${SECRETS_PATH}/services/newrelic/newrelic-config.yaml
     cat ${NR_DIR}/newrelic-daemonset.yaml.tmpl | envsubst | kubectl apply -f -
+    echo "Done installing New Relic"
 }
 
 install_calico_rbac() {
+    echo "Installing calico"
     if [ ${KOPS_NETWORKING} != "calico" ]; then
         echo "Networking not using calico, not doing anything"
         continue
     else
         kubectl apply -f "https://docs.projectcalico.org/${CALICO_VERSION:-v3.2}/getting-started/kubernetes/installation/rbac.yaml"
     fi
+    echo "Done installing calico"
 }
 
 install_fluentd() {
-
+    echo "Installing fluentd"
     PAPERTRAIL_CONFIG="${SECRETS_PATH}/${KOPS_ZONES}/papertrail.env"
     if [ ! -f "${PAPERTRAIL_CONFIG}" ]; then
         echo "Can't find papertrail.env"
@@ -118,8 +123,8 @@ install_fluentd() {
     fi
 
     source "${PAPERTRAIL_CONFIG}"
-    echo "Installing fluentd"
     (cd ${KOPS_INSTALLER}/services/fluentd && make FLUENTD_SYSLOG_HOST=${SYSLOG_HOST} FLUENTD_SYSLOG_PORT=${SYSLOG_PORT})
+    echo "Done installing fluentd"
 }
 
 install_cluster_autoscaler() {
@@ -130,6 +135,7 @@ install_cluster_autoscaler() {
         --user system:serviceaccount:kube-system:default \
         kube-system-cluster-admin --clusterrole cluster-admin
     j2 ${KOPS_INSTALLER}/services/cluster-autoscaler/autoscaler.yaml.j2 | kubectl apply -f -
+    echo "Done installing cluster autoscaler"
 }
 
 install_block-aws() {
@@ -139,15 +145,17 @@ install_block-aws() {
         --from-env-file "${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-cron.yaml"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-networkpolicy.yaml"
+    echo "Done installiing block-aws"
 }
 
 install_metrics-server() {
-    echo "Install metrics-server"
+    echo "Installing metrics-server"
     kubectl apply -f "${KOPS_INSTALLER}/services/metrics-server/metrics-server.yaml"
+    echo "Done installing metrics-server"
 }
 
 install_ark() {
-    echo "Install ark"
+    echo "Installing ark"
     kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-prereqs.yaml"
     kubectl -n heptio-ark create secret generic cloud-credentials \
         --from-file cloud="${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-ark"
@@ -157,6 +165,7 @@ install_ark() {
     (cd "${KOPS_INSTALLER}/services/ark" && make deploy)
 
     kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-deployment.yaml"
+    echo "Done installing ark"
 }
 
 install_all() {
@@ -176,7 +185,6 @@ set +u
 usage() {
     echo "Usage: $(basename ${0}) <arg>"
     echo "  args: "
-    echo "  autoscaler              generate terraform for autoscaler"
     echo "  cluster_autoscaler      install cluster autoscaler"
     echo "  calico                  install calico networking"
     echo "  newrelic                install newrelic"
