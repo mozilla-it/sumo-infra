@@ -27,7 +27,7 @@ set_tf_resource_name() {
     export TF_RESOURCE_NAME=$(echo ${KOPS_CLUSTER_NAME} | tr "." "-")
 }
 
-generate_cluster_autoscaler_tf() {
+apply_cluster_autoscaler_tf() {
     set_tf_resource_name
     # we can now specify the exact ASG instead of "*" for the autoscaler policy
     # https://github.com/kubernetes/autoscaler/pull/527
@@ -111,9 +111,9 @@ install_calico_rbac() {
 
 install_fluentd() {
 
-    PAPERTRAIL_CONFIG="${SECRETS_PATH}/k8s/secrets/${CLUSTER_ALT_NAME}/papertrail.sh"
+    PAPERTRAIL_CONFIG="${SECRETS_PATH}/${KOPS_ZONES}/papertrail.env"
     if [ ! -f "${PAPERTRAIL_CONFIG}" ]; then
-        echo "Can't find papertrail.sh"
+        echo "Can't find papertrail.env"
         exit 1
     fi
 
@@ -123,14 +123,13 @@ install_fluentd() {
 }
 
 install_cluster_autoscaler() {
-    MAX_NODES=20
-
     echo "Installing cluster autoscaler"
+    apply_cluster_autoscaler_tf
     # https://github.com/kubernetes/dashboard/issues/2326#issuecomment-326651713
     kubectl create clusterrolebinding \
         --user system:serviceaccount:kube-system:default \
         kube-system-cluster-admin --clusterrole cluster-admin
-    j2 ${KOPS_INSTALLER}/services/cluster-autoscaler | kubectl apply -f -
+    j2 ${KOPS_INSTALLER}/services/cluster-autoscaler/autoscaler.yaml.j2 | kubectl apply -f -
 }
 
 install_block-aws() {
@@ -154,7 +153,7 @@ install_ark() {
         --from-file cloud="${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-ark"
 
     export AWS_REGION=${KOPS_REGION}
-    export ARK_BUCKET=$(cd out/terraform && terraform output ark_bucket)
+    export ARK_BUCKET=$(cd tf && terraform output ark_bucket)
     (cd "${KOPS_INSTALLER}/services/ark" && make deploy)
 
     kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-deployment.yaml"
@@ -165,11 +164,10 @@ install_all() {
     install_calico_rbac
     install_fluentd
     install_mig
-    install_datadog
-    install_redirector_service
     install_block-aws
     install_ark
     install_newrelic
+    install_metrics-server
 }
 
 # Turn off annoying set -u in case someone sources this script
@@ -186,14 +184,13 @@ usage() {
     echo "  block-aws               install the AWS metadata block"
     echo "  ark                     install ark/velero for backups"
     echo "  metrics-server          install metrics-server"
+    echo "  fluentd                 install fluentd"
     echo "  all                     install all of the above components"
 }
 
 # Allow us to run this script one function at a time
 if [ $# -eq 1 ]; then
     case $1 in
-        autoscaler)
-            generate_cluster_autoscaler_tf;;
         cluster_autoscaler)
             install_cluster_autoscaler;;
         calico)
@@ -208,6 +205,8 @@ if [ $# -eq 1 ]; then
             install_ark;;
         metrics-server)
             install_metrics-server;;
+        fluentd)
+            install_fluentd;;
         all)
             install_all;;
         default)
