@@ -163,6 +163,11 @@ install_ark() {
 
     export AWS_REGION=${KOPS_REGION}
     export ARK_BUCKET=$(cd tf && terraform output ark_bucket)
+    if [ "$ARK_BUCKET" == "" ]; then
+        echo "Error: could not get the name of the Ark bucket, you likely need to run the terraform that creates it, see the README at https://github.com/mozilla-it/sumo-infra/blob/master/k8s/README.md"
+        echo "Exiting"
+        exit 1
+    fi
     (cd "${KOPS_INSTALLER}/services/ark" && make deploy)
 
     kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-deployment.yaml"
