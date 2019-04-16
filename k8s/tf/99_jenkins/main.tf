@@ -4,18 +4,18 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = "mdn-state-4e366a3ac64d1b4022c8b5e35efbd288"
+    bucket = "sumo-state-095732026120"
     key    = "terraform/ci"
     region = "us-west-2"
   }
 }
 
-resource "aws_key_pair" "mdn" {
+resource "aws_key_pair" "sumo" {
   lifecycle {
     create_before_destroy = true
   }
 
-  key_name   = "mdn"
+  key_name   = "sumo"
   public_key = "${var.ssh_pubkey}"
 }
 
@@ -145,7 +145,7 @@ resource "aws_security_group" "ci" {
   tags = {
     Name    = "ci-sg"
     Region  = "${var.region}"
-    Service = "MDN"
+    Service = "SUMO"
   }
 }
 
@@ -226,7 +226,7 @@ resource "aws_launch_configuration" "ci" {
   image_id = "${data.aws_ami.ubuntu.id}"
 
   instance_type               = "${var.instance_type}"
-  key_name                    = "${aws_key_pair.mdn.key_name}"
+  key_name                    = "${aws_key_pair.sumo.key_name}"
   associate_public_ip_address = true
   user_data                   = "${data.template_file.user_data.rendered}"
 
@@ -336,38 +336,3 @@ resource aws_iam_role_policy "ci-backup" {
 EOF
 }
 
-resource aws_iam_policy "mdn-interactive-permissive" {
-  name        = "mdn-interactive-permissive"
-  description = "Allow ci to push to interactive-example bucket"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:ListBucket"
-      ],
-      "Resource": [
-        "arn:aws:s3:::mdninteractive-*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:*"
-      ],
-      "Resource": [
-        "arn:aws:s3:::mdninteractive-*/*"
-      ]
-    }
-  ]
-}
-EOF
-}
-
-resource aws_iam_role_policy_attachment "ci-role" {
-  role       = "${aws_iam_role.ci.name}"
-  policy_arn = "${aws_iam_policy.mdn-interactive-permissive.arn}"
-}
