@@ -20,47 +20,102 @@ resource "aws_key_pair" "sumo" {
 }
 
 # Create a new load balancer
-resource "aws_elb" "ci" {
-  name    = "ci-elb-${var.project}"
-  subnets = ["${data.aws_subnet_ids.subnet_id.ids}"]
 
-  listener {
-    instance_port     = 80
-    instance_protocol = "http"
-    lb_port           = 80
-    lb_protocol       = "http"
-  }
-
-  listener {
-    instance_port      = 80
-    instance_protocol  = "http"
-    lb_port            = 443
-    lb_protocol        = "https"
-    ssl_certificate_id = "${data.aws_acm_certificate.ci.arn}"
-  }
-
-  health_check {
-    healthy_threshold   = 3
-    unhealthy_threshold = 5
-    timeout             = 10
-    target              = "TCP:80"
-    interval            = 30
-  }
-
-  cross_zone_load_balancing = true
-
-  security_groups = [
-    "${aws_security_group.elb.id}",
-  ]
+resource "aws_eip" "eip" {
+  count = "${length(data.aws_subnet_ids.subnet_id.ids)}"
+  vpc   = true
 
   tags = {
-    Name   = "ci-elb"
-    Region = "${var.region}"
+    Name        = "${var.service}-nlb-eip"
+    Service     = "${var.project}-${var.service}"
+    Region      = "${var.region}"
+    Terraform   = "true"
+  }
+}
+
+locals {
+  listeners = [
+    {
+      port        = "80"
+      target_port = "80"
+    },
+    {
+      port        = "443"
+      target_port = "443"
+    },
+  ]
+}
+
+resource "aws_lb" "balancer" {
+  name               = "${var.project}-${var.service}-nlb"
+  load_balancer_type = "network"
+  internal           = false
+
+  enable_cross_zone_load_balancing = true
+
+  # Have to hardcode :(
+
+  subnet_mapping {
+    subnet_id     = "${element(data.aws_subnet_ids.subnet_id.ids, 0)}"
+    allocation_id = "${aws_eip.eip.0.id}"
+  }
+
+  subnet_mapping {
+    subnet_id     = "${element(data.aws_subnet_ids.subnet_id.ids, 1)}"
+    allocation_id = "${aws_eip.eip.1.id}"
+  }
+
+  subnet_mapping {
+    subnet_id     = "${element(data.aws_subnet_ids.subnet_id.ids, 2)}"
+    allocation_id = "${aws_eip.eip.2.id}"
+  }
+
+  tags = {
+    Name        = "${var.service}-nlb"
+    Service     = "${var.project}-${var.service}"
+    Region      = "${var.region}"
+    Terraform   = "true"
+  }
+}
+
+resource "aws_lb_target_group" "balancer_target_group-http" {
+  name     = "http-80"
+  port     = "80"
+  protocol = "TCP"
+  vpc_id   = "${data.terraform_remote_state.kubernetes-us-west-2.vpc_id}"
+}
+
+resource "aws_lb_target_group" "balancer_target_group-https" {
+  name     = "https-443"
+  port     = "443"
+  protocol = "TCP"
+  vpc_id   = "${data.terraform_remote_state.kubernetes-us-west-2.vpc_id}"
+}
+
+resource "aws_lb_listener" "balancer_listener-http" {
+  load_balancer_arn = "${aws_lb.balancer.id}"
+  port              = "80"
+  protocol          = "TCP"
+
+  default_action {
+    target_group_arn = "${aws_lb_target_group.balancer_target_group-http.id}"
+    type             = "forward"
+  }
+}
+
+resource "aws_lb_listener" "balancer_listener-https" {
+  load_balancer_arn = "${aws_lb.balancer.id}"
+  port              = "443"
+  protocol          = "TCP"
+
+  default_action {
+    target_group_arn = "${aws_lb_target_group.balancer_target_group-https.id}"
+    type             = "forward"
   }
 }
 
 resource "aws_security_group" "elb" {
-  name        = "ci-elb-sg"
+  name        = "${var.project}-${var.service}-elb-sg"
   description = "Allow inbound traffic from ELB to CI"
 
   vpc_id = "${data.terraform_remote_state.kubernetes-us-west-2.vpc_id}"
@@ -87,13 +142,15 @@ resource "aws_security_group" "elb" {
   }
 
   tags = {
-    Name   = "ci-elb-sg"
-    Region = "${var.region}"
+    Name        = "${var.service}-elb-sg"
+    Service     = "${var.project}-${var.service}"
+    Region      = "${var.region}"
+    Terraform   = "true"
   }
 }
 
 resource "aws_security_group" "ci" {
-  name        = "ci-sg"
+  name        = "${var.project}-${var.service}-sg"
   description = "Allow inbound traffic to CI from ELB"
 
   vpc_id = "${data.terraform_remote_state.kubernetes-us-west-2.vpc_id}"
@@ -119,20 +176,11 @@ resource "aws_security_group" "ci" {
   }
 
   ingress {
-    from_port = 4443
-    to_port   = 4443
-    protocol  = "tcp"
-
-    security_groups = [
-      "${aws_security_group.elb.id}",
-    ]
-  }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    description       = "Allow SSH access from whitelist"
+    from_port         = "22"
+    to_port           = "22"
+    protocol          = "TCP"
+    cidr_blocks       = "${var.ip_whitelist}"
   }
 
   egress {
@@ -143,30 +191,20 @@ resource "aws_security_group" "ci" {
   }
 
   tags = {
-    Name    = "ci-sg"
-    Region  = "${var.region}"
-    Service = "SUMO"
+    Name        = "${var.service}-sg"
+    Service     = "${var.project}-${var.service}"
+    Region      = "${var.region}"
+    Terraform   = "true"
   }
-}
-
-resource "aws_security_group_rule" "ingress_ssh" {
-  type              = "ingress"
-  security_group_id = "${aws_security_group.ci.id}"
-  from_port         = "22"
-  to_port           = "22"
-  protocol          = "TCP"
-  cidr_blocks       = "${var.ip_whitelist}"
 }
 
 resource "aws_autoscaling_group" "ci" {
   vpc_zone_identifier = ["${data.aws_subnet_ids.subnet_id.ids}"]
 
   # This is on purpose, when the LC changes, will force creation of a new ASG
-  name = "ci-${var.project} - ${aws_launch_configuration.ci.name}"
+  name = "${var.project}-${var.service} - ${aws_launch_configuration.ci.name}"
 
-  load_balancers = [
-    "${aws_elb.ci.name}",
-  ]
+  load_balancers = ["${aws_lb.balancer.name}"]
 
   lifecycle {
     create_before_destroy = true
@@ -192,36 +230,23 @@ resource "aws_autoscaling_group" "ci" {
     "GroupTotalInstances",
   ]
 
-  tag {
-    key                 = "Name"
-    value               = "ci.${var.region}.${var.domain}"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "Region"
-    value               = "${var.region}"
-    propagate_at_launch = true
-  }
 }
 
 data template_file "user_data" {
   template = "${file("${path.module}/templates/user_data.tpl")}"
 
   vars = {
-    backup_dir         = "${var.backup_dir}"
-    backup_bucket      = "${aws_s3_bucket.ci-backup-bucket.id}"
-    nginx_htpasswd     = "${var.nginx_htpasswd}"
-    jenkins_backup_dms = "${var.jenkins_backup_dms}"
-    papertrail_host    = "${var.papertrail_host}"
-    papertrail_port    = "${var.papertrail_port}"
-    datadog_key        = "${var.datadog_key}"
-    datadog_hostname   = "${var.datadog_hostname}"
+    backup_dir           = "${var.backup_dir}"
+    backup_bucket        = "${aws_s3_bucket.backup.id}"
+    nginx_htpasswd       = "${var.nginx_htpasswd}"
+    jenkins_backup_dms   = "${var.jenkins_backup_dms}"
+    papertrail_host      = "${var.papertrail_host}"
+    papertrail_port      = "${var.papertrail_port}"
   }
 }
 
 resource "aws_launch_configuration" "ci" {
-  name_prefix = "ci-${var.project}-"
+  name_prefix = "${var.project}-${var.service}-"
 
   image_id = "${data.aws_ami.ubuntu.id}"
 
@@ -249,6 +274,16 @@ resource "aws_launch_configuration" "ci" {
   }
 }
 
+resource "aws_autoscaling_attachment" "http" {
+  autoscaling_group_name = "${aws_autoscaling_group.ci.id}"
+  alb_target_group_arn   = "${aws_lb_target_group.balancer_target_group-http.arn}"
+}
+
+resource "aws_autoscaling_attachment" "https" {
+  autoscaling_group_name = "${aws_autoscaling_group.ci.id}"
+  alb_target_group_arn   = "${aws_lb_target_group.balancer_target_group-https.arn}"
+}
+
 resource "random_id" "rand-var" {
   keepers = {
     backup_bucket = "${var.backup_bucket}"
@@ -257,24 +292,26 @@ resource "random_id" "rand-var" {
   byte_length = 8
 }
 
-resource aws_s3_bucket "ci-backup-bucket" {
+resource aws_s3_bucket "backup" {
   bucket = "${var.backup_bucket}-${random_id.rand-var.hex}"
   acl    = "private"
 
   tags {
-    Name    = "${var.backup_bucket}-${random_id.rand-var.hex}"
-    Region  = "${var.region}"
-    Purpose = "Backup bucket for CI system"
+    Name      = "${var.service}-s3backup"
+    Service   = "${var.project}-${var.service}"
+    Region    = "${var.region}"
+    Purpose   = "Backup bucket for CI system"
+    Terraform = "true"
   }
 }
 
 resource "aws_iam_instance_profile" "ci" {
-  name = "ci-${var.project}-${var.region}"
+  name = "${var.project}-${var.service}-${var.region}"
   role = "${aws_iam_role.ci.name}"
 }
 
 resource "aws_iam_role" "ci" {
-  name = "ci-${var.project}-${var.region}"
+  name = "${var.project}-${var.service}-${var.region}"
   path = "/"
 
   assume_role_policy = <<EOF
@@ -295,7 +332,7 @@ EOF
 }
 
 resource aws_iam_role_policy "ci-backup" {
-  name = "ci-backups-${var.region}"
+  name = "${var.project}-${var.service}-backups-${var.region}"
   role = "${aws_iam_role.ci.id}"
 
   policy = <<EOF
@@ -317,7 +354,7 @@ resource aws_iam_role_policy "ci-backup" {
       "Action": [
         "s3:ListBucket"
       ],
-      "Resource": "${aws_s3_bucket.ci-backup-bucket.arn}"
+      "Resource": "${aws_s3_bucket.backup.arn}"
     },
     {
       "Effect": "Allow",
@@ -327,8 +364,8 @@ resource aws_iam_role_policy "ci-backup" {
         "s3:DeleteObject"
       ],
       "Resource": [
-        "${aws_s3_bucket.ci-backup-bucket.arn}",
-        "${aws_s3_bucket.ci-backup-bucket.arn}/*"
+        "${aws_s3_bucket.backup.arn}",
+        "${aws_s3_bucket.backup.arn}/*"
       ]
     }
   ]

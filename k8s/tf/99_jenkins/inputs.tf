@@ -2,12 +2,20 @@ variable "region" {
   default = "us-west-2"
 }
 
+variable "acm_cert" {
+  default = "*.sumo.mozit.cloud"
+}
+
 variable "instance_type" {
   default = "m5.xlarge"
 }
 
 variable "project" {
   default = "sumo"
+}
+
+variable "service" {
+  default = "ci"
 }
 
 variable "domain" {

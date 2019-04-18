@@ -2,8 +2,8 @@ data terraform_remote_state "kubernetes-us-west-2" {
   backend = "s3"
 
   config {
-    bucket = "mdn-state-4e366a3ac64d1b4022c8b5e35efbd288"
-    key    = "terraform/kubernetes-us-west-2a"
+    bucket = "sumo-state-095732026120"
+    key    = "terraform/sumo-infra"
     region = "us-west-2"
   }
 }
@@ -29,6 +29,6 @@ data aws_ami "ubuntu" {
 }
 
 data aws_acm_certificate "ci" {
-  domain   = "ci.us-west-2.mdn.mozit.cloud"
+  domain   = "${var.acm_cert}"
   statuses = ["ISSUED"]
 }
