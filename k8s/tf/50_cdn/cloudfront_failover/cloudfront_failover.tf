@@ -12,7 +12,7 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
     compress        = true
     default_ttl     = "${var.default_ttl}"
 
-    max_ttl = "${var.max_ttl}"
+    max_ttl                = "${var.max_ttl}"
     min_ttl                = "${var.min_ttl}"
     smooth_streaming       = false
     target_origin_id       = "${var.distribution_name}"
@@ -20,6 +20,7 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
 
     forwarded_values {
       query_string = true
+
       cookies {
         forward = "none"
       }
@@ -31,8 +32,8 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
     origin_id   = "${var.distribution_name}"
 
     custom_header = {
-        name = "X-Forwarded-Host"
-        value = "support.mozilla.org"
+      name  = "X-Forwarded-Host"
+      value = "support.mozilla.org"
     }
 
     custom_origin_config {
@@ -59,4 +60,3 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
     minimum_protocol_version = "TLSv1"
   }
 }
-
