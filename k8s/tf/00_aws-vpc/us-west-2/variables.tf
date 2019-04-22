@@ -3,13 +3,38 @@ variable "region" {
 }
 
 variable "environment" {
-  default = "stage"
+  default = "prod"
+}
+
+variable "s3_kops_state" {
+  default = "sumo-kops-state-095732026120"
+}
+
+variable "vpc_cidr" {
+  default = "10.141.0.0/16"
 }
 
 variable "private_subnets" {
-  default = ["10.0.0.0/19", "10.0.64.0/19", "10.0.128.0/19"]
+  default = ["10.141.0.0/20", "10.141.32.0/20", "10.141.64.0/20"]
 }
 
 variable "public_subnets" {
-  default  = ["10.0.32.0/19", "10.0.96.0/19", "10.0.160.0/19"]
+  default = ["10.141.96.0/19", "10.141.128.0/19", "10.141.160.0/19"]
+}
+
+variable "database_subnets"  {
+  default = ["10.141.16.0/27", "10.141.48.0/27"]
+}
+
+variable "elasticache_subnets" {
+  default = ["10.141.16.32/27", "10.141.48.32/27"]
+}
+
+# Tags to apply across the VPC resources
+variable "base_tags" {
+  default = {
+    "Terraform" = "true",
+    "Project" = "sumo",
+    "Region" = "us-west-2",
+  }
 }
