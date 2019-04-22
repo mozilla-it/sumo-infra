@@ -7,7 +7,7 @@ variable "environment" {
 }
 
 variable "s3_kops_state" {
-  default = "sumo-kops-state-095732026120-testing"
+  default = "sumo-kops-state-095732026120"
 }
 
 variable "vpc_cidr" {
@@ -37,57 +37,4 @@ variable "base_tags" {
     "Project" = "sumo",
     "Region" = "us-west-2",
   }
-}
-
-# Private subnets, /19 split in half
-variable "private-a1" {
-  description = "Base - Unused"
-  default = "10.141.0.0/20"
-}
-
-variable "private-b1" {
-  description = "Base - Unused"
-  default = "10.141.32.0/20"
-}
-
-variable "private-c1" {
-  description = "Base - Unused"
-  default = "10.141.64.0/20"
-}
-
-# Smaller, private /27s
-variable "private-a2" {
-  description = "RDS"
-  default = "10.141.16.0/27"
-}
-
-variable "private-a3" {
-  description = "redis / elasticache"
-  default = "10.141.16.32/27"
-}
-
-variable "private-b2" {
-  description = "RDS"
-  default = "10.141.48.0/27"
-}
-
-variable "private-b3" {
-  description = "redis / elasticache"
-  default = "10.141.48.32/27"
-}
-
-# Public subnets
-variable "public-a1" {
-  description = "Webheads"
-  default = "10.141.96.0/19"
-}
-
-variable "public-b1" {
-  description = "Webheads"
-  default = "10.141.128.0/19"
-}
-
-variable "public-c1" {
-  description = "Webheads"
-  default = "10.141.160.0/19"
 }
