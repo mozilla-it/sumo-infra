@@ -1,4 +1,4 @@
-data terraform_remote_state "kubernetes-us-west-2" {
+data terraform_remote_state "sumo-prod-us-west-2" {
   backend = "s3"
 
   config {
@@ -9,7 +9,7 @@ data terraform_remote_state "kubernetes-us-west-2" {
 }
 
 data aws_subnet_ids "subnet_id" {
-  vpc_id = "${data.terraform_remote_state.kubernetes-us-west-2.vpc_id}"
+  vpc_id = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
 }
 
 data aws_ami "ubuntu" {
