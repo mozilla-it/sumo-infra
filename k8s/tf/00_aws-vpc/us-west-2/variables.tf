@@ -30,6 +30,14 @@ variable "elasticache_subnets" {
   default = ["10.141.16.32/27", "10.141.48.32/27"]
 }
 
+variable "mdc1-ip" {
+  default = "63.245.208.251"
+}
+
+variable "mdc1-bgp-asn" {
+  default = "65048"
+}
+
 # Tags to apply across the VPC resources
 variable "base_tags" {
   default = {
