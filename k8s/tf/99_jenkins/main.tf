@@ -19,54 +19,11 @@ resource "aws_key_pair" "sumo" {
   public_key = "${var.ssh_pubkey}"
 }
 
-# Create a new load balancer
-
-resource "aws_eip" "eip" {
-  count = 1
-  vpc   = true
-
-  tags = {
-    Name      = "${var.service}-eip"
-    Service   = "${var.project}-${var.service}"
-    Region    = "${var.region}"
-    Terraform = "true"
-  }
-}
-
 resource "aws_security_group" "ci" {
   name        = "${var.project}-${var.service}-sg"
   description = "Allow inbound traffic to CI"
 
   vpc_id = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = "${var.ip_whitelist}"
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = "${var.ip_whitelist}"
-  }
-
-  ingress {
-    description = "Allow SSH access from whitelist"
-    from_port   = "22"
-    to_port     = "22"
-    protocol    = "TCP"
-    cidr_blocks = "${var.ip_whitelist}"
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   tags = {
     Name      = "${var.service}-sg"
@@ -95,6 +52,12 @@ resource "aws_autoscaling_group" "ci" {
   health_check_type    = "EC2"
   force_delete         = true
   launch_configuration = "${aws_launch_configuration.ci.name}"
+
+  tag {
+    key = "Name"
+    value = "${var.project}-${var.service}-${var.region}-asg-instance"
+    propagate_at_launch = true
+  }
 
   enabled_metrics = [
     "GroupMinSize",
@@ -128,7 +91,7 @@ resource "aws_launch_configuration" "ci" {
 
   instance_type               = "${var.instance_type}"
   key_name                    = "${aws_key_pair.sumo.key_name}"
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   user_data                   = "${data.template_file.user_data.rendered}"
 
   lifecycle {
