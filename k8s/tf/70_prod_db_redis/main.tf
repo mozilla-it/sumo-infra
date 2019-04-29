@@ -22,7 +22,8 @@ module "mysql-prod" {
   mysql_security_group_name   = "sumo_rds_sg_prod"
   mysql_storage_gb            = 250
   mysql_storage_type          = "gp2"
-  subnets                     = "${join(",", data.aws_subnet_ids.database.ids)}"
-  vpc_id                      = "${data.terraform_remote_state.vpc.vpc_id}"
-  vpc_cidr                    = "${data.terraform_remote_state.vpc.cidr_block}"
+
+  db_subnet_group = "${data.terraform_remote_state.vpc.db_subnet_group}"
+  vpc_id          = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_cidr        = "${data.terraform_remote_state.vpc.cidr_block}"
 }
