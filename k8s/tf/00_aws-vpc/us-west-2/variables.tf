@@ -6,10 +6,6 @@ variable "environment" {
   default = "prod"
 }
 
-variable "s3_kops_state" {
-  default = "sumo-kops-state-095732026120"
-}
-
 variable "vpc_cidr" {
   default = "10.141.0.0/16"
 }
