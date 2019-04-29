@@ -103,6 +103,7 @@ resource "aws_db_instance" "sumo_rds" {
   storage_type                = "${var.mysql_storage_type}"
   username                    = "${var.mysql_username}"
   vpc_security_group_ids      = ["${aws_security_group.sumo_rds_sg.id}"]
+  final_snapshot_identifier   = "sumo-final-db-snapshot"
 
   tags {
     "Stack" = "SUMO-${var.mysql_env}"

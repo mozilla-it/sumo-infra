@@ -13,7 +13,7 @@ data "aws_subnet_ids" "database" {
   vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
 
   tags = {
-    Name    = "sumo-prod-db-${var.REGION}*"
+    Name    = "sumo-prod-db-${var.region}*"
     Purpose = "database"
   }
 }
@@ -23,7 +23,7 @@ data "aws_subnet_ids" "elasticache" {
   vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
 
   tags = {
-    Name    = "sumo-prod-elasticache-${var.REGION}*"
+    Name    = "sumo-prod-elasticache-${var.region}*"
     Purpose = "elasticache"
   }
 }
@@ -48,25 +48,11 @@ data "terraform_remote_state" "kops" {
 data "aws_security_groups" "kops_sg" {
   filter {
     name   = "group-name"
-    values = ["nodes.k8s.${var.REGION}*.sumo.mozit.cloud"]
+    values = ["nodes.k8s.${var.region}*.sumo.mozit.cloud"]
   }
 
   filter {
     name   = "vpc-id"
     values = ["${data.terraform_remote_state.vpc.vpc_id}"]
   }
-}
-
-# Debugging
-output "subnet_cidr_blocks" {
-  #  value    = ["${data.aws_subnet.database.*.cidr_block}"]
-  value = "${join(", ", data.aws_subnet.database.*.cidr_block)}"
-}
-
-output "database_subnet_ids" {
-  value = ["${data.aws_subnet_ids.database.ids}"]
-}
-
-output "kops_security_groups" {
-  value = ["${data.aws_security_groups.kops_sg.ids}"]
 }
