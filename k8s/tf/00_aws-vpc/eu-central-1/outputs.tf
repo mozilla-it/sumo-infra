@@ -3,7 +3,7 @@ output "vpc_id" {
 }
 
 output "private_subnets" {
-    value = "${module.vpc.private_subnets}"
+  value = "${module.vpc.private_subnets}"
 }
 
 output "cidr_block" {
@@ -11,5 +11,5 @@ output "cidr_block" {
 }
 
 output "public_subnets" {
-    value = "${module.vpc.public_subnets}"
+  value = "${module.vpc.public_subnets}"
 }
