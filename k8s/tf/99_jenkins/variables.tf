@@ -2,6 +2,10 @@ variable "region" {
   default = "us-west-2"
 }
 
+variable "mdc_cidr" {
+  default = "10.48.0.0/15"
+}
+
 variable "acm_cert" {
   default = "*.sumo.mozit.cloud"
 }
@@ -41,7 +45,3 @@ variable "jenkins_backup_dms" {}
 variable "papertrail_host" {}
 
 variable "papertrail_port" {}
-
-variable "ip_whitelist" {
-  type = "list"
-}

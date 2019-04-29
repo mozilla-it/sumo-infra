@@ -1,15 +1,3 @@
-provider "aws" {
-  region = "${var.region}"
-}
-
-terraform {
-  backend "s3" {
-    bucket = "sumo-state-095732026120"
-    key    = "terraform/ci"
-    region = "us-west-2"
-  }
-}
-
 resource "aws_key_pair" "sumo" {
   lifecycle {
     create_before_destroy = true
@@ -26,11 +14,50 @@ resource "aws_security_group" "ci" {
   vpc_id = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
 
   tags = {
-    Name      = "${var.service}-sg"
+    Name      = "${var.project}-${var.service}-sg"
     Service   = "${var.project}-${var.service}"
     Region    = "${var.region}"
     Terraform = "true"
   }
+}
+
+resource "aws_security_group_rule" "ci-ssh" {
+  type              = "ingress"
+  description       = "SSH via VPN"
+  security_group_id = "${aws_security_group.ci.id}"
+  from_port         = "22"
+  to_port           = "22"
+  protocol          = "TCP"
+  cidr_blocks       = ["${var.mdc_cidr}"]
+}
+
+resource "aws_security_group_rule" "ci-http" {
+  type              = "ingress"
+  description       = "HTTP via VPN"
+  security_group_id = "${aws_security_group.ci.id}"
+  from_port         = "80"
+  to_port           = "80"
+  protocol          = "TCP"
+  cidr_blocks       = ["${var.mdc_cidr}"]
+}
+
+resource "aws_security_group_rule" "ci-https" {
+  type              = "ingress"
+  description       = "HTTPS via VPN"
+  security_group_id = "${aws_security_group.ci.id}"
+  from_port         = "443"
+  to_port           = "443"
+  protocol          = "TCP"
+  cidr_blocks       = ["${var.mdc_cidr}"]
+}
+
+resource "aws_security_group_rule" "ci-egress" {
+  type              = "egress"
+  security_group_id = "${aws_security_group.ci.id}"
+  from_port         = "0"
+  to_port           = "0"
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_autoscaling_group" "ci" {
@@ -54,8 +81,8 @@ resource "aws_autoscaling_group" "ci" {
   launch_configuration = "${aws_launch_configuration.ci.name}"
 
   tag {
-    key = "Name"
-    value = "${var.project}-${var.service}-${var.region}-asg-instance"
+    key                 = "Name"
+    value               = "${var.project}-${var.service}-${var.region}-asg-instance"
     propagate_at_launch = true
   }
 
