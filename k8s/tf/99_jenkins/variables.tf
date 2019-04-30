@@ -10,6 +10,10 @@ variable "acm_cert" {
   default = "*.sumo.mozit.cloud"
 }
 
+variable "route53_zone" {
+  default = "ZXCBUDNBNSCXV"
+}
+
 variable "instance_type" {
   default = "m5.xlarge"
 }
@@ -36,6 +40,16 @@ variable "backup_bucket" {
 
 variable "backup_dir" {
   default = "/data/backups"
+}
+
+# Tags to apply across the VPC resources
+variable "base_tags" {
+  default = {
+    "Terraform" = "true"
+    "Project"   = "sumo"
+    "Service"   = "sumo-ci"
+    "Region"    = "us-west-2"
+  }
 }
 
 variable "nginx_htpasswd" {}

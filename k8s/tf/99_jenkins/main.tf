@@ -7,18 +7,103 @@ resource "aws_key_pair" "sumo" {
   public_key = "${var.ssh_pubkey}"
 }
 
+# Create a new load balancer
+resource "aws_lb" "ci" {
+  name               = "${var.project}-${var.service}-lb"
+  subnets            = ["${data.aws_subnet_ids.subnet_id.ids}"]
+  security_groups    = ["${aws_security_group.lb.id}"]
+  load_balancer_type = "application"
+  internal           = true
+
+  tags = "${var.base_tags}"
+}
+
+resource "aws_lb_target_group" "ci-http" {
+  name     = "${var.project}-${var.service}-tg-http"
+  vpc_id   = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
+  port     = 80
+  protocol = "HTTP"
+
+  health_check {
+    interval            = 30
+    path                = "/"
+    port                = 80
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+    timeout             = 5
+    protocol            = "HTTP"
+    matcher             = "200,401"
+  }
+
+  tags = "${var.base_tags}"
+}
+
+resource "aws_lb_listener" "ci-http" {
+  load_balancer_arn = "${aws_lb.ci.arn}"
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_lb_listener" "ci-https" {
+  load_balancer_arn = "${aws_lb.ci.arn}"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = "${data.aws_acm_certificate.ci.arn}"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.ci-http.arn}"
+  }
+}
+
+resource "aws_security_group" "lb" {
+  name        = "${var.project}-${var.service}-lb-sg"
+  description = "Allow inbound traffic from LB to CI"
+
+  vpc_id = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = "${var.base_tags}"
+}
+
 resource "aws_security_group" "ci" {
   name        = "${var.project}-${var.service}-sg"
   description = "Allow inbound traffic to CI"
 
   vpc_id = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
 
-  tags = {
-    Name      = "${var.project}-${var.service}-sg"
-    Service   = "${var.project}-${var.service}"
-    Region    = "${var.region}"
-    Terraform = "true"
-  }
+  tags = "${merge(map("Name", "${var.project}-${var.service}-sg"), var.base_tags)}"
 }
 
 resource "aws_security_group_rule" "ci-ssh" {
@@ -32,23 +117,23 @@ resource "aws_security_group_rule" "ci-ssh" {
 }
 
 resource "aws_security_group_rule" "ci-http" {
-  type              = "ingress"
-  description       = "HTTP via VPN"
-  security_group_id = "${aws_security_group.ci.id}"
-  from_port         = "80"
-  to_port           = "80"
-  protocol          = "TCP"
-  cidr_blocks       = ["${var.mdc_cidr}"]
+  type                     = "ingress"
+  description              = "HTTP via VPN"
+  security_group_id        = "${aws_security_group.ci.id}"
+  from_port                = "80"
+  to_port                  = "80"
+  protocol                 = "TCP"
+  source_security_group_id = "${aws_security_group.lb.id}"
 }
 
 resource "aws_security_group_rule" "ci-https" {
-  type              = "ingress"
-  description       = "HTTPS via VPN"
-  security_group_id = "${aws_security_group.ci.id}"
-  from_port         = "443"
-  to_port           = "443"
-  protocol          = "TCP"
-  cidr_blocks       = ["${var.mdc_cidr}"]
+  type                     = "ingress"
+  description              = "HTTPS via VPN"
+  security_group_id        = "${aws_security_group.ci.id}"
+  from_port                = "443"
+  to_port                  = "443"
+  protocol                 = "TCP"
+  source_security_group_id = "${aws_security_group.lb.id}"
 }
 
 resource "aws_security_group_rule" "ci-egress" {
@@ -64,7 +149,10 @@ resource "aws_autoscaling_group" "ci" {
   vpc_zone_identifier = ["${data.aws_subnet_ids.subnet_id.ids}"]
 
   # This is on purpose, when the LC changes, will force creation of a new ASG
-  name = "${var.project}-${var.service} - ${aws_launch_configuration.ci.name}"
+  name                      = "${var.project}-${var.service} - ${aws_launch_configuration.ci.name}"
+  target_group_arns         = ["${aws_lb_target_group.ci-http.arn}"]
+  min_elb_capacity          = 1
+  wait_for_capacity_timeout = "10m"
 
   lifecycle {
     create_before_destroy = true
@@ -140,6 +228,14 @@ resource "aws_launch_configuration" "ci" {
   }
 }
 
+resource "aws_route53_record" "ci" {
+  zone_id = "${var.route53_zone}"
+  name    = "ci.sumo.mozit.cloud"
+  type    = "CNAME"
+  ttl     = 60
+  records = ["${aws_lb.ci.dns_name}"]
+}
+
 resource "random_id" "rand-var" {
   keepers = {
     backup_bucket = "${var.backup_bucket}"
@@ -152,13 +248,11 @@ resource aws_s3_bucket "backup" {
   bucket = "${var.backup_bucket}-${random_id.rand-var.hex}"
   acl    = "private"
 
-  tags {
-    Name      = "${var.service}-s3backup"
-    Service   = "${var.project}-${var.service}"
-    Region    = "${var.region}"
-    Purpose   = "Backup bucket for CI system"
-    Terraform = "true"
-  }
+  tags = "${merge(
+            map("Name", "${var.project}-${var.service}-s3backup"),
+            map("Purpose", "Backup bucket for CI system"),
+            var.base_tags
+          )}"
 }
 
 resource "aws_iam_instance_profile" "ci" {

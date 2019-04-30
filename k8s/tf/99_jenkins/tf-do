@@ -47,6 +47,11 @@ apply() {
     terraform apply -input=false -var-file=${TF_SECRETS_PATH}/terraform.tfvars -var "environment=${environment}"
 }
 
+destroy() {
+    local environment=$1
+    terraform destroy -input=false -var-file=${TF_SECRETS_PATH}/terraform.tfvars -var "environment=${environment}"
+}
+
 while [ "$1" != "" ]; do
 	case "$1" in
 		-x | --debug | --setx )
@@ -69,9 +74,13 @@ while [ "$1" != "" ]; do
 			GOT_COMMAND=1
 		;;
 		apply )
-            apply "${MY_ENVIRONMENT:-stage}"
+                        apply "${MY_ENVIRONMENT:-stage}"
 			GOT_COMMAND=1
 		;;
+                destroy )
+                        destroy "${MY_ENVIRONMENT:-stage}"
+                        GOT_COMMAND=1
+                ;;
 	esac
 	shift
 done

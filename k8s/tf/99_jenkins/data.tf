@@ -10,6 +10,11 @@ data terraform_remote_state "sumo-prod-us-west-2" {
 
 data aws_subnet_ids "subnet_id" {
   vpc_id = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
+
+  filter {
+    name   = "tag:Name"
+    values = ["*private*"]
+  }
 }
 
 data aws_ami "ubuntu" {
