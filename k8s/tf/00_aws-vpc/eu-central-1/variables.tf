@@ -3,7 +3,7 @@ variable "region" {
 }
 
 variable "environment" {
-  default = "prod"
+  default = "backup"
 }
 
 variable "vpc_cidr" {
@@ -27,11 +27,11 @@ variable "elasticache_subnets" {
 }
 
 variable "mdc2-ip" {
-  default = "63.245.208.251"
+  default = "63.245.210.251"
 }
 
 variable "mdc2-bgp-asn" {
-  default = "65048"
+  default = "65050"
 }
 
 # Tags to apply across the VPC resources
