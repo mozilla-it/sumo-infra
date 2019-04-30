@@ -46,5 +46,5 @@ resource "aws_customer_gateway" "main" {
   ip_address = "${var.mdc2-ip}"
   type       = "ipsec.1"
 
-  tags = "${merge(map("Name", "mdc1-customer-gateway"), var.base_tags)}"
+  tags = "${merge(map("Name", "mdc2-customer-gateway"), var.base_tags)}"
 }
