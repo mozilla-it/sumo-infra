@@ -11,7 +11,7 @@ provider aws {
 }
 
 module "ark_bucket" {
-  source       = "github.com/limed/tf-ark-backups?ref=master"
+  source       = "github.com/mozilla-it/tf-ark-backups?ref=master"
   region       = "${var.region}"
   bucket_name  = "cluster-backups"
   cluster_name = "us-west-2b"
