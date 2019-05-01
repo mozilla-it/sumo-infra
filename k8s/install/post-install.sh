@@ -85,6 +85,13 @@ install_mig() {
     echo "Installing mig"
     kubectl apply -f "${KOPS_INSTALLER}/services/mig/mig-namespace.yaml"
 
+    # Check we have access to the secrets repo
+    if [ ! -f "${SECRETS_PATH}/services/mig/agent.key" ]; then
+        echo "Error: could not access ${SECRETS_PATH}/services/mig/agent.key"
+        echo "Check \$SECRETS_PATH env var is set in your config.sh for this cluster and sourced"
+        exit 8
+    fi
+
     # Export mqpassword
     # Check if the secret already exists so we don't error out on kubectl create secret step
     set +e 
@@ -107,6 +114,14 @@ install_mig() {
 
 install_newrelic() {
     echo "Installing New Relic"
+
+    # Check we have access to the secrets repo
+    if [ ! -d "${SECRETS_PATH}/services/newrelic/newrelic-config.yaml" ]; then
+        echo "Error: could not access ${SECRETS_PATH}/services/newrelic/newrelic-config.yaml"
+        echo "Check \$SECRETS_PATH env var is set in your config.sh for this cluster and sourced"
+        exit 8
+    fi
+
     NR_DIR=${KOPS_INSTALLER}/services/newrelic/
     kubectl apply -f "${NR_DIR}/newrelic-namespace.yaml"
     kubectl apply -f ${SECRETS_PATH}/services/newrelic/newrelic-config.yaml
@@ -129,7 +144,8 @@ install_fluentd() {
     echo "Installing fluentd"
     PAPERTRAIL_CONFIG="${SECRETS_PATH}/${KOPS_ZONES}/papertrail.env"
     if [ ! -f "${PAPERTRAIL_CONFIG}" ]; then
-        echo "Can't find papertrail.env"
+        echo "Error: could not access ${PAPERTRAIL_CONFIG}"
+        echo "Check \$SECRETS_PATH env var is set in your config.sh for this cluster and sourced"
         exit 1
     fi
 
@@ -158,6 +174,7 @@ install_block-aws() {
     # Check we have access to the secret
     if [ ! -f "${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws" ]; then
         echo "Error: could not access ${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws"
+        echo "Check \$SECRETS_PATH env var is set in your config.sh for this cluster and sourced"
         exit 7
     fi
 
@@ -198,6 +215,13 @@ install_ark() {
     cd -
 
     kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-prereqs.yaml"
+
+    # Check we have access to the secret
+    if [ ! -f "${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-ark" ]; then
+        echo "Error: could not access ${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-ark"
+        echo "Check \$SECRETS_PATH env var is set in your config.sh for this cluster and sourced"
+        exit 7
+    fi
 
     # Check if the secret already exists so we don't error out on kubectl create secret step
     set +e 
