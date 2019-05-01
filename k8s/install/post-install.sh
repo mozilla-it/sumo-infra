@@ -86,11 +86,21 @@ install_mig() {
     kubectl apply -f "${KOPS_INSTALLER}/services/mig/mig-namespace.yaml"
 
     # Export mqpassword
-    kubectl -n mig create secret generic mig-agent-secrets \
-        --from-file=${SECRETS_PATH}/services/mig/agent.key \
-        --from-file=${SECRETS_PATH}/services/mig/agent.crt \
-        --from-file=${SECRETS_PATH}/services/mig/ca.crt \
-        --from-file=${SECRETS_PATH}/services/mig/mig-agent.cfg
+    # Check if the secret already exists so we don't error out on kubectl create secret step
+    set +e 
+    kubectl -n mig get secret mig-agent-secrets > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        set -e
+        echo "Creating mig secret in k8s cluster"
+        kubectl -n mig create secret generic mig-agent-secrets \
+            --from-file=${SECRETS_PATH}/services/mig/agent.key \
+            --from-file=${SECRETS_PATH}/services/mig/agent.crt \
+            --from-file=${SECRETS_PATH}/services/mig/ca.crt \
+            --from-file=${SECRETS_PATH}/services/mig/mig-agent.cfg
+    else
+        set -e
+        echo "Mig secret already exists in k8s cluster.  If you need to update it, delete it first with 'kubectl -n mig delete secret mig-agent-secrets' and rerun this script"
+    fi
     kubectl -n mig apply -f ${KOPS_INSTALLER}/services/mig/migdaemonset.yaml
     echo "Done installing mig"
 }
@@ -132,9 +142,11 @@ install_cluster_autoscaler() {
     echo "Installing cluster autoscaler"
     apply_cluster_autoscaler_tf
     # https://github.com/kubernetes/dashboard/issues/2326#issuecomment-326651713
+    set +e  # This will return 1 if the binding already exists so do not bomb the script on it
     kubectl create clusterrolebinding \
         --user system:serviceaccount:kube-system:default \
         kube-system-cluster-admin --clusterrole cluster-admin
+    set -e
     j2 ${KOPS_INSTALLER}/services/cluster-autoscaler/autoscaler.yaml.j2 | kubectl apply -f -
     echo "Done installing cluster autoscaler"
 }
@@ -142,8 +154,25 @@ install_cluster_autoscaler() {
 install_block-aws() {
     echo "Install block-aws"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-namespace.yaml"
-    kubectl -n sumo-cron create secret generic blockaws-secrets \
-        --from-env-file "${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws"
+
+    # Check we have access to the secret
+    if [ ! -f "${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws" ]; then
+        echo "Error: could not access ${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws"
+        exit 7
+    fi
+
+    # Check if the secret already exists so we don't error out on kubectl create secret step
+    set +e 
+    kubectl -n sumo-cron get secret blockaws-secrets > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        set -e
+        echo "Creating block-aws secret in k8s cluster"
+        kubectl -n sumo-cron create secret generic blockaws-secrets \
+            --from-env-file "${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws"
+    else
+        set -e
+        echo "block-aws secret already exists in k8s cluster.  If you need to update it, delete it first with 'kubectl -n heptio-ark delete secret cloud-credentials' and rerun this script"
+    fi
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-cron.yaml"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-networkpolicy.yaml"
     echo "Done installiing block-aws"
