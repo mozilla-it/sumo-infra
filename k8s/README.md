@@ -22,6 +22,8 @@ Kubernetes and Kops require some infrastructure to get going, primarily a VPC an
 - In the `k8s/tf/00_aws-vpc/<your_AZ>` directory, run `terraform apply` 
 - In the `k8s/tf/01_dns` directory, run `terraform apply` 
 - In the `k8s/tf/10_ark/<your_AZ>` directory, run `terraform apply` 
+
+## Create the cluster with kops
 - Edit `k8s/common.sh` and put real values form your terraform output into `KOPS_VPC_ID`, `KOPS_STATE_BUCKET` and `STATE_BUCKET`.  Ensure all the sizing and k8s version is as you desire.
 - cd to the directory under `k8s/` for the Availability Zone(AZ) you want to build a k8s cluster in such as `us-west-2a`:
 - Copy config.sh.template to config.sh and put real values in it for:
@@ -29,8 +31,6 @@ Kubernetes and Kops require some infrastructure to get going, primarily a VPC an
     - `KOPS_SSH_PUB_KEY` which should point to a copy of SSH public key
     - `KOPS_ADMIN_IP` which should be your IP
     - `SECRETS_PATH` which should point to a checkout of sumo's private repo
-
-## Create the cluster with kops
 - `source config.sh`
 - run `install.sh` to have kops generate terraform for your k8s cluster
 - In the resulting `out/terraform` directory, run `terraform apply`
