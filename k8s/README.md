@@ -40,3 +40,8 @@ Kubernetes and Kops require some infrastructure to get going, primarily a VPC an
 ## Configure the kubernetes cluster
 - Run the post-install configuration script like `./post-install.sh all` and follow any prompts, or if it is more comfortable you can install one component at a time, see `./post-install` for more details
 
+## Configure more application infra
+- In the `k8s/tf/50_cdn` directory, run `terraform apply` to create s3 origins and cloudfront cdns
+- In the `k8s/tf/60_dev_db` directory, run `terraform apply` to create the dev environment database, this requires the eu-central-1a (Frankfurt) region to have been created and k8s configured already as that is where the dev environment lives
+- In the `k8s/tf/70_prod_db_redis` directory, run `terraform apply` to create the prod database and Redis cache
+- In the `k8s/tf/99_jenkins` directory, run `terraform apply` to create the Jenkins CI instance
