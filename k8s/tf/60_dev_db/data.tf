@@ -3,7 +3,7 @@ data "terraform_remote_state" "vpc" {
 
   config {
     bucket = "sumo-state-095732026120"
-    key    = "terraform/sumo-infra"
+    key    = "terraform/sumo-infra-eu-central-1"
     region = "us-west-2"
   }
 }
@@ -13,7 +13,7 @@ data "aws_subnet_ids" "database" {
   vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
 
   tags = {
-    Name    = "sumo-prod-db-${var.region}*"
+    Name    = "sumo-backup-db-${var.region}*"
     Purpose = "database"
   }
 }
@@ -22,17 +22,6 @@ data "aws_subnet_ids" "database" {
 data "aws_subnet" "database" {
   count = "${length(data.aws_subnet_ids.database.ids)}"
   id    = "${data.aws_subnet_ids.database.ids[count.index]}"
-}
-
-# Get k8s security groups created by kops
-data "terraform_remote_state" "kops" {
-  backend = "s3"
-
-  config {
-    bucket = "sumo-kops-state-095732026120"
-    key    = "terraform/sumo-infra"
-    region = "us-west-2"
-  }
 }
 
 data "aws_security_groups" "kops_sg" {

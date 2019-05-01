@@ -10,7 +10,7 @@ module "mysql-dev" {
   mysql_instance_class        = "db.t2.small"
   mysql_backup_retention_days = 0
   mysql_security_group_name   = "sumo_rds_sg_dev"
-  mysql_db_subnet_ids         = "${join(", ", data.aws_subnet_ids.database.ids)}"
+  db_subnet_group_name        = "${data.terraform_remote_state.vpc.db_subnet_group}"
   mysql_storage_gb            = 250
   mysql_storage_type          = "gp2"
   vpc_id                      = "${data.terraform_remote_state.vpc.vpc_id}"

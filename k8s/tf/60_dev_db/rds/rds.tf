@@ -1,78 +1,3 @@
-variable "mysql_db_name" {}
-
-variable "mysql_username" {}
-
-variable "mysql_password" {}
-
-variable "mysql_identifier" {}
-
-variable "mysql_env" {}
-
-variable "mysql_security_group_name" {}
-
-variable "mysql_storage_gb" {
-  default     = "100"
-  description = "Storage size in GB"
-}
-
-variable "mysql_instance_class" {
-  default     = "db.m3.xlarge"
-  description = "Instance class"
-}
-
-variable "mysql_port" {
-  default     = 3306
-  description = "ingress port to open"
-}
-
-variable "mysql_engine" {
-  default     = "mysql"
-  description = "Engine type, example values mysql, postgres"
-}
-
-variable "mysql_engine_version" {
-  description = "Engine version"
-
-  default = {
-    # https://github.com/mozilla/kitsune/issues/2937
-    mysql = "5.6.34"
-  }
-}
-
-variable "mysql_storage_type" {
-  default = "gp2"
-}
-
-variable "mysql_backup_retention_days" {
-  default = 7
-}
-
-variable "mysql_backup_window" {
-  default = "12:00-12:30"
-}
-
-variable "mysql_maintenance_window" {
-  default = "Sun:11:29-Sun:11:59"
-}
-
-variable "mysql_storage_encrypted" {
-  default = true
-}
-
-variable "mysql_auto_minor_version_upgrade" {
-  default = true
-}
-
-variable "mysql_allow_major_version_upgrade" {
-  default = false
-}
-
-variable "vpc_id" {}
-
-variable "vpc_cidr" {}
-
-variable "mysql_db_subnet_ids" {}
-
 resource "aws_security_group" "sumo_rds_sg" {
   name        = "${var.mysql_security_group_name}"
   description = "Allow all inbound traffic"
@@ -97,25 +22,16 @@ resource "aws_security_group" "sumo_rds_sg" {
   }
 }
 
-resource "aws_db_subnet_group" "sumo" {
-  name       = "sumo"
-  subnet_ids = ["${split(",", var.mysql_db_subnet_ids)}"]
-
-  tags = {
-    app       = "sumo"
-    terraform = "yes"
-  }
-}
-
 resource "aws_db_instance" "sumo_rds" {
   allocated_storage           = "${var.mysql_storage_gb}"
   allow_major_version_upgrade = "${var.mysql_allow_major_version_upgrade}"
   auto_minor_version_upgrade  = "${var.mysql_auto_minor_version_upgrade}"
   backup_retention_period     = "${var.mysql_backup_retention_days}"
   backup_window               = "${var.mysql_backup_window}"
-  db_subnet_group_name        = "sumo"
+  db_subnet_group_name        = "${var.db_subnet_group_name}"
+#  mysql_security_group_name   = "${var.mysql_security_group_name}"
 
-  depends_on             = ["aws_security_group.sumo_rds_sg", "aws_db_subnet_group.sumo"]
+  depends_on             = ["aws_security_group.sumo_rds_sg"]
   engine                 = "${var.mysql_engine}"
   engine_version         = "${lookup(var.mysql_engine_version, var.mysql_engine)}"
   identifier             = "${var.mysql_identifier}"
