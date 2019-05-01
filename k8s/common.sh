@@ -11,9 +11,6 @@ export KOPS_NODE_COUNT=3
 export KOPS_NODE_SIZE="m4.xlarge"
 export KOPS_NODE_VOLUME_SIZE_GB=250
 
-# VPC built separately with terraform
-export KOPS_VPC_ID="vpc-0df5c6330b0623c73"
-
 # s3 bucket
 # Generate random hash by doing
 # date +%s | md5sum | cut -d ' ' -f 1
