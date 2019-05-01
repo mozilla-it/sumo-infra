@@ -28,12 +28,6 @@ data "aws_subnet_ids" "elasticache" {
   }
 }
 
-# Get a list of databse subnet objects in our VPC and region
-data "aws_subnet" "database" {
-  count = "${length(data.aws_subnet_ids.database.ids)}"
-  id    = "${data.aws_subnet_ids.database.ids[count.index]}"
-}
-
 data "aws_security_groups" "kops_sg" {
   filter {
     name   = "group-name"
