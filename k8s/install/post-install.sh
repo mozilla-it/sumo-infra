@@ -157,9 +157,31 @@ install_metrics-server() {
 
 install_ark() {
     echo "Installing ark"
+
+    # Ensure the supporting ark terraform has already been applied
+    cd ../tf/10_ark/$(basename $PWD)
+    terraform output ark_bucket > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Error: ark terraform not applied, please apply that first in ../tf/10_ark/$(basename $PWD).  Then put the secrets it outputs into ${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-ark"
+        echo "See the README at https://github.com/mozilla-it/sumo-infra/blob/master/k8s/README.md for more details"
+        exit 6
+    fi
+    cd -
+
     kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-prereqs.yaml"
-    kubectl -n heptio-ark create secret generic cloud-credentials \
-        --from-file cloud="${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-ark"
+
+    # Check if the secret already exists so we don't error out on kubectl create secret step
+    set +e 
+    kubectl -n heptio-ark get secret cloud-credentials > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        set -e
+        echo "Creating ark secret in k8s cluster"
+        kubectl -n heptio-ark create secret generic cloud-credentials \
+            --from-file cloud="${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-ark"
+    else
+        set -e
+        echo "Ark secret already exists in k8s cluster.  If you need to update it, delete it first with 'kubectl -n heptio-ark delete secret cloud-credentials' and rerun this script"
+    fi
 
     export AWS_REGION=${KOPS_REGION}
     export ARK_BUCKET=$(cd ../tf/10_ark/$(basename $PWD) && terraform output ark_bucket)
@@ -204,6 +226,7 @@ usage() {
 
 # Allow us to install one component at a time (or all of them)
 if [ $# -eq 1 ]; then
+    set -e
     case $1 in
         cluster_autoscaler)
             install_cluster_autoscaler;;
@@ -225,15 +248,18 @@ if [ $# -eq 1 ]; then
             install_all;;
         -h|--help)
             usage
+            set +e
             exit
             ;;
         *)
             echo "Unknown argument ${1}, exiting"
             echo
+            set +e
             usage
             exit 1
             ;;
     esac
+    set +e
 else
     usage
     exit 2
