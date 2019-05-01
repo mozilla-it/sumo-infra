@@ -34,17 +34,6 @@ data "aws_subnet" "database" {
   id    = "${data.aws_subnet_ids.database.ids[count.index]}"
 }
 
-# Get k8s security groups created by kops
-data "terraform_remote_state" "kops" {
-  backend = "s3"
-
-  config {
-    bucket = "sumo-kops-state-095732026120"
-    key    = "terraform/sumo-infra"
-    region = "us-west-2"
-  }
-}
-
 data "aws_security_groups" "kops_sg" {
   filter {
     name   = "group-name"
