@@ -161,8 +161,6 @@ kubeProxy:
 kubelet:
   allowPrivileged: true
   anonymousAuth: false
-  authenticationTokenWebhook: true
-  authorizationMode: Webhook
   cgroupRoot: /
   cloudProvider: aws
   clusterDNS: 100.64.0.10
