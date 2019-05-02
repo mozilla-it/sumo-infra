@@ -18,8 +18,6 @@ variable "redis_engine_version" {
   default = "3.2.4"
 }
 
-variable "subnets" {}
-
 variable "nodes_security_groups" {}
 
 variable "redis_subnet" {}

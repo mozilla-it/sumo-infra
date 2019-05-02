@@ -18,16 +18,6 @@ data "aws_subnet_ids" "database" {
   }
 }
 
-# Identify elasticache/redis subnets in our VPC and region
-data "aws_subnet_ids" "elasticache" {
-  vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
-
-  tags = {
-    Name    = "sumo-prod-elasticache-${var.region}*"
-    Purpose = "elasticache"
-  }
-}
-
 data "aws_security_groups" "kops_sg" {
   filter {
     name   = "group-name"
