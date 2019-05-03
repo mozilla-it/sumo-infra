@@ -32,7 +32,7 @@ ci-restore() {
     LAST_FULL=$(basename "$(echo "$ALL_BACKUPS" | grep FULL | tail -n1)")
 
     # And all following incrementals
-    INCREMENTALS=$(echo "$ALL_BACKUPS" | sed -e "0,/$LAST_FULL/d" | xargs -n1 basename)
+    INCREMENTALS=$(echo "$ALL_BACKUPS" | sed -e "/FULL-/d" | xargs -n1 basename)
 
     # Recover from latest backup (full + incrementals)
     for BACKUP in $LAST_FULL $INCREMENTALS; do
