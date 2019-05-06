@@ -1,15 +1,3 @@
-provider "aws" {
-  region = "${var.region}"
-}
-
-terraform {
-  backend "s3" {
-    bucket = "sumo-state-095732026120"
-    key    = "terraform/ci"
-    region = "us-west-2"
-  }
-}
-
 resource "aws_key_pair" "sumo" {
   lifecycle {
     create_before_destroy = true
@@ -20,50 +8,70 @@ resource "aws_key_pair" "sumo" {
 }
 
 # Create a new load balancer
-resource "aws_elb" "ci" {
-  name    = "ci-elb-${var.project}"
-  subnets = ["${data.aws_subnet_ids.subnet_id.ids}"]
+resource "aws_lb" "ci" {
+  name               = "${var.project}-${var.service}-lb"
+  subnets            = ["${data.aws_subnet_ids.subnet_id.ids}"]
+  security_groups    = ["${aws_security_group.lb.id}"]
+  load_balancer_type = "application"
+  internal           = true
 
-  listener {
-    instance_port     = 80
-    instance_protocol = "http"
-    lb_port           = 80
-    lb_protocol       = "http"
-  }
+  tags = "${var.base_tags}"
+}
 
-  listener {
-    instance_port      = 80
-    instance_protocol  = "http"
-    lb_port            = 443
-    lb_protocol        = "https"
-    ssl_certificate_id = "${data.aws_acm_certificate.ci.arn}"
-  }
+resource "aws_lb_target_group" "ci-http" {
+  name     = "${var.project}-${var.service}-tg-http"
+  vpc_id   = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
+  port     = 80
+  protocol = "HTTP"
 
   health_check {
-    healthy_threshold   = 3
-    unhealthy_threshold = 5
-    timeout             = 10
-    target              = "TCP:80"
     interval            = 30
+    path                = "/"
+    port                = 80
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+    timeout             = 5
+    protocol            = "HTTP"
+    matcher             = "200,401"
   }
 
-  cross_zone_load_balancing = true
+  tags = "${var.base_tags}"
+}
 
-  security_groups = [
-    "${aws_security_group.elb.id}",
-  ]
+resource "aws_lb_listener" "ci-http" {
+  load_balancer_arn = "${aws_lb.ci.arn}"
+  port              = "80"
+  protocol          = "HTTP"
 
-  tags = {
-    Name   = "ci-elb"
-    Region = "${var.region}"
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 
-resource "aws_security_group" "elb" {
-  name        = "ci-elb-sg"
-  description = "Allow inbound traffic from ELB to CI"
+resource "aws_lb_listener" "ci-https" {
+  load_balancer_arn = "${aws_lb.ci.arn}"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = "${data.aws_acm_certificate.ci.arn}"
 
-  vpc_id = "${data.terraform_remote_state.kubernetes-us-west-2.vpc_id}"
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.ci-http.arn}"
+  }
+}
+
+resource "aws_security_group" "lb" {
+  name        = "${var.project}-${var.service}-lb-sg"
+  description = "Allow inbound traffic from LB to CI"
+
+  vpc_id = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
 
   ingress {
     from_port   = 80
@@ -86,87 +94,65 @@ resource "aws_security_group" "elb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name   = "ci-elb-sg"
-    Region = "${var.region}"
-  }
+  tags = "${var.base_tags}"
 }
 
 resource "aws_security_group" "ci" {
-  name        = "ci-sg"
-  description = "Allow inbound traffic to CI from ELB"
+  name        = "${var.project}-${var.service}-sg"
+  description = "Allow inbound traffic to CI"
 
-  vpc_id = "${data.terraform_remote_state.kubernetes-us-west-2.vpc_id}"
+  vpc_id = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
 
-  ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
-
-    security_groups = [
-      "${aws_security_group.elb.id}",
-    ]
-  }
-
-  ingress {
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
-
-    security_groups = [
-      "${aws_security_group.elb.id}",
-    ]
-  }
-
-  ingress {
-    from_port = 4443
-    to_port   = 4443
-    protocol  = "tcp"
-
-    security_groups = [
-      "${aws_security_group.elb.id}",
-    ]
-  }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name    = "ci-sg"
-    Region  = "${var.region}"
-    Service = "SUMO"
-  }
+  tags = "${merge(map("Name", "${var.project}-${var.service}-sg"), var.base_tags)}"
 }
 
-resource "aws_security_group_rule" "ingress_ssh" {
+resource "aws_security_group_rule" "ci-ssh" {
   type              = "ingress"
+  description       = "SSH via VPN"
   security_group_id = "${aws_security_group.ci.id}"
   from_port         = "22"
   to_port           = "22"
   protocol          = "TCP"
-  cidr_blocks       = "${var.ip_whitelist}"
+  cidr_blocks       = ["${var.mdc_cidr}"]
+}
+
+resource "aws_security_group_rule" "ci-http" {
+  type                     = "ingress"
+  description              = "HTTP via VPN"
+  security_group_id        = "${aws_security_group.ci.id}"
+  from_port                = "80"
+  to_port                  = "80"
+  protocol                 = "TCP"
+  source_security_group_id = "${aws_security_group.lb.id}"
+}
+
+resource "aws_security_group_rule" "ci-https" {
+  type                     = "ingress"
+  description              = "HTTPS via VPN"
+  security_group_id        = "${aws_security_group.ci.id}"
+  from_port                = "443"
+  to_port                  = "443"
+  protocol                 = "TCP"
+  source_security_group_id = "${aws_security_group.lb.id}"
+}
+
+resource "aws_security_group_rule" "ci-egress" {
+  type              = "egress"
+  security_group_id = "${aws_security_group.ci.id}"
+  from_port         = "0"
+  to_port           = "0"
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
 resource "aws_autoscaling_group" "ci" {
   vpc_zone_identifier = ["${data.aws_subnet_ids.subnet_id.ids}"]
 
   # This is on purpose, when the LC changes, will force creation of a new ASG
-  name = "ci-${var.project} - ${aws_launch_configuration.ci.name}"
-
-  load_balancers = [
-    "${aws_elb.ci.name}",
-  ]
+  name                      = "${var.project}-${var.service} - ${aws_launch_configuration.ci.name}"
+  target_group_arns         = ["${aws_lb_target_group.ci-http.arn}"]
+  min_elb_capacity          = 1
+  wait_for_capacity_timeout = "10m"
 
   lifecycle {
     create_before_destroy = true
@@ -175,11 +161,18 @@ resource "aws_autoscaling_group" "ci" {
   max_size                  = "1"
   min_size                  = "1"
   desired_capacity          = "1"
-  health_check_grace_period = 1800
+  health_check_grace_period = 300
+
   # Less than ideal but the initial sync takes such a long time
-  health_check_type         = "EC2"
-  force_delete              = true
-  launch_configuration      = "${aws_launch_configuration.ci.name}"
+  health_check_type    = "EC2"
+  force_delete         = true
+  launch_configuration = "${aws_launch_configuration.ci.name}"
+
+  tag {
+    key                 = "Name"
+    value               = "${var.project}-${var.service}-${var.region}-asg-instance"
+    propagate_at_launch = true
+  }
 
   enabled_metrics = [
     "GroupMinSize",
@@ -191,18 +184,6 @@ resource "aws_autoscaling_group" "ci" {
     "GroupTerminatingInstances",
     "GroupTotalInstances",
   ]
-
-  tag {
-    key                 = "Name"
-    value               = "ci.${var.region}.${var.domain}"
-    propagate_at_launch = true
-  }
-
-  tag {
-    key                 = "Region"
-    value               = "${var.region}"
-    propagate_at_launch = true
-  }
 }
 
 data template_file "user_data" {
@@ -210,24 +191,22 @@ data template_file "user_data" {
 
   vars = {
     backup_dir         = "${var.backup_dir}"
-    backup_bucket      = "${aws_s3_bucket.ci-backup-bucket.id}"
+    backup_bucket      = "${aws_s3_bucket.backup.id}"
     nginx_htpasswd     = "${var.nginx_htpasswd}"
     jenkins_backup_dms = "${var.jenkins_backup_dms}"
     papertrail_host    = "${var.papertrail_host}"
     papertrail_port    = "${var.papertrail_port}"
-    datadog_key        = "${var.datadog_key}"
-    datadog_hostname   = "${var.datadog_hostname}"
   }
 }
 
 resource "aws_launch_configuration" "ci" {
-  name_prefix = "ci-${var.project}-"
+  name_prefix = "${var.project}-${var.service}-"
 
   image_id = "${data.aws_ami.ubuntu.id}"
 
   instance_type               = "${var.instance_type}"
   key_name                    = "${aws_key_pair.sumo.key_name}"
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   user_data                   = "${data.template_file.user_data.rendered}"
 
   lifecycle {
@@ -249,6 +228,14 @@ resource "aws_launch_configuration" "ci" {
   }
 }
 
+resource "aws_route53_record" "ci" {
+  zone_id = "${var.route53_zone}"
+  name    = "ci.sumo.mozit.cloud"
+  type    = "CNAME"
+  ttl     = 60
+  records = ["${aws_lb.ci.dns_name}"]
+}
+
 resource "random_id" "rand-var" {
   keepers = {
     backup_bucket = "${var.backup_bucket}"
@@ -257,24 +244,24 @@ resource "random_id" "rand-var" {
   byte_length = 8
 }
 
-resource aws_s3_bucket "ci-backup-bucket" {
+resource aws_s3_bucket "backup" {
   bucket = "${var.backup_bucket}-${random_id.rand-var.hex}"
   acl    = "private"
 
-  tags {
-    Name    = "${var.backup_bucket}-${random_id.rand-var.hex}"
-    Region  = "${var.region}"
-    Purpose = "Backup bucket for CI system"
-  }
+  tags = "${merge(
+            map("Name", "${var.project}-${var.service}-s3backup"),
+            map("Purpose", "Backup bucket for CI system"),
+            var.base_tags
+          )}"
 }
 
 resource "aws_iam_instance_profile" "ci" {
-  name = "ci-${var.project}-${var.region}"
+  name = "${var.project}-${var.service}-${var.region}"
   role = "${aws_iam_role.ci.name}"
 }
 
 resource "aws_iam_role" "ci" {
-  name = "ci-${var.project}-${var.region}"
+  name = "${var.project}-${var.service}-${var.region}"
   path = "/"
 
   assume_role_policy = <<EOF
@@ -295,7 +282,7 @@ EOF
 }
 
 resource aws_iam_role_policy "ci-backup" {
-  name = "ci-backups-${var.region}"
+  name = "${var.project}-${var.service}-backups-${var.region}"
   role = "${aws_iam_role.ci.id}"
 
   policy = <<EOF
@@ -317,7 +304,7 @@ resource aws_iam_role_policy "ci-backup" {
       "Action": [
         "s3:ListBucket"
       ],
-      "Resource": "${aws_s3_bucket.ci-backup-bucket.arn}"
+      "Resource": "${aws_s3_bucket.backup.arn}"
     },
     {
       "Effect": "Allow",
@@ -327,12 +314,11 @@ resource aws_iam_role_policy "ci-backup" {
         "s3:DeleteObject"
       ],
       "Resource": [
-        "${aws_s3_bucket.ci-backup-bucket.arn}",
-        "${aws_s3_bucket.ci-backup-bucket.arn}/*"
+        "${aws_s3_bucket.backup.arn}",
+        "${aws_s3_bucket.backup.arn}/*"
       ]
     }
   ]
 }
 EOF
 }
-

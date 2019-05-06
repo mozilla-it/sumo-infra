@@ -2,12 +2,28 @@ variable "region" {
   default = "us-west-2"
 }
 
+variable "mdc_cidr" {
+  default = "10.48.0.0/15"
+}
+
+variable "acm_cert" {
+  default = "*.sumo.mozit.cloud"
+}
+
+variable "route53_zone" {
+  default = "ZXCBUDNBNSCXV"
+}
+
 variable "instance_type" {
   default = "m5.xlarge"
 }
 
 variable "project" {
   default = "sumo"
+}
+
+variable "service" {
+  default = "ci"
 }
 
 variable "domain" {
@@ -26,6 +42,18 @@ variable "backup_dir" {
   default = "/data/backups"
 }
 
+# Tags to apply across the VPC resources
+variable "base_tags" {
+  default = {
+    "method" = "terraform"
+    "project"   = "sumo"
+    "service" = "sumo-ci"
+    "region"    = "us-west-2"
+    "environment" = "prod"
+    "source" = "gh:mozilla-it/sumo-infra:mozilla-it/ansible-jenkins"
+  }
+}
+
 variable "nginx_htpasswd" {}
 
 variable "jenkins_backup_dms" {}
@@ -33,7 +61,3 @@ variable "jenkins_backup_dms" {}
 variable "papertrail_host" {}
 
 variable "papertrail_port" {}
-
-variable "ip_whitelist" {
-  type = "list"
-}
