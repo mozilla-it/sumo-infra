@@ -1,11 +1,6 @@
 #!/bin/bash
 
-if [ ! -f ./config.sh ]; then
-	echo "Config file not found"
-	exit 1
-fi
-
-source ./config.sh
+export TF_SECRETS_PATH="${HOME}/git/mozilla/sumo/sumo-private/services/jenkins"
 
 if [ -z ${TF_SECRETS_PATH} ]; then
 	echo "Secrets path is not set"
