@@ -71,4 +71,6 @@ variable "vpc_id" {}
 
 variable "vpc_cidr" {}
 
+variable "it_vpn_cidr" {}
+
 variable "db_subnet_group_name" {}

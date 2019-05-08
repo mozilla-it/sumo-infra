@@ -15,6 +15,7 @@ module "mysql-dev" {
   mysql_storage_type          = "gp2"
   vpc_id                      = "${data.terraform_remote_state.vpc.vpc_id}"
   vpc_cidr                    = "${data.terraform_remote_state.vpc.cidr_block}"
+  it_vpn_cidr                 = "${var.it_vpn_cidr}"
 }
 
 /*
@@ -33,6 +34,7 @@ module "mysql-stage" {
     mysql_storage_type = "gp2"
     vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
     vpc_cidr                    = "${data.terraform_remote_state.vpc.cidr_block}"
+    it_vpn_cidr = "${var.it_vpn_cidr}"
 }
 */
 

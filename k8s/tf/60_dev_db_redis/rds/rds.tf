@@ -7,7 +7,7 @@ resource "aws_security_group" "sumo_rds_sg" {
     from_port   = "${var.mysql_port}"
     to_port     = "${var.mysql_port}"
     protocol    = "TCP"
-    cidr_blocks = ["${var.vpc_cidr}"]
+    cidr_blocks = ["${var.vpc_cidr}","${var.it_vpn_cidr}"]
   }
 
   egress {
