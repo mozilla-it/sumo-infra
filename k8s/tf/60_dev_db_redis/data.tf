@@ -18,6 +18,16 @@ data "aws_subnet_ids" "database" {
   }
 }
 
+# Identify elasticache/redis subnets in our VPC and region
+data "aws_subnet_ids" "elasticache" {
+  vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
+
+  tags = {
+    Name    = "sumo-backup-elasticache-${var.region}*"
+    Purpose = "elasticache"
+  }
+}
+
 # Get a list of databse subnet objects in our VPC and region
 data "aws_subnet" "database" {
   count = "${length(data.aws_subnet_ids.database.ids)}"

@@ -1,3 +1,13 @@
+module "redis-shared" {
+  source                = "redis"
+  redis_name            = "dev"
+  redis_node_size       = "cache.m3.large"
+  redis_num_nodes       = 3
+  subnets               = "${join(",", data.aws_subnet_ids.elasticache.ids)}"
+  nodes_security_groups = "${join(",", data.aws_security_groups.kops_sg.ids)}"
+  redis_subnet          = "${data.terraform_remote_state.vpc.redis_subnet_group}"
+}
+
 module "mysql-dev" {
   source    = "rds"
   mysql_env = "dev"
