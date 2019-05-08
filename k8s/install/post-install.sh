@@ -249,6 +249,20 @@ install_ark() {
     echo "Done installing ark"
 }
 
+install_namespaces() {
+    echo "Installing namespaces"
+
+    # Ensure the supporting ark terraform has already been applied
+    kubectl get namespace sumo_dev > /dev/null
+    if [ $? -ne 0 ]; then
+        kubectl create namespace sumo_dev
+        if [ $? -ne 0 ]; then
+            echo "Error: could not create new namespace sumo_dev"
+            exit 7
+        fi
+    fi
+}
+
 install_all() {
     install_cluster_autoscaler
     install_calico_rbac
@@ -297,6 +311,8 @@ if [ $# -eq 1 ]; then
             install_metrics-server;;
         fluentd)
             install_fluentd;;
+        namespaces)
+            install_namespaces;;
         all)
             install_all;;
         -h|--help)
