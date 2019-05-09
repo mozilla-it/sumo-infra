@@ -1,9 +1,9 @@
 #!/bin/bash
 
-export TF_SECRETS_PATH="${HOME}/git/mozilla/sumo/sumo-private/services/jenkins"
-
 if [ -z ${TF_SECRETS_PATH} ]; then
-	echo "Secrets path is not set"
+        echo "You must export \$TF_SECRETS_PATH directory where Jenkins terraform.tfvars are located."
+        echo "E.G. "
+        echo "$ export TF_SECRETS_PATH='${HOME}/git/private-repo/services/jenkins'; $0 <plan|apply|destroy>"
 	exit 1
 fi
 
