@@ -50,3 +50,40 @@ resource "aws_s3_bucket" "sumo-user-media" {
 }
 EOF
 }
+
+resource "aws_iam_user" "user-media" {
+  name = "${var.user_media_name}"
+}
+
+resource "aws_iam_policy" "user-media" {
+  name = "${var.user_media_name}-s3-rw"
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "s3:*"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:s3:::${var.bucket_name}",
+                "arn:aws:s3:::${var.bucket_name}/*"
+            ]
+        },
+        {
+            "Action": [
+                "s3:ListAllMyBuckets"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:s3:::*"
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_user_policy_attachment" "user-media" {
+  user = "${aws_iam_user.user-media.name}"
+  policy_arn = "${aws_iam_policy.user-media.arn}"
+}

@@ -23,6 +23,7 @@ resource "aws_s3_bucket" "logs" {
 
 module "sumo-user-media-dev-bucket" {
     bucket_name = "mozit-sumo-user-media-dev"
+    user_media_name = "static-s3-user-dev"
     iam_policy_name = "SUMOUserMediaDev"
     logging_bucket_id = "${aws_s3_bucket.logs.id}"
     logging_prefix = "dev-logs/"
@@ -32,6 +33,7 @@ module "sumo-user-media-dev-bucket" {
 
 module "sumo-user-media-stage-bucket" {
     bucket_name = "mozit-sumo-user-media-stage"
+    user_media_name = "static-s3-user-stage"
     iam_policy_name = "SUMOUserMediaStage"
     logging_bucket_id = "${aws_s3_bucket.logs.id}"
     logging_prefix = "stage-logs/"
@@ -41,6 +43,7 @@ module "sumo-user-media-stage-bucket" {
 
 module "sumo-user-media-prod-bucket" {
     bucket_name = "mozit-sumo-user-media-prod"
+    user_media_name = "static-s3-user-prod"
     iam_policy_name = "SUMOUserMediaProd"
     logging_bucket_id = "${aws_s3_bucket.logs.id}"
     logging_prefix = "prod-logs/"

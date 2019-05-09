@@ -1,4 +1,5 @@
 variable "bucket_name" {}
+variable "user_media_name" {}
 variable "iam_policy_name" {}
 variable "logging_bucket_id" {}
 variable "logging_prefix" {}
@@ -13,3 +14,4 @@ variable "hosted-zone-id-defs" {
     us-west-2 = "Z3BJ6K6RIION7M"
   }
 }
+
