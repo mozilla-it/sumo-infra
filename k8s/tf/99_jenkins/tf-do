@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z ${TF_SECRETS_PATH} ]; then
-	echo "You must export \$TF_SECRETS_PATH directory where Jenkins terraform.tfvars are located."
+        echo "You must export \$TF_SECRETS_PATH directory where Jenkins terraform.tfvars are located."
         echo "E.G. "
         echo "$ export TF_SECRETS_PATH='${HOME}/git/private-repo/services/jenkins'; $0 <plan|apply|destroy>"
 	exit 1
