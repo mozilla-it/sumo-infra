@@ -322,3 +322,8 @@ resource aws_iam_role_policy "ci-backup" {
 }
 EOF
 }
+
+resource "aws_iam_role_policy_attachment" "ssm" {
+  role       = "${aws_iam_role.ci.id}"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+}
