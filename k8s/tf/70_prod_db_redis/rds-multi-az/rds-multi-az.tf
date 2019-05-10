@@ -1,3 +1,14 @@
+resource "aws_kms_key" "key" {
+  description = "KMS key for prod RDS"
+  key_usage   = "ENCRYPT_DECRYPT"
+
+  #  policy                  = "${var.key_policy}"
+  #  deletion_window_in_days = "${var.deletion_window_in_days}"
+  is_enabled = true
+
+  #  enable_key_rotation     = true
+}
+
 resource "aws_db_instance" "sumo_rds" {
   allocated_storage           = "${var.mysql_storage_gb}"
   allow_major_version_upgrade = "${var.mysql_allow_major_version_upgrade}"
@@ -20,6 +31,7 @@ resource "aws_db_instance" "sumo_rds" {
   username                    = "${var.mysql_username}"
   vpc_security_group_ids      = ["${aws_security_group.sumo_rds_sg.id}"]
   final_snapshot_identifier   = "sumo-final-db-snapshot"
+  kms_key_id                  = "${aws_kms_key.key.arn}"
 
   tags {
     "Stack" = "SUMO-${var.mysql_env}"
@@ -35,7 +47,7 @@ resource "aws_security_group" "sumo_rds_sg" {
     from_port   = "${var.mysql_port}"
     to_port     = "${var.mysql_port}"
     protocol    = "TCP"
-    cidr_blocks = ["${var.vpc_cidr}","${var.it_vpn_cidr}"]
+    cidr_blocks = ["${var.vpc_cidr}", "${var.it_vpn_cidr}"]
   }
 
   egress {
