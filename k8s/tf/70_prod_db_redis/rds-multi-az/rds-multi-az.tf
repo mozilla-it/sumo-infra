@@ -1,12 +1,7 @@
 resource "aws_kms_key" "key" {
   description = "KMS key for prod RDS"
   key_usage   = "ENCRYPT_DECRYPT"
-
-  #  policy                  = "${var.key_policy}"
-  #  deletion_window_in_days = "${var.deletion_window_in_days}"
-  is_enabled = true
-
-  #  enable_key_rotation     = true
+  is_enabled  = true
 }
 
 resource "aws_db_instance" "sumo_rds" {
