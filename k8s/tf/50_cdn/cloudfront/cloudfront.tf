@@ -20,7 +20,6 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
     # 86400 = 24 hours
     max_ttl = 86400
 
-
     min_ttl                = 0
     smooth_streaming       = false
     target_origin_id       = "${var.distribution_name}"
@@ -64,3 +63,10 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
   }
 }
 
+resource "aws_route53_record" "cname" {
+  zone_id = "${data.terraform_remote_state.dns.master-zone}"
+  name    = "${var.domain_name}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${aws_cloudfront_distribution.sumo-cf-dist.domain_name}"]
+}
