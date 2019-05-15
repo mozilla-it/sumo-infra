@@ -80,6 +80,7 @@ module "sumo-static-media-prod-bucket" {
 
 #####################################################################
 # user media CDN
+# user media has s3 origins
 #####################################################################
 module "sumo-user-media-dev-cf" {
     source = "./cloudfront"
@@ -113,6 +114,7 @@ module "sumo-user-media-prod-cf" {
 
 #####################################################################
 # static media CDN
+# static media has kitsune as the origin, and kitsune interacts directly with the s3 buckets
 #####################################################################
 module "sumo-static-media-dev-cf" {
     source = "./cloudfront_static_media"
