@@ -8,6 +8,7 @@ JENKINS_BACKUP_DMS="${jenkins_backup_dms}"
 NGINX_HTPASSWD="${nginx_htpasswd}"
 PAPERTRAIL_HOST="${papertrail_host}"
 PAPERTRAIL_PORT="${papertrail_port}"
+SLACK_TOKEN="${slack_token}"
 
 die() {
     echo "$*" 1>&2
@@ -67,7 +68,8 @@ main() {
     cd /tmp/ansible-jenkins && \
         ansible-playbook site.yml -e "jenkins_backup_directory="$${BACKUP_DIR}" jenkins_backup_bucket="$${BACKUP_BUCKET}" \
                                         jenkins_backup_dms="$${JENKINS_BACKUP_DMS}" nginx_htpasswd="$${NGINX_HTPASSWD}" \
-                                        papertrail_host="$${PAPERTRAIL_HOST}" papertrail_port="$${PAPERTRAIL_PORT}"" \
+                                        papertrail_host="$${PAPERTRAIL_HOST}" papertrail_port="$${PAPERTRAIL_PORT}" 
+                                        slack_token="$${SLACK_TOKEN}"" \
         || die "Failed to run ansible"
 
     echo "Restoring backup sets to $${BACKUP_DIR}"

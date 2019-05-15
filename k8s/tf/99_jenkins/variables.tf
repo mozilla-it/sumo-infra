@@ -61,3 +61,5 @@ variable "jenkins_backup_dms" {}
 variable "papertrail_host" {}
 
 variable "papertrail_port" {}
+
+variable "slack_token" {}

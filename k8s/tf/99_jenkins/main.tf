@@ -196,6 +196,7 @@ data template_file "user_data" {
     jenkins_backup_dms = "${var.jenkins_backup_dms}"
     papertrail_host    = "${var.papertrail_host}"
     papertrail_port    = "${var.papertrail_port}"
+    slack_token        = "${var.slack_token}"
   }
 }
 
