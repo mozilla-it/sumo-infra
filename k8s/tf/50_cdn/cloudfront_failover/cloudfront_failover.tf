@@ -62,10 +62,10 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
 }
 
 resource "aws_route53_record" "cname" {
+  count   = "${length(var.aliases)}"
   zone_id = "${data.terraform_remote_state.dns.master-zone}"
-  name    = "${var.domain_name}"
+  name    = "${var.aliases[count.index]}"
   type    = "CNAME"
   ttl     = "300"
   records = ["${aws_cloudfront_distribution.sumo-cf-dist.domain_name}"]
 }
-
