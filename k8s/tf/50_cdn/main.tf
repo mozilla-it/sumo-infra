@@ -85,7 +85,7 @@ module "sumo-user-media-dev-cf" {
     source = "./cloudfront"
 
     acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/c948200c-e483-4d31-aeb8-1b5cfc9ab18f"
-    aliases = ["dev-cdn.sumo.mozit.cloud"]
+    aliases = ["dev-media-cdn.sumo.mozit.cloud"]
     comment = "Dev CDN for SUMO user media"
     distribution_name = "SUMOMediaDevCDN"
     domain_name = "mozit-sumo-user-media-dev.s3-website-us-west-2.amazonaws.com"
@@ -95,7 +95,7 @@ module "sumo-user-media-stage-cf" {
     source = "./cloudfront"
 
     acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/c948200c-e483-4d31-aeb8-1b5cfc9ab18f"
-    aliases = ["stage-cdn.sumo.mozit.cloud"]
+    aliases = ["stage-media-cdn.sumo.mozit.cloud"]
     comment = "Stage CDN for SUMO user media"
     distribution_name = "SUMOMediaStageCDN"
     domain_name = "mozit-sumo-user-media-stage.s3-website-us-west-2.amazonaws.com"
@@ -105,7 +105,7 @@ module "sumo-user-media-prod-cf" {
     source = "./cloudfront"
 
     acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/c948200c-e483-4d31-aeb8-1b5cfc9ab18f"
-    aliases = ["mozit-prod-cdn.sumo.mozit.cloud"]
+    aliases = ["prod-media-cdn.sumo.mozit.cloud"]
     comment = "Prod CDN for SUMO user media"
     distribution_name = "SUMOMediaProdCDN"
     domain_name = "mozit-sumo-user-media-prod.s3-website-us-west-2.amazonaws.com"
@@ -131,7 +131,7 @@ module "sumo-static-media-stage-cf" {
     aliases = ["static-media-stage-cdn.sumo.mozit.cloud"]
     comment = "Stage CDN for SUMO static media"
     distribution_name = "SUMOStaticMediaStageCDN"
-    domain_name = "stage-tp.sumo.mozit.cloud"
+    domain_name = "static-media-stage.sumo.mozit.cloud"
 }
 
 module "sumo-static-media-prod-cf" {
@@ -141,7 +141,7 @@ module "sumo-static-media-prod-cf" {
     aliases = ["static-media-prod-cdn.sumo.mozit.cloud"]
     comment = "Prod CDN for SUMO static media"
     distribution_name = "SUMOStaticMediaProdCDN"
-    domain_name = "mozit-support.mozilla.org"
+    domain_name = "static-media-prod.sumo.mozit.cloud"
 }
 
 #####################################################################
