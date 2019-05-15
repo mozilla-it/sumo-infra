@@ -92,3 +92,11 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
     minimum_protocol_version = "TLSv1"
   }
 }
+
+resource "aws_route53_record" "cname" {
+  zone_id = "${data.terraform_remote_state.dns.master-zone}"
+  name    = "${var.domain_name}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${aws_cloudfront_distribution.sumo-cf-dist.domain_name}"]
+}
