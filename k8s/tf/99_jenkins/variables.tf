@@ -54,6 +54,14 @@ variable "base_tags" {
   }
 }
 
+variable "parameter_root_name" {
+  default = "/sumo-ci/ssh/l10n-deploy"
+}
+
+variable "static_s3_prefix" {
+  default = "mozit-sumo*-media*"
+}
+
 variable "nginx_htpasswd" {}
 
 variable "jenkins_backup_dms" {}
@@ -63,3 +71,5 @@ variable "papertrail_host" {}
 variable "papertrail_port" {}
 
 variable "slack_token" {}
+
+variable "gh_deploy_key" {}

@@ -37,3 +37,5 @@ data aws_acm_certificate "ci" {
   domain   = "${var.acm_cert}"
   statuses = ["ISSUED"]
 }
+
+data "aws_caller_identity" "id" {}

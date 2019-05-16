@@ -152,7 +152,7 @@ resource "aws_autoscaling_group" "ci" {
   name                      = "${var.project}-${var.service} - ${aws_launch_configuration.ci.name}"
   target_group_arns         = ["${aws_lb_target_group.ci-http.arn}"]
   min_elb_capacity          = 1
-  wait_for_capacity_timeout = "10m"
+  wait_for_capacity_timeout = "0"
 
   lifecycle {
     create_before_destroy = true
@@ -186,17 +186,18 @@ resource "aws_autoscaling_group" "ci" {
   ]
 }
 
-data template_file "user_data" {
+data "template_file" "user_data" {
   template = "${file("${path.module}/templates/user_data.tpl")}"
 
   vars = {
-    backup_dir         = "${var.backup_dir}"
-    backup_bucket      = "${aws_s3_bucket.backup.id}"
-    nginx_htpasswd     = "${var.nginx_htpasswd}"
-    jenkins_backup_dms = "${var.jenkins_backup_dms}"
-    papertrail_host    = "${var.papertrail_host}"
-    papertrail_port    = "${var.papertrail_port}"
-    slack_token        = "${var.slack_token}"
+    backup_dir          = "${var.backup_dir}"
+    backup_bucket       = "${aws_s3_bucket.backup.id}"
+    nginx_htpasswd      = "${var.nginx_htpasswd}"
+    jenkins_backup_dms  = "${var.jenkins_backup_dms}"
+    papertrail_host     = "${var.papertrail_host}"
+    papertrail_port     = "${var.papertrail_port}"
+    slack_token         = "${var.slack_token}"
+    parameter_root_name = "${var.parameter_root_name}"
   }
 }
 
@@ -245,7 +246,7 @@ resource "random_id" "rand-var" {
   byte_length = 8
 }
 
-resource aws_s3_bucket "backup" {
+resource "aws_s3_bucket" "backup" {
   bucket = "${var.backup_bucket}-${random_id.rand-var.hex}"
   acl    = "private"
 
@@ -282,7 +283,7 @@ resource "aws_iam_role" "ci" {
 EOF
 }
 
-resource aws_iam_role_policy "ci-backup" {
+resource "aws_iam_role_policy" "ci-backup" {
   name = "${var.project}-${var.service}-backups-${var.region}"
   role = "${aws_iam_role.ci.id}"
 
@@ -324,7 +325,100 @@ resource aws_iam_role_policy "ci-backup" {
 EOF
 }
 
+resource "aws_iam_role_policy" "static-assets" {
+  name = "${var.project}-${var.service}-static-assets"
+  role = "${aws_iam_role.ci.id}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListAllBuckets",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListAllMyBuckets",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::${var.static_s3_prefix}",
+        "arn:aws:s3:::${var.static_s3_prefix}/*"
+      ]
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_iam_role_policy_attachment" "ssm" {
   role       = "${aws_iam_role.ci.id}"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+locals {
+  # Normalise the parameter name, and remove any duplicate slashes
+  parameter_root_name = "${join("/",compact(split("/", var.parameter_root_name)))}"
+}
+
+resource "aws_iam_role_policy" "ci-ssm" {
+  name = "${var.project}-${var.service}-ssm-parameter"
+  role = "${aws_iam_role.ci.id}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+
+      "Effect": "Allow",
+      "Action": [
+         "ssm:GetParameters",
+         "ssm:GetParameter",
+         "ssm:GetParameterHistory",
+         "ssm:GetParametersByPath"
+      ],
+      "Resource": [
+        "arn:aws:ssm:${var.region}:${data.aws_caller_identity.id.account_id}:parameter/${local.parameter_root_name}*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:DescribeKey"
+      ],
+      "Resource": [
+        "${aws_kms_key.ci-ssm.arn}"
+      ]
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_kms_key" "ci-ssm" {
+  description             = "${var.project}-${var.service}-ssm-parameter"
+  deletion_window_in_days = 10
+  enable_key_rotation     = true
+  tags                    = "${var.base_tags}"
+}
+
+resource "aws_ssm_parameter" "ci" {
+  name        = "/${local.parameter_root_name}"
+  description = "SSH deploy key for l10n locale repository"
+  type        = "SecureString"
+  value       = "${var.gh_deploy_key}"
+  key_id      = "${aws_kms_key.ci-ssm.key_id}"
+
+  tags = "${var.base_tags}"
 }

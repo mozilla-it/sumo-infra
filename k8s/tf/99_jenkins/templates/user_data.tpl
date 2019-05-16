@@ -9,6 +9,7 @@ NGINX_HTPASSWD="${nginx_htpasswd}"
 PAPERTRAIL_HOST="${papertrail_host}"
 PAPERTRAIL_PORT="${papertrail_port}"
 SLACK_TOKEN="${slack_token}"
+SSM_KEY="${parameter_root_name}"
 
 die() {
     echo "$*" 1>&2
@@ -44,11 +45,11 @@ ci-restore() {
 }
 
 lock() {
-    local prefix=$$1
-    local lock_file="/var/lock/$$prefix.lock"
+    local prefix=$1
+    local lock_file="/var/lock/$${prefix}.lock"
 
     # create lockfile
-    eval "exec 200>$$lock_file"
+    eval "exec 200>$${lock_file}"
     # acquire the lock
     flock -n 200 \
         && return 0 \
@@ -69,8 +70,7 @@ main() {
         ansible-playbook site.yml -e "jenkins_backup_directory="$${BACKUP_DIR}" jenkins_backup_bucket="$${BACKUP_BUCKET}" \
                                         jenkins_backup_dms="$${JENKINS_BACKUP_DMS}" nginx_htpasswd="$${NGINX_HTPASSWD}" \
                                         papertrail_host="$${PAPERTRAIL_HOST}" papertrail_port="$${PAPERTRAIL_PORT}" 
-                                        slack_token="$${SLACK_TOKEN}"" \
-        || die "Failed to run ansible"
+                                        slack_token="$${SLACK_TOKEN}" ssm_key="$${SSM_KEY}"" || die "Failed to run ansible"
 
     echo "Restoring backup sets to $${BACKUP_DIR}"
     restore-backup-set || die "Failed to restore backup set to $${BACKUP_DIR}"
