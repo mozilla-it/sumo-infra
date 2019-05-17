@@ -56,3 +56,7 @@ module "eu-central-1a" {
   domain_name = "${var.domain_name}"
   zone_id     = "${aws_route53_zone.master-zone.id}"
 }
+
+resource "aws_route53_zone" "cdn" {
+  name        = "itsre-sumo.mozilla.net"
+}

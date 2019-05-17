@@ -21,3 +21,7 @@ output "us-west-2a-zone-id" {
 output "us-west-2b-zone-id" {
   value = "${module.us-west-2b.hosted_zone_id}"
 }
+
+output "cdn-zone-id" {
+  value = "${aws_route53_zone.cdn.zone_id}"
+}
