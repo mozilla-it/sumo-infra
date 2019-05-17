@@ -61,10 +61,19 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
   }
 }
 
-resource "aws_route53_record" "cname" {
-  count   = "${length(var.aliases)}"
+# Create a CNAME for this CDN alias in the master zone, sumo.mozit.cloud
+resource "aws_route53_record" "mozit_cname" {
   zone_id = "${data.terraform_remote_state.dns.master-zone}"
-  name    = "${var.aliases[count.index]}"
+  name    = "${var.short_name}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${aws_cloudfront_distribution.sumo-cf-dist.domain_name}"]
+}
+
+# Create a CNAME for this CDN alias in the itsre-sumo.mozilla.net zone
+resource "aws_route53_record" "mozilla_net_cname" {
+  zone_id = "${data.terraform_remote_state.dns.cdn-zone-id}"
+  name    = "${var.short_name}"
   type    = "CNAME"
   ttl     = "300"
   records = ["${aws_cloudfront_distribution.sumo-cf-dist.domain_name}"]

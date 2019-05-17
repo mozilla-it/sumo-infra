@@ -86,6 +86,7 @@ module "sumo-user-media-dev-cf" {
     source = "./cloudfront"
 
     acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    short_name = "user-media-dev-cdn"
     aliases = ["user-media-dev-cdn.itsre-sumo.mozilla.net", "user-media-dev-cdn.sumo.mozit.cloud"]
     comment = "Dev CDN for SUMO user media"
     distribution_name = "SUMOMediaDevCDN"
@@ -96,6 +97,7 @@ module "sumo-user-media-stage-cf" {
     source = "./cloudfront"
 
     acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    short_name = "user-media-stage-cdn"
     aliases = ["user-media-stage-cdn.itsre-sumo.mozilla.net", "user-media-stage-cdn.sumo.mozit.cloud"]
     comment = "Stage CDN for SUMO user media"
     distribution_name = "SUMOMediaStageCDN"
@@ -106,6 +108,7 @@ module "sumo-user-media-prod-cf" {
     source = "./cloudfront"
 
     acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    short_name = "user-media-prod-cdn"
     aliases = ["user-media-prod-cdn.itsre-sumo.mozilla.net", "user-media-prod-cdn.sumo.mozit.cloud"]
     comment = "Prod CDN for SUMO user media"
     distribution_name = "SUMOMediaProdCDN"
@@ -120,6 +123,7 @@ module "sumo-static-media-dev-cf" {
     source = "./cloudfront_static_media"
 
     acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    short_name = "static-media-dev-cdn"
     aliases = ["static-media-dev-cdn.itsre-sumo.mozilla.net", "static-media-dev-cdn.sumo.mozit.cloud"]
     comment = "Dev CDN for SUMO static media"
     distribution_name = "SUMOStaticMediaDevCDN"
@@ -130,6 +134,7 @@ module "sumo-static-media-stage-cf" {
     source = "./cloudfront_static_media"
 
     acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    short_name = "static-media-stage-cdn"
     aliases = ["static-media-stage-cdn.itsre-sumo.mozilla.net", "static-media-stage-cdn.sumo.mozit.cloud"]
     comment = "Stage CDN for SUMO static media"
     distribution_name = "SUMOStaticMediaStageCDN"
@@ -140,6 +145,7 @@ module "sumo-static-media-prod-cf" {
     source = "./cloudfront_static_media"
 
     acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    short_name = "static-media-prod-cdn"
     aliases = ["static-media-prod-cdn.itsre-sumo.mozilla.net", "static-media-prod-cdn.sumo.mozit.cloud"]
     comment = "Prod CDN for SUMO static media"
     distribution_name = "SUMOStaticMediaProdCDN"
@@ -153,6 +159,7 @@ module "sumo-failover-cf" {
     source = "./cloudfront_failover"
 
     acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    short_name = "failover-cdn"
     aliases = ["failover-cdn.itsre-sumo.mozilla.net", "failover-cdn.sumo.mozit.cloud"]
     comment = "Frankfurt failover CDN"
     distribution_name = "SUMOFailoverCDN"
