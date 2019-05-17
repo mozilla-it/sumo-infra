@@ -24,8 +24,10 @@ resource aws_route53_zone "master-zone" {
   delegation_set_id = "${aws_route53_delegation_set.delegation-set.id}"
 
   tags {
-    Name    = "${var.domain_name}"
-    Purpose = "Sumo DNS master zone"
+    "Name"    = "${var.domain_name}"
+    "Purpose" = "Sumo DNS master zone"
+    "Terraform"   = "true"
+    "Project"     = "sumo"
   }
 }
 

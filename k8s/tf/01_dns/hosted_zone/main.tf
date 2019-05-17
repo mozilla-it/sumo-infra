@@ -6,9 +6,11 @@ resource aws_route53_zone "region-zone" {
   }
 
   tags {
-    Name    = "${var.region}.${var.domain_name}"
-    Purpose = "Region stub zone"
-    Region  = "${var.region}"
+    "Name"      = "${var.region}.${var.domain_name}"
+    "Purpose"   = "Region stub zone"
+    "Region"    = "${var.region}"
+    "Terraform" = "true"
+    "Project"   = "sumo"
   }
 }
 
