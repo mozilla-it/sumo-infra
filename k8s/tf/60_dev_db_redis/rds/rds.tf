@@ -18,7 +18,10 @@ resource "aws_security_group" "sumo_rds_sg" {
   }
 
   tags {
-    Name = "${var.mysql_security_group_name}"
+    "Name"        = "${var.mysql_security_group_name}"
+    "Terraform"   = "true"
+    "Project"     = "sumo"
+    "Environment" = "dev"
   }
 }
 
@@ -45,7 +48,11 @@ resource "aws_db_instance" "sumo_rds" {
   username               = "${var.mysql_username}"
   vpc_security_group_ids = ["${aws_security_group.sumo_rds_sg.id}"]
   skip_final_snapshot    = true
+
   tags {
-    "Stack" = "SUMO-${var.mysql_env}"
+    "Stack"       = "SUMO-${var.mysql_env}"
+    "Terraform"   = "true"
+    "Project"     = "sumo"
+    "Environment" = "dev"
   }
 }

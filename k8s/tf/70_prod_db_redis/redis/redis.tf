@@ -11,6 +11,10 @@ resource "aws_elasticache_replication_group" "sumo-redis-rg" {
   security_group_ids = ["${split(",", var.nodes_security_groups)}"]
 
   tags {
-    Stack = "SUMO-${var.redis_name}"
+    "Stack"       = "SUMO-${var.redis_name}"
+    "Terraform"   = "true"
+    "Project"     = "sumo"
+    "Region"      = "us-west-2"
+    "Environment" = "prod"
   }
 }

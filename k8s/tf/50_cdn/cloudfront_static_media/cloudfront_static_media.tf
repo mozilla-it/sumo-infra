@@ -91,6 +91,11 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
     # https://www.terraform.io/docs/providers/aws/r/cloudfront_distribution.html#minimum_protocol_version
     minimum_protocol_version = "TLSv1"
   }
+
+  tags = {
+    "Terraform" = "true"
+    "Project"   = "sumo"
+  }
 }
 
 # Create a CNAME for this CDN alias in the master zone, sumo.mozit.cloud

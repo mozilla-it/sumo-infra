@@ -30,7 +30,11 @@ resource "aws_db_instance" "sumo_rds" {
   deletion_protection         = true
 
   tags {
-    "Stack" = "SUMO-${var.mysql_env}"
+    "Stack"       = "SUMO-${var.mysql_env}"
+    "Terraform"   = "true"
+    "Project"     = "sumo"
+    "Region"      = "us-west-2"
+    "Environment" = "prod"
   }
 }
 
@@ -54,6 +58,10 @@ resource "aws_security_group" "sumo_rds_sg" {
   }
 
   tags {
-    Name = "${var.mysql_security_group_name}"
+    "Name"        = "${var.mysql_security_group_name}"
+    "Terraform"   = "true"
+    "Project"     = "sumo"
+    "Region"      = "us-west-2"
+    "Environment" = "prod"
   }
 }
