@@ -45,12 +45,12 @@ variable "backup_dir" {
 # Tags to apply across the VPC resources
 variable "base_tags" {
   default = {
-    "method" = "terraform"
-    "project"   = "sumo"
-    "service" = "sumo-ci"
-    "region"    = "us-west-2"
+    "method"      = "terraform"
+    "project"     = "sumo"
+    "service"     = "sumo-ci"
+    "region"      = "us-west-2"
     "environment" = "prod"
-    "source" = "gh:mozilla-it/sumo-infra:mozilla-it/ansible-jenkins"
+    "source"      = "gh:mozilla-it/sumo-infra:mozilla-it/ansible-jenkins"
   }
 }
 

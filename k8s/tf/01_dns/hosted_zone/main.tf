@@ -16,11 +16,10 @@ resource aws_route53_record "region-hosted-record" {
   zone_id = "${var.zone_id}"
   name    = "${var.region}"
 
-  type  = "NS"
-  ttl   = "86400"
+  type = "NS"
+  ttl  = "86400"
 
   records = [
-    "${aws_route53_zone.region-zone.name_servers}"
+    "${aws_route53_zone.region-zone.name_servers}",
   ]
-
 }

@@ -58,5 +58,5 @@ module "eu-central-1a" {
 }
 
 resource "aws_route53_zone" "cdn" {
-  name        = "itsre-sumo.mozilla.net"
+  name = "itsre-sumo.mozilla.net"
 }

@@ -7,7 +7,7 @@ resource "aws_security_group" "sumo_rds_sg" {
     from_port   = "${var.mysql_port}"
     to_port     = "${var.mysql_port}"
     protocol    = "TCP"
-    cidr_blocks = ["${var.vpc_cidr}","${var.it_vpn_cidr}"]
+    cidr_blocks = ["${var.vpc_cidr}", "${var.it_vpn_cidr}"]
   }
 
   egress {
@@ -29,7 +29,6 @@ resource "aws_db_instance" "sumo_rds" {
   backup_retention_period     = "${var.mysql_backup_retention_days}"
   backup_window               = "${var.mysql_backup_window}"
   db_subnet_group_name        = "${var.db_subnet_group_name}"
-#  mysql_security_group_name   = "${var.mysql_security_group_name}"
 
   depends_on             = ["aws_security_group.sumo_rds_sg"]
   engine                 = "${var.mysql_engine}"
@@ -46,7 +45,6 @@ resource "aws_db_instance" "sumo_rds" {
   username               = "${var.mysql_username}"
   vpc_security_group_ids = ["${aws_security_group.sumo_rds_sg.id}"]
   skip_final_snapshot    = true
-
   tags {
     "Stack" = "SUMO-${var.mysql_env}"
   }

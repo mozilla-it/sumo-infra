@@ -14,4 +14,3 @@ variable "hosted-zone-id-defs" {
     us-west-2 = "Z3BJ6K6RIION7M"
   }
 }
-

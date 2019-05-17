@@ -16,4 +16,3 @@ module "ark_bucket" {
   bucket_name  = "cluster-backups"
   cluster_name = "eu-central-1a"
 }
-
