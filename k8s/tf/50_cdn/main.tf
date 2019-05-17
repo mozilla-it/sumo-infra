@@ -85,8 +85,8 @@ module "sumo-static-media-prod-bucket" {
 module "sumo-user-media-dev-cf" {
     source = "./cloudfront"
 
-    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/c948200c-e483-4d31-aeb8-1b5cfc9ab18f"
-    aliases = ["dev-media-cdn.sumo.mozit.cloud"]
+    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    aliases = ["user-media-dev-cdn.itsre-sumo.mozilla.net", "user-media-dev-cdn.sumo.mozit.cloud"]
     comment = "Dev CDN for SUMO user media"
     distribution_name = "SUMOMediaDevCDN"
     domain_name = "mozit-sumo-user-media-dev.s3-website-us-west-2.amazonaws.com"
@@ -95,8 +95,8 @@ module "sumo-user-media-dev-cf" {
 module "sumo-user-media-stage-cf" {
     source = "./cloudfront"
 
-    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/c948200c-e483-4d31-aeb8-1b5cfc9ab18f"
-    aliases = ["stage-media-cdn.sumo.mozit.cloud"]
+    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    aliases = ["user-media-stage-cdn.itsre-sumo.mozilla.net", "user-media-stage-cdn.sumo.mozit.cloud"]
     comment = "Stage CDN for SUMO user media"
     distribution_name = "SUMOMediaStageCDN"
     domain_name = "mozit-sumo-user-media-stage.s3-website-us-west-2.amazonaws.com"
@@ -105,8 +105,8 @@ module "sumo-user-media-stage-cf" {
 module "sumo-user-media-prod-cf" {
     source = "./cloudfront"
 
-    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/c948200c-e483-4d31-aeb8-1b5cfc9ab18f"
-    aliases = ["prod-media-cdn.sumo.mozit.cloud"]
+    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    aliases = ["user-media-prod-cdn.itsre-sumo.mozilla.net", "user-media-prod-cdn.sumo.mozit.cloud"]
     comment = "Prod CDN for SUMO user media"
     distribution_name = "SUMOMediaProdCDN"
     domain_name = "mozit-sumo-user-media-prod.s3-website-us-west-2.amazonaws.com"
@@ -119,8 +119,8 @@ module "sumo-user-media-prod-cf" {
 module "sumo-static-media-dev-cf" {
     source = "./cloudfront_static_media"
 
-    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/c948200c-e483-4d31-aeb8-1b5cfc9ab18f"
-    aliases = ["static-media-dev-cdn.sumo.mozit.cloud"]
+    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    aliases = ["static-media-dev-cdn.itsre-sumo.mozilla.net", "static-media-dev-cdn.sumo.mozit.cloud"]
     comment = "Dev CDN for SUMO static media"
     distribution_name = "SUMOStaticMediaDevCDN"
     domain_name = "dev.sumo.mozit.cloud"
@@ -129,8 +129,8 @@ module "sumo-static-media-dev-cf" {
 module "sumo-static-media-stage-cf" {
     source = "./cloudfront_static_media"
 
-    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/c948200c-e483-4d31-aeb8-1b5cfc9ab18f"
-    aliases = ["static-media-stage-cdn.sumo.mozit.cloud"]
+    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    aliases = ["static-media-stage-cdn.itsre-sumo.mozilla.net", "static-media-stage-cdn.sumo.mozit.cloud"]
     comment = "Stage CDN for SUMO static media"
     distribution_name = "SUMOStaticMediaStageCDN"
     domain_name = "stage.sumo.mozit.cloud"
@@ -139,8 +139,8 @@ module "sumo-static-media-stage-cf" {
 module "sumo-static-media-prod-cf" {
     source = "./cloudfront_static_media"
 
-    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/c948200c-e483-4d31-aeb8-1b5cfc9ab18f"
-    aliases = ["static-media-prod-cdn.sumo.mozit.cloud"]
+    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    aliases = ["static-media-prod-cdn.itsre-sumo.mozilla.net", "static-media-prod-cdn.sumo.mozit.cloud"]
     comment = "Prod CDN for SUMO static media"
     distribution_name = "SUMOStaticMediaProdCDN"
     domain_name = "prod.sumo.mozit.cloud"
@@ -152,8 +152,8 @@ module "sumo-static-media-prod-cf" {
 module "sumo-failover-cf" {
     source = "./cloudfront_failover"
 
-    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/c948200c-e483-4d31-aeb8-1b5cfc9ab18f"
-    aliases = ["failover-cdn.sumo.mozit.cloud"]
+    acm_cert_arn = "arn:aws:acm:us-east-1:095732026120:certificate/e5cfc7ce-87df-4ea4-8007-3c1ef1e9a545"
+    aliases = ["failover-cdn.itsre-sumo.mozilla.net", "failover-cdn.sumo.mozit.cloud"]
     comment = "Frankfurt failover CDN"
     distribution_name = "SUMOFailoverCDN"
     domain_name = "prod-frankfurt.sumo.mozit.cloud"
