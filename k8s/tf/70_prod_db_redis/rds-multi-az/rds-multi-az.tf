@@ -27,6 +27,7 @@ resource "aws_db_instance" "sumo_rds" {
   vpc_security_group_ids      = ["${aws_security_group.sumo_rds_sg.id}"]
   final_snapshot_identifier   = "sumo-final-db-snapshot"
   kms_key_id                  = "${aws_kms_key.key.arn}"
+  deletion_protection         = true
 
   tags {
     "Stack" = "SUMO-${var.mysql_env}"
