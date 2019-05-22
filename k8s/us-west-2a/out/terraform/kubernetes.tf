@@ -6,13 +6,13 @@ locals = {
   masters_role_name            = "${aws_iam_role.masters-k8s-us-west-2a-sumo-mozit-cloud.name}"
   node_autoscaling_group_ids   = ["${aws_autoscaling_group.nodes-k8s-us-west-2a-sumo-mozit-cloud.id}"]
   node_security_group_ids      = ["${aws_security_group.nodes-k8s-us-west-2a-sumo-mozit-cloud.id}"]
-  node_subnet_ids              = ["subnet-00bb62251c39329fd"]
+  node_subnet_ids              = ["subnet-09e56bef33ab1bcb4"]
   nodes_role_arn               = "${aws_iam_role.nodes-k8s-us-west-2a-sumo-mozit-cloud.arn}"
   nodes_role_name              = "${aws_iam_role.nodes-k8s-us-west-2a-sumo-mozit-cloud.name}"
   region                       = "us-west-2"
-  subnet_ids                   = ["subnet-00bb62251c39329fd"]
-  subnet_us-west-2a_id         = "subnet-00bb62251c39329fd"
-  vpc_id                       = "vpc-0df5c6330b0623c73"
+  subnet_ids                   = ["subnet-09e56bef33ab1bcb4"]
+  subnet_us-west-2a_id         = "subnet-09e56bef33ab1bcb4"
+  vpc_id                       = "vpc-0b159cc609c2de823"
 }
 
 output "cluster_name" {
@@ -44,7 +44,7 @@ output "node_security_group_ids" {
 }
 
 output "node_subnet_ids" {
-  value = ["subnet-00bb62251c39329fd"]
+  value = ["subnet-09e56bef33ab1bcb4"]
 }
 
 output "nodes_role_arn" {
@@ -60,15 +60,15 @@ output "region" {
 }
 
 output "subnet_ids" {
-  value = ["subnet-00bb62251c39329fd"]
+  value = ["subnet-09e56bef33ab1bcb4"]
 }
 
 output "subnet_us-west-2a_id" {
-  value = "subnet-00bb62251c39329fd"
+  value = "subnet-09e56bef33ab1bcb4"
 }
 
 output "vpc_id" {
-  value = "vpc-0df5c6330b0623c73"
+  value = "vpc-0b159cc609c2de823"
 }
 
 provider "aws" {
@@ -80,7 +80,7 @@ resource "aws_autoscaling_group" "master-us-west-2a-masters-k8s-us-west-2a-sumo-
   launch_configuration = "${aws_launch_configuration.master-us-west-2a-masters-k8s-us-west-2a-sumo-mozit-cloud.id}"
   max_size             = 1
   min_size             = 1
-  vpc_zone_identifier  = ["subnet-00bb62251c39329fd"]
+  vpc_zone_identifier  = ["subnet-09e56bef33ab1bcb4"]
 
   tag = {
     key                 = "KubernetesCluster"
@@ -115,7 +115,7 @@ resource "aws_autoscaling_group" "nodes-k8s-us-west-2a-sumo-mozit-cloud" {
   launch_configuration = "${aws_launch_configuration.nodes-k8s-us-west-2a-sumo-mozit-cloud.id}"
   max_size             = 12
   min_size             = 3
-  vpc_zone_identifier  = ["subnet-00bb62251c39329fd"]
+  vpc_zone_identifier  = ["subnet-09e56bef33ab1bcb4"]
 
   tag = {
     key                 = "KubernetesCluster"
@@ -260,7 +260,7 @@ resource "aws_launch_configuration" "nodes-k8s-us-west-2a-sumo-mozit-cloud" {
 
 resource "aws_security_group" "masters-k8s-us-west-2a-sumo-mozit-cloud" {
   name        = "masters.k8s.us-west-2a.sumo.mozit.cloud"
-  vpc_id      = "vpc-0df5c6330b0623c73"
+  vpc_id      = "vpc-0b159cc609c2de823"
   description = "Security group for masters"
 
   tags = {
@@ -272,7 +272,7 @@ resource "aws_security_group" "masters-k8s-us-west-2a-sumo-mozit-cloud" {
 
 resource "aws_security_group" "nodes-k8s-us-west-2a-sumo-mozit-cloud" {
   name        = "nodes.k8s.us-west-2a.sumo.mozit.cloud"
-  vpc_id      = "vpc-0df5c6330b0623c73"
+  vpc_id      = "vpc-0b159cc609c2de823"
   description = "Security group for nodes"
 
   tags = {
