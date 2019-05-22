@@ -2,7 +2,7 @@ export ENVIRONMENT ?= dev
 export CERT_ARN
 
 setup-service: check-env
-	j2 sumo.service.yaml | kubectl apply -f -
+	j2 sumo.service.yaml.j2 | kubectl apply -f -
 
 check-env:
 ifndef CERT_ARN
