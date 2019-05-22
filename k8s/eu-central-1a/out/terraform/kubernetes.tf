@@ -381,22 +381,22 @@ resource "aws_security_group_rule" "node-to-master-udp-1-65535" {
   protocol                 = "udp"
 }
 
-resource "aws_security_group_rule" "ssh-external-to-master-64-53-133-59--32" {
+resource "aws_security_group_rule" "ssh-external-to-master-10-50-0-0--15" {
   type              = "ingress"
   security_group_id = "${aws_security_group.masters-k8s-eu-central-1a-sumo-mozit-cloud.id}"
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  cidr_blocks       = ["64.53.133.59/32"]
+  cidr_blocks       = ["10.50.0.0/15"]
 }
 
-resource "aws_security_group_rule" "ssh-external-to-node-64-53-133-59--32" {
+resource "aws_security_group_rule" "ssh-external-to-node-10-50-0-0--15" {
   type              = "ingress"
   security_group_id = "${aws_security_group.nodes-k8s-eu-central-1a-sumo-mozit-cloud.id}"
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  cidr_blocks       = ["64.53.133.59/32"]
+  cidr_blocks       = ["10.50.0.0/15"]
 }
 
 terraform = {
