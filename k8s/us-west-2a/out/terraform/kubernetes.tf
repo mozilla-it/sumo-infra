@@ -309,13 +309,13 @@ resource "aws_security_group_rule" "all-node-to-node" {
   protocol                 = "-1"
 }
 
-resource "aws_security_group_rule" "https-external-to-master-64-53-133-59--32" {
+resource "aws_security_group_rule" "https-external-to-master-10-48-0-0--15" {
   type              = "ingress"
   security_group_id = "${aws_security_group.masters-k8s-us-west-2a-sumo-mozit-cloud.id}"
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
-  cidr_blocks       = ["64.53.133.59/32"]
+  cidr_blocks       = ["10.48.0.0/15"]
 }
 
 resource "aws_security_group_rule" "master-egress" {
