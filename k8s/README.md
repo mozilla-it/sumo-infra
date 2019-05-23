@@ -19,9 +19,9 @@ You will need the following tools to get kubernetes installed
 Kubernetes and Kops require some infrastructure to get going, primarily a VPC and some S3 buckets
 
 - Ensure your AWS_PROFILE is set correctly and authenticate to AWS if necessary
-- In the `k8s/tf/00_aws-vpc/<your_AZ>` directory, run `terraform apply` 
-- In the `k8s/tf/01_dns` directory, run `terraform apply` 
-- In the `k8s/tf/10_ark/<your_AZ>` directory, run `terraform apply` 
+- In the `k8s/tf/00_aws-vpc/<your_AZ>` directory, run `terraform apply`
+- In the `k8s/tf/01_dns` directory, run `terraform apply`
+- In the `k8s/tf/10_ark/<your_AZ>` directory, run `terraform apply`
 
 ## Create the cluster with kops
 - Edit `k8s/common.sh` and put real values form your terraform output into `KOPS_VPC_ID`, `KOPS_STATE_BUCKET` and `STATE_BUCKET`.  Ensure all the sizing and k8s version is as you desire.
@@ -50,7 +50,14 @@ Note: If you already have applied the kops terraform and have a terraform.tfstat
 - `kops validate cluster` until it shows the cluster is ready
 
 ## Configure the kubernetes cluster
-- Run the post-install configuration script like `./post-install.sh all` and follow any prompts, or if it is more comfortable you can install one component at a time, see `./post-install` for more details
+- Ensure your kubeconfig is pointed at the cluster you intend to install against `kubectl config current-context`
+- Run the post-install configuration script like `./post-install.sh all` and follow any prompts, or if it is more comfortable you can install one component at a time, see `./install/post-install.sh` for more details
+
+### post-install.sh notes
+  * `ingress_controller()` function install relies on environment variables in `<cluster>/config.sh` that may change per namespace and currently requires modifying and re-running `./post-install.sh ingress_controller` for each namespace. E.G. edit config.sh and set `ENVIRONMENT` to stage to deploy an ingress endpoint for sumo-stage.
+  * Only single ingress-controller and external-dns pods are created and watch all namespaces, but there will be a new ingress created for each namespace (there is a 1:1 mapping between ingress and an ALB created)
+  * Note: currently ingress_controller() is not part of the default install `all` and must be called independently, explicitly.
+  * You can view all configured ingresses with `kubectl get ing -A`
 
 ## Configure more application infra
 - In the `k8s/tf/50_cdn` directory, run `terraform apply` to create s3 origins and cloudfront cdns

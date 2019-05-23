@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "sumo-{{ ENVIRONMENT }}"
+  namespace: "sumo-{{ ENVIRONMENT }}"
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '6'
+    alb.ingress.kubernetes.io/subnets: '{{ PUBLIC_SUBNETS }}'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/healthcheck-path: /healthz/
+#    alb.ingress.kubernetes.io/healthcheck-port: '8000'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '10'
+    alb.ingress.kubernetes.io/certificate-arn: {{ CERT_ARN }}
+  labels:
+    app: sumo-{{ ENVIRONMENT }}
+spec:
+  rules:
+    - host: {{ ENVIRONMENT }}.{{ CLUSTER_ALT_NAME }}.sumo.mozit.cloud
+      http:
+        paths:
+          - path:
+            backend:
+              serviceName: 'sumo-{{ ENVIRONMENT }}'
+              servicePort: 8000

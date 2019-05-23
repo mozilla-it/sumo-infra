@@ -27,3 +27,15 @@ export KOPS_INSTALLER="../install"
 
 # secrets path for post-install.sh functions
 #export SECRETS_PATH="${HOME}/scm/mdn-k8s-private"
+
+#
+# This is for ALB Ingress Controller
+#
+# will map to namespace sumo-(dev|stage|prod)
+export ENVIRONMENT=""
+# ACM certificate ARN to apply to ALB
+export CERT_ARN=""
+# All subnets for VPC, ALB requires at least two
+export PUBLIC_SUBNETS=""
+# Hosted zone for automatic ALB DNS record creation
+export ROUTE53_ZONE=""
