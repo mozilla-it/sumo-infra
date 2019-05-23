@@ -26,7 +26,6 @@ validate_cluster() {
 
 set_tf_resource_name() {
     export TF_RESOURCE_NAME=$(echo ${KOPS_CLUSTER_NAME} | tr "." "-")
-    [ -n "${VPN_CIDR}" ] && export TF_CIDR_RESOURCE=$(echo ${VPN_CIDR} | tr "." "-" | sed -e 's/\//--/g')
 }
 
 apply_ingress_controller_tf() {
