@@ -442,6 +442,7 @@ usage() {
     echo "  ark                     install ark/velero for backups"
     echo "  metrics-server          install metrics-server"
     echo "  fluentd                 install fluentd"
+    echo "  ingress_controller      install fluentd"
     echo "  all                     install all of the above components"
 }
 
