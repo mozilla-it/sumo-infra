@@ -44,7 +44,7 @@ variable "mysql_storage_type" {
 }
 
 variable "mysql_backup_retention_days" {
-  default = 7
+  default = 14
 }
 
 variable "mysql_backup_window" {
