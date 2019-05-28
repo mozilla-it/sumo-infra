@@ -36,7 +36,3 @@ export KOPS_INSTALLER="../install"
 export ENVIRONMENT=""
 # ACM certificate ARN to apply to ALB
 export CERT_ARN=""
-# All subnets for VPC, ALB requires at least two
-export PUBLIC_SUBNETS=""
-# Hosted zone for automatic ALB DNS record creation
-export ROUTE53_ZONE=""

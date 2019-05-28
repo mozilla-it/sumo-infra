@@ -7,12 +7,20 @@ metadata:
   labels:
     app: sumo-{{ ENVIRONMENT }}
     type: lb
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ CERT_ARN }}
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: "ELBSecurityPolicy-TLS-1-2-2017-01"
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
-    - protocol: TCP
-      port: 8000
-      targetPort: 8000
+  - name: http
+    port: 80
+    targetPort: 8000
+  - name: https
+    port: 443
+    targetPort: 8000
   selector:
     app: sumo-{{ ENVIRONMENT }}
     type: web
