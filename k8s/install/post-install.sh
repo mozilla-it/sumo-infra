@@ -294,7 +294,7 @@ usage() {
     echo "  ark                     install ark/velero for backups"
     echo "  metrics-server          install metrics-server"
     echo "  fluentd                 install fluentd"
-    echo "  elb_instance            install ELB instance"
+    echo "  elb_service             install ELB service"
     echo "  all                     install all of the above components"
 }
 
