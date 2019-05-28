@@ -54,10 +54,9 @@ Note: If you already have applied the kops terraform and have a terraform.tfstat
 - Run the post-install configuration script like `./post-install.sh all` and follow any prompts, or if it is more comfortable you can install one component at a time, see `./install/post-install.sh` for more details
 
 ### post-install.sh notes
-  * `ingress_controller()` function install relies on environment variables in `<cluster>/config.sh` that may change per namespace and currently requires modifying and re-running `./post-install.sh ingress_controller` for each namespace. E.G. edit config.sh and set `ENVIRONMENT` to stage to deploy an ingress endpoint for sumo-stage.
-  * Only single ingress-controller and external-dns pods are created and watch all namespaces, but there will be a new ingress created for each namespace (there is a 1:1 mapping between ingress and an ALB created)
-  * Note: currently ingress_controller() is not part of the default install `all` and must be called independently, explicitly.
-  * You can view all configured ingresses with `kubectl get ing -A`
+  * `elb_service()` function install relies on environment variables in `<cluster>/config.sh` that may change per namespace and currently requires modifying and re-running `./post-install.sh elb_service` for each namespace. E.G. edit config.sh and set `ENVIRONMENT` to stage to deploy an ELB for sumo-stage.
+  * Note: currently elb_service() is not part of the default install `all` and must be called independently, explicitly.
+  * You can view all configured LoadBalancer services with `kubectl get svc -A`
 
 ## Configure more application infra
 - In the `k8s/tf/50_cdn` directory, run `terraform apply` to create s3 origins and cloudfront cdns
