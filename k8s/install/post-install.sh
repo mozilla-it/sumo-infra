@@ -116,7 +116,7 @@ install_newrelic() {
     echo "Installing New Relic"
 
     # Check we have access to the secrets repo
-    if [ ! -d "${SECRETS_PATH}/services/newrelic/newrelic-config.yaml" ]; then
+    if [ ! -f "${SECRETS_PATH}/services/newrelic/newrelic-config.yaml" ]; then
         echo "Error: could not access ${SECRETS_PATH}/services/newrelic/newrelic-config.yaml"
         echo "Check \$SECRETS_PATH env var is set in your config.sh for this cluster and sourced"
         exit 8
