@@ -112,6 +112,28 @@ install_mig() {
     echo "Done installing mig"
 }
 
+install_yar() {
+    echo "Installing yar"
+
+    # Check we have access to the secrets repo
+    if [ ! -f "${SECRETS_PATH}/services/mig/agent.key" ]; then
+        echo "Error: could not access ${SECRETS_PATH}/services/mig/agent.key"
+        echo "Check \$SECRETS_PATH env var is set in your config.sh for this cluster and sourced"
+        exit 8
+    fi
+
+    # If the namespace already exists, delete it first so we don't get duplicate replicasets
+    kubectl get namespace sumo-yar > /dev/null
+    if [ $? -ne 0 ]; then
+        kubectl delete namespace sumo-yar
+    fi
+    kubectl apply -f "${SECRETS_PATH}/services/yar/yar-namespace.yaml"
+    kubectl apply -f "${SECRETS_PATH}/services/yar/yar-secrets.yaml"
+    kubectl apply -f "${SECRETS_PATH}/services/yar/yar.yaml"
+
+    echo "Done installing yar"
+}
+
 install_newrelic() {
     echo "Installing New Relic"
 
@@ -295,6 +317,7 @@ usage() {
     echo "  metrics-server          install metrics-server"
     echo "  fluentd                 install fluentd"
     echo "  elb_service             install ELB service"
+    echo "  yar                     install yar service"
     echo "  all                     install all of the above components"
 }
 
@@ -322,6 +345,8 @@ if [ $# -eq 1 ]; then
             install_namespaces;;
         elb_service)
             install_elb_service;;
+        yar)
+            install_yar;;
         all)
             install_all;;
         -h|--help)
