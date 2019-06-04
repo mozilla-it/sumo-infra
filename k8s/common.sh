@@ -11,6 +11,11 @@ export KOPS_NODE_COUNT=3
 export KOPS_NODE_SIZE="m4.xlarge"
 export KOPS_NODE_VOLUME_SIZE_GB=250
 
+export K8S_NAMESPACE=sumo-prod
+export SUMO_APP_NAME=${K8S_NAMESPACE}
+export SUMO_NODEPORT_NAME=${SUMO_APP_NAME}-nodeport
+export SUMO_ENV_PORT=8000
+
 # s3 bucket
 # Generate random hash by doing
 # date +%s | md5sum | cut -d ' ' -f 1
