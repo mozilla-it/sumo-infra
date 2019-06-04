@@ -34,6 +34,14 @@ variable "mdc1-bgp-asn" {
   default = "65048"
 }
 
+variable "mdc2-ip" {
+  default = "63.245.210.251"
+}
+
+variable "mdc2-bgp-asn" {
+  default = "65050"
+}
+
 # Tags to apply across the VPC resources
 variable "base_tags" {
   default = {

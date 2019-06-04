@@ -53,7 +53,7 @@ module "vpn_gateway" {
   vpc_id              = "${module.vpc.vpc_id}"
   vpn_gateway_id      = "${module.vpc.vgw_id}"
   customer_gateway_id = "${aws_customer_gateway.main.id}"
-  tags                = "${var.base_tags}"
+  tags                = "${merge(map("Purpose", "US-to-MDC1"), var.base_tags)}"
 }
 
 resource "aws_customer_gateway" "main" {
@@ -62,4 +62,21 @@ resource "aws_customer_gateway" "main" {
   type       = "ipsec.1"
 
   tags = "${merge(map("Name", "mdc1-customer-gateway"), var.base_tags)}"
+}
+
+module "vpn_gateway_mdc2" {
+  source = "terraform-aws-modules/vpn-gateway/aws"
+
+  vpc_id              = "${module.vpc.vpc_id}"
+  vpn_gateway_id      = "${module.vpc.vgw_id}"
+  customer_gateway_id = "${aws_customer_gateway.mdc2.id}"
+  tags                = "${merge(map("Purpose", "US-to-MDC2"), var.base_tags)}"
+}
+
+resource "aws_customer_gateway" "mdc2" {
+  bgp_asn    = "${var.mdc2-bgp-asn}"
+  ip_address = "${var.mdc2-ip}"
+  type       = "ipsec.1"
+
+  tags = "${merge(map("Name", "mdc2-customer-gateway"), var.base_tags)}"
 }
