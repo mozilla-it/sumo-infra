@@ -17,6 +17,9 @@ export KOPS_MASTER_COUNT=1
 export KOPS_NODE_COUNT=6
 export KOPS_ZONES="eu-central-1a"
 
+# This is for the autoscaling configurations in AWS/k8s
+export MAX_NODE_COUNT=$((4 * ${KOPS_NODE_COUNT}))
+
 # Created externally by terraform
 export KOPS_SUBNETS="<Public VPC subnet ID tied to KOPS_ZONES>"
 

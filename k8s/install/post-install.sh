@@ -66,11 +66,10 @@ resource "aws_iam_role_policy_attachment" "autoscaler-attach" {
 }
 BASHEOF
 
-    DEFAULT_MAX=$(echo "$((4 * ${KOPS_NODE_COUNT}))")
     # set ASG max size so to allow the cluster autoscaler to scale up
     # retains whitespace for easier reading :-)
     echo "Editing ./out/terraform/kubernetes.tf to increase max_size"
-    sed -ri "s/max_size(\s*)=(\s*)$KOPS_NODE_COUNT/max_size\\1=\2$DEFAULT_MAX/" ./out/terraform/kubernetes.tf
+    sed -ri "s/max_size(\s*)=(\s*)$KOPS_NODE_COUNT/max_size\\1=\2$MAX_NODE_COUNT/" ./out/terraform/kubernetes.tf
     echo "*** Applying cluster_autoscaler terraform, press enter then read all proposed changes carefully before continuing ***"
     read
     cd ./out/terraform

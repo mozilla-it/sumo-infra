@@ -136,7 +136,7 @@ spec:
             - --cloud-provider=aws
             - --skip-nodes-with-local-storage=false
             # Below specifies the nodes from MIN to MAX_NODES
-            - --nodes=1:20:nodes.{{ KOPS_CLUSTER_NAME }}
+            - --nodes={{ KOPS_NODE_COUNT }}:{{ MAX_NODE_COUNT }}:nodes.{{ KOPS_CLUSTER_NAME }}
           env:
             - name: AWS_REGION
               value: {{ KOPS_REGION }}
