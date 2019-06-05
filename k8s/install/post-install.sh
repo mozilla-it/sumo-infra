@@ -115,15 +115,15 @@ install_yar() {
     echo "Installing yar"
 
     # Check we have access to the secrets repo
-    if [ ! -f "${SECRETS_PATH}/services/mig/agent.key" ]; then
-        echo "Error: could not access ${SECRETS_PATH}/services/mig/agent.key"
+    if [ ! -f "${SECRETS_PATH}/services/yar/yar-secrets.yaml" ]; then
+        echo "Error: could not access ${SECRETS_PATH}/services/yar/yar-secrets.yaml"
         echo "Check \$SECRETS_PATH env var is set in your config.sh for this cluster and sourced"
         exit 8
     fi
 
     # If the namespace already exists, delete it first so we don't get duplicate replicasets
     kubectl get namespace sumo-yar > /dev/null
-    if [ $? -ne 0 ]; then
+    if [ $? -eq 0 ]; then
         kubectl delete namespace sumo-yar
     fi
     kubectl apply -f "${SECRETS_PATH}/services/yar/yar-namespace.yaml"
