@@ -113,7 +113,7 @@ resource "aws_security_group_rule" "ci-ssh" {
   from_port         = "22"
   to_port           = "22"
   protocol          = "TCP"
-  cidr_blocks       = ["${var.mdc_cidr}"]
+  cidr_blocks       = ["${var.mdc1_cidr}", "${var.mdc2_cidr}"]
 }
 
 resource "aws_security_group_rule" "ci-http" {

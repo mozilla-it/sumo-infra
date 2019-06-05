@@ -2,8 +2,12 @@ variable "region" {
   default = "us-west-2"
 }
 
-variable "mdc_cidr" {
+variable "mdc1_cidr" {
   default = "10.48.0.0/15"
+}
+
+variable "mdc2_cidr" {
+  default = "10.50.0.0/15"
 }
 
 variable "acm_cert" {
