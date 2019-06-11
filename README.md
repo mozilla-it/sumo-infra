@@ -65,3 +65,6 @@ ark_secret_key=
 export SYSLOG_HOST="logs.papertrailapp.com"
 export SYSLOG_PORT="unique_port"
 ```
+
+- jenkins
+  - This is a Terraform tfvars file passed straight into a Terraform command using a helper script `./tf-do <plan|apply>`. The format is the standard `key = value` where `key` matches variables found in the k8s/tf Jenkins directory.

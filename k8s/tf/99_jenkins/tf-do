@@ -17,6 +17,7 @@ show_help() {
     echo -en "	init		Terraform init\n"
     echo -en "	plan		Terraform plan\n"
     echo -en "	apply		Terraform apply\n"
+    echo -en "  destroy         Terraform destroy\n"
 }
 
 terraform_do() {
