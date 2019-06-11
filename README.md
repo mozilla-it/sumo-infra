@@ -4,6 +4,16 @@ This repo has source code for building SUMO infrastructure in AWS including netw
 ## Kubernetes Clusters
 To stand up most of the infra including Kuberenets and Jenkins, see `k8s/README.md`
 
+## Monitoring
+SUMO is monitored with AWS Health Checks, New Relic Synthetics, New Relic APM and Dead Man's Snitch.  These tools feed into PagerDuty, Slack and Email alerts.
+
+### Slack alerts
+Deployments, Jenkin builds and Dead man's snitch all report to Slack.  To set this up, request a new slack bot from the Service Desk.  There are 3 different ways that our services interact with Slack bots:
+* Webhook URL: This is how New Relic integrates with Slack.  Service Desk can create a bot that listens at a url like https://hooks.slack.com/services/<hash>
+** AWS SNS can also integrate via Webhook URLs (from a Lambda function) into Slack
+* Email address: This is how AWS health checks can be integrated with Slack.  Note this is not the preferred method of integration and is I believe deprecated by Slack.
+* Slack API key: This is also a deprecated Slack bot feature that gives a key that can be used to post to slack.  The slack-cli tool uses this feature and is called by Jenkins and commander.sh when building or deploying SUMO
+
 ## SUMO Secrets
 Secrets are stored in a private location, but to aid in future discoverability the structure is described here:
 - Global secrets in the `services` directory
