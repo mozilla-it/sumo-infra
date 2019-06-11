@@ -11,7 +11,7 @@ variable "project" {
 }
 
 variable "ssl_cert_prod" {
-  default = "arn:aws:acm:us-west-2:095732026120:certificate/8d68c499-42aa-41cf-80c7-bb3b1e402790"
+  default = "arn:aws:acm:us-west-2:095732026120:certificate/9180d862-fd78-4c28-9d9a-0c33a8532302"
 }
 
 variable "sumo_zone_id" {
