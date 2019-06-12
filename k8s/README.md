@@ -68,3 +68,10 @@ Note: If you already have applied the kops terraform and have a terraform.tfstat
 - In the `k8s/tf/70_prod_db_redis` directory, run `terraform apply` to create the prod database and Redis cache
 - In the `k8s/tf/80_regional_lb` directory, run `terraform apply` to create the load balancer that points to all nodes in oregon-a and oregon-b
 - In the `k8s/tf/99_jenkins` directory, run `terraform apply` to create the Jenkins CI instance
+
+## Configure some infra by hand
+At this time, not all infra is created by Terraform due to time constraints.  Create the following by hand:
+- Route53 Traffic Policy to send traffic to Oregon ELB with a failover to Frankfurt CloudFront
+- Health checks for each ELB with alerts to Slack
+- SNS topic and associated Lambda function to send CloudWatch alerts to Slack
+- Read only DB replica in Frankfurt
