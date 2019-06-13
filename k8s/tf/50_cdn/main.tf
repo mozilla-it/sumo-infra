@@ -89,7 +89,7 @@ module "sumo-user-media-dev-cf" {
   aliases           = ["user-media-dev-cdn.itsre-sumo.mozilla.net", "user-media-dev-cdn.sumo.mozit.cloud"]
   comment           = "Dev CDN for SUMO user media"
   distribution_name = "SUMOMediaDevCDN"
-  domain_name       = "mozit-sumo-user-media-dev.s3-website-us-west-2.amazonaws.com"
+  origin_name       = "mozit-sumo-user-media-dev.s3-website-us-west-2.amazonaws.com"
 }
 
 module "sumo-user-media-stage-cf" {
@@ -100,7 +100,7 @@ module "sumo-user-media-stage-cf" {
   aliases           = ["user-media-stage-cdn.itsre-sumo.mozilla.net", "user-media-stage-cdn.sumo.mozit.cloud"]
   comment           = "Stage CDN for SUMO user media"
   distribution_name = "SUMOMediaStageCDN"
-  domain_name       = "mozit-sumo-user-media-stage.s3-website-us-west-2.amazonaws.com"
+  origin_name       = "mozit-sumo-user-media-stage.s3-website-us-west-2.amazonaws.com"
 }
 
 module "sumo-user-media-prod-cf" {
@@ -111,7 +111,7 @@ module "sumo-user-media-prod-cf" {
   aliases           = ["user-media-prod-cdn.itsre-sumo.mozilla.net", "user-media-prod-cdn.sumo.mozit.cloud"]
   comment           = "Prod CDN for SUMO user media"
   distribution_name = "SUMOMediaProdCDN"
-  domain_name       = "mozit-sumo-user-media-prod.s3-website-us-west-2.amazonaws.com"
+  origin_name       = "mozit-sumo-user-media-prod.s3-website-us-west-2.amazonaws.com"
 }
 
 #####################################################################
@@ -126,7 +126,7 @@ module "sumo-static-media-dev-cf" {
   aliases           = ["static-media-dev-cdn.itsre-sumo.mozilla.net", "static-media-dev-cdn.sumo.mozit.cloud"]
   comment           = "Dev CDN for SUMO static media"
   distribution_name = "SUMOStaticMediaDevCDN"
-  domain_name       = "dev.sumo.mozit.cloud"
+  origin_name       = "dev.sumo.mozit.cloud"
 }
 
 module "sumo-static-media-stage-cf" {
@@ -137,7 +137,7 @@ module "sumo-static-media-stage-cf" {
   aliases           = ["static-media-stage-cdn.itsre-sumo.mozilla.net", "static-media-stage-cdn.sumo.mozit.cloud"]
   comment           = "Stage CDN for SUMO static media"
   distribution_name = "SUMOStaticMediaStageCDN"
-  domain_name       = "stage-tp.sumo.mozit.cloud"
+  origin_name       = "stage-tp.sumo.mozit.cloud"
 }
 
 module "sumo-static-media-prod-cf" {
@@ -148,7 +148,7 @@ module "sumo-static-media-prod-cf" {
   aliases           = ["static-media-prod-cdn.itsre-sumo.mozilla.net", "static-media-prod-cdn.sumo.mozit.cloud"]
   comment           = "Prod CDN for SUMO static media"
   distribution_name = "SUMOStaticMediaProdCDN"
-  domain_name       = "prod-tp.sumo.mozit.cloud"
+  origin_name       = "prod-tp.sumo.mozit.cloud"
 }
 
 #####################################################################
@@ -162,7 +162,7 @@ module "sumo-failover-cf" {
   aliases           = ["failover-cdn.itsre-sumo.mozilla.net", "failover-cdn.sumo.mozit.cloud"]
   comment           = "Frankfurt failover CDN"
   distribution_name = "SUMOFailoverCDN"
-  domain_name       = "prod-frankfurt.sumo.mozit.cloud"
+  origin_name       = "prod-frankfurt.sumo.mozit.cloud"
   min_ttl           = 0
   max_ttl           = 28800                                                                                 /* 8 hours */
   default_ttl       = 14400                                                                                 /* 4 hours */

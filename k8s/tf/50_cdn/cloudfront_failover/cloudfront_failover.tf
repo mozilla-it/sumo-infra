@@ -28,7 +28,7 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
   }
 
   origin {
-    domain_name = "${var.domain_name}"
+    domain_name = "${var.origin_name}"
     origin_id   = "${var.distribution_name}"
 
     custom_header = {
