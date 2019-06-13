@@ -137,7 +137,7 @@ module "sumo-static-media-stage-cf" {
   aliases           = ["static-media-stage-cdn.itsre-sumo.mozilla.net", "static-media-stage-cdn.sumo.mozit.cloud"]
   comment           = "Stage CDN for SUMO static media"
   distribution_name = "SUMOStaticMediaStageCDN"
-  domain_name       = "stage.sumo.mozit.cloud"
+  domain_name       = "stage-tp.sumo.mozit.cloud"
 }
 
 module "sumo-static-media-prod-cf" {
@@ -148,7 +148,7 @@ module "sumo-static-media-prod-cf" {
   aliases           = ["static-media-prod-cdn.itsre-sumo.mozilla.net", "static-media-prod-cdn.sumo.mozit.cloud"]
   comment           = "Prod CDN for SUMO static media"
   distribution_name = "SUMOStaticMediaProdCDN"
-  domain_name       = "prod.sumo.mozit.cloud"
+  domain_name       = "prod-tp.sumo.mozit.cloud"
 }
 
 #####################################################################
