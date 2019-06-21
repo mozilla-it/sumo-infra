@@ -37,7 +37,7 @@ Kubernetes and Kops require some infrastructure to get going, primarily a VPC an
 - `source config.sh`
 - run `install.sh` to have kops generate terraform for your k8s cluster
 - In the resulting `out/terraform` directory, you will need to define a remote state bucket before applying the newly generated terraform code.
-  ```
+```
 $ cat ./out/terraform/provider.tf
 terraform {
   backend "s3" {
@@ -45,7 +45,7 @@ terraform {
     key    = "<state-key>"
     region = "<region>"
   }
-  ```
+```
 Note: If you already have applied the kops terraform and have a terraform.tfstate, you can copy that to the remote bucket named as the key name, and terraform will use that with the provider snippet in place on subsequent runs.
 
 - Run `terraform init && terraform apply`
