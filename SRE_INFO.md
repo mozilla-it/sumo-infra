@@ -1,6 +1,8 @@
 # SRE Info
 
 ## Infra Access
+To access Kubernetes Masters, you need to be on the MDC1 or MDC2 VPN.  The [Kubeconfig](https://github.com/mozilla-it/sumo-private/blob/master/us-west-2a/kubectl.us-west-2a.conf) is in the private secrets repo, there is one for each of the three clusters.
+
 [SRE aws-vault setup](https://mana.mozilla.org/wiki/display/SRE/aws-vault)
 
 [SRE account guide](https://mana.mozilla.org/wiki/display/SRE/AWS+Account+access+guide)
