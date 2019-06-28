@@ -148,8 +148,7 @@ module "sumo-static-media-prod-cf" {
   aliases           = ["static-media-prod-cdn.itsre-sumo.mozilla.net", "static-media-prod-cdn.sumo.mozit.cloud"]
   comment           = "Prod CDN for SUMO static media"
   distribution_name = "SUMOStaticMediaProdCDN"
-  origin_name       = "prod-tp.sumo.mozit.cloud"
-#  origin_name       = "mozit-sumo-prod-media.s3-website-us-west-2.amazonaws.com"
+  origin_name       = "mozit-sumo-prod-media.s3.us-west-2.amazonaws.com"
 }
 
 #####################################################################
