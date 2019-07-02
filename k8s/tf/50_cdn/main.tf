@@ -90,6 +90,8 @@ module "sumo-user-media-dev-cf" {
   comment           = "Dev CDN for SUMO user media"
   distribution_name = "SUMOMediaDevCDN"
   origin_name       = "mozit-sumo-user-media-dev.s3-website-us-west-2.amazonaws.com"
+  s3_logging_bucket = "sumo-cloudfront-logging.s3.us-east-1.amazonaws.com"
+  s3_logging_prefix = "sumo-user-media-dev"
 }
 
 module "sumo-user-media-stage-cf" {
@@ -101,6 +103,8 @@ module "sumo-user-media-stage-cf" {
   comment           = "Stage CDN for SUMO user media"
   distribution_name = "SUMOMediaStageCDN"
   origin_name       = "mozit-sumo-user-media-stage.s3-website-us-west-2.amazonaws.com"
+  s3_logging_bucket = "sumo-cloudfront-logging.s3.us-east-1.amazonaws.com"
+  s3_logging_prefix = "sumo-user-media-stage"
 }
 
 module "sumo-user-media-prod-cf" {
@@ -112,6 +116,8 @@ module "sumo-user-media-prod-cf" {
   comment           = "Prod CDN for SUMO user media"
   distribution_name = "SUMOMediaProdCDN"
   origin_name       = "mozit-sumo-user-media-prod.s3-website-us-west-2.amazonaws.com"
+  s3_logging_bucket = "sumo-cloudfront-logging.s3.us-east-1.amazonaws.com"
+  s3_logging_prefix = "sumo-user-media-prod"
 }
 
 #####################################################################
@@ -127,6 +133,8 @@ module "sumo-static-media-dev-cf" {
   comment           = "Dev CDN for SUMO static media"
   distribution_name = "SUMOStaticMediaDevCDN"
   origin_name       = "dev.sumo.mozit.cloud"
+  s3_logging_bucket = "sumo-cloudfront-logging.s3.us-east-1.amazonaws.com"
+  s3_logging_prefix = "sumo-static-media-dev"
 }
 
 module "sumo-static-media-stage-cf" {
@@ -138,6 +146,8 @@ module "sumo-static-media-stage-cf" {
   comment           = "Stage CDN for SUMO static media"
   distribution_name = "SUMOStaticMediaStageCDN"
   origin_name       = "mozit-sumo-stage-media.s3.us-west-2.amazonaws.com"
+  s3_logging_bucket = "sumo-cloudfront-logging.s3.us-east-1.amazonaws.com"
+  s3_logging_prefix = "sumo-static-media-stage"
 }
 
 module "sumo-static-media-prod-cf" {
@@ -149,6 +159,8 @@ module "sumo-static-media-prod-cf" {
   comment           = "Prod CDN for SUMO static media"
   distribution_name = "SUMOStaticMediaProdCDN"
   origin_name       = "mozit-sumo-prod-media.s3.us-west-2.amazonaws.com"
+  s3_logging_bucket = "sumo-cloudfront-logging.s3.us-east-1.amazonaws.com"
+  s3_logging_prefix = "sumo-static-media-prod"
 }
 
 #####################################################################
@@ -166,4 +178,6 @@ module "sumo-failover-cf" {
   min_ttl           = 0
   max_ttl           = 28800                                                                                 /* 8 hours */
   default_ttl       = 14400                                                                                 /* 4 hours */
+  s3_logging_bucket = "sumo-cloudfront-logging.s3.us-east-1.amazonaws.com"
+  s3_logging_prefix = "sumo-failover-cdn"
 }

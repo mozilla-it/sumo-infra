@@ -62,6 +62,12 @@ resource "aws_cloudfront_distribution" "sumo-cf-dist" {
     minimum_protocol_version = "TLSv1"
   }
 
+  logging_config {
+    include_cookies = false
+    bucket          = "${var.s3_logging_bucket}"
+    prefix          = "${var.s3_logging_prefix}"
+  }
+
   tags = {
     "Terraform" = "true"
     "Project"   = "sumo"
