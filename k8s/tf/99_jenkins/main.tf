@@ -250,9 +250,17 @@ resource "aws_s3_bucket" "backup" {
   bucket = "${var.backup_bucket}-${random_id.rand-var.hex}"
   acl    = "private"
 
+  lifecycle_rule {
+    enabled = true
+
+    expiration {
+      days = "7"
+    }
+  }
+
   tags = "${merge(
             map("Name", "${var.project}-${var.service}-s3backup"),
-            map("Purpose", "Backup bucket for CI system"),
+            map("purpose", "Backup bucket for CI system"),
             var.base_tags
           )}"
 }
