@@ -18,6 +18,15 @@ terraform {
 resource "aws_s3_bucket" "logs" {
   bucket = "mozit-sumo-user-media-logs"
   acl    = "log-delivery-write"
+
+  lifecycle_rule {
+    enabled = true
+
+    expiration {
+      days = 14
+    }
+  }
+
 }
 
 module "sumo-user-media-dev-bucket" {
@@ -57,6 +66,14 @@ module "sumo-user-media-prod-bucket" {
 resource "aws_s3_bucket" "static-media-logs" {
   bucket = "mozit-sumo-static-media-logs"
   acl    = "log-delivery-write"
+
+  lifecycle_rule {
+    enabled = true
+
+    expiration {
+      days = 14
+    }
+  }
 }
 
 module "sumo-static-media-stage-bucket" {
