@@ -17,7 +17,6 @@ Deployments, Jenkin builds and Dead man's snitch all report to Slack.  To set th
 ## SUMO Secrets
 Secrets are stored in a private location, but to aid in future discoverability the structure is described here:
 - Global secrets in the `services` directory
-  - `mig/` contains a agent certificate and key, a CA cert and a mig agent config all given to us by EIS.  The config looks like:
 ```
 [agent]
     isimmortal      = on
