@@ -1,5 +1,5 @@
 #!/bin/bash
-# Configure various bits of a SUMO Kubernetes cluster including secrets and cluster services like fluentd, mig, calico, autoscalers, etc.
+# Configure various bits of a SUMO Kubernetes cluster including secrets and cluster services like fluentd, calico, autoscalers, etc.
 # Requires GNU sed vs BSD sed.  `brew install gnu-sed`
 
 set -u
@@ -78,37 +78,6 @@ BASHEOF
     cd - > /dev/null
     echo "Done applying cluster_autoscaler terraform"
     echo "You may want to git commit the modified ./out/terraform/kubernetes.tf with increased max_size"
-}
-
-install_mig() {
-    echo "Installing mig"
-    kubectl apply -f "${KOPS_INSTALLER}/services/mig/mig-namespace.yaml"
-
-    # Check we have access to the secrets repo
-    if [ ! -f "${SECRETS_PATH}/services/mig/agent.key" ]; then
-        echo "Error: could not access ${SECRETS_PATH}/services/mig/agent.key"
-        echo "Check \$SECRETS_PATH env var is set in your config.sh for this cluster and sourced"
-        exit 8
-    fi
-
-    # Export mqpassword
-    # Check if the secret already exists so we don't error out on kubectl create secret step
-    set +e
-    kubectl -n mig get secret mig-agent-secrets > /dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        set -e
-        echo "Creating mig secret in k8s cluster"
-        kubectl -n mig create secret generic mig-agent-secrets \
-            --from-file=${SECRETS_PATH}/services/mig/agent.key \
-            --from-file=${SECRETS_PATH}/services/mig/agent.crt \
-            --from-file=${SECRETS_PATH}/services/mig/ca.crt \
-            --from-file=${SECRETS_PATH}/services/mig/mig-agent.cfg
-    else
-        set -e
-        echo "Mig secret already exists in k8s cluster.  If you need to update it, delete it first with 'kubectl -n mig delete secret mig-agent-secrets' and rerun this script"
-    fi
-    kubectl -n mig apply -f ${KOPS_INSTALLER}/services/mig/migdaemonset.yaml
-    echo "Done installing mig"
 }
 
 install_yar() {
@@ -294,7 +263,6 @@ install_all() {
     install_cluster_autoscaler
     install_calico_rbac
     install_fluentd
-    install_mig
     install_block-aws
     install_ark
     install_newrelic
@@ -310,7 +278,6 @@ usage() {
     echo "  cluster_autoscaler      install cluster autoscaler"
     echo "  calico                  install calico networking"
     echo "  newrelic                install newrelic"
-    echo "  mig                     install mig"
     echo "  block-aws               install the AWS metadata block"
     echo "  ark                     install ark/velero for backups"
     echo "  metrics-server          install metrics-server"
@@ -330,8 +297,6 @@ if [ $# -eq 1 ]; then
             install_calico_rbac;;
         newrelic)
             install_newrelic;;
-        mig)
-            install_mig;;
         block-aws)
             install_block-aws;;
         ark)
