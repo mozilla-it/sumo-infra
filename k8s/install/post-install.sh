@@ -236,6 +236,7 @@ install_ark() {
     (cd "${KOPS_INSTALLER}/services/ark" && make deploy)
 
     kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-deployment.yaml"
+    kubectl apply -f "${KOPS_INSTALLER}/services/ark/ark-schedule.yaml"
     echo "Done installing ark"
 }
 
