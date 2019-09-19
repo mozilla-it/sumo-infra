@@ -178,7 +178,7 @@ install_block-aws() {
             --from-env-file "${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws"
     else
         set -e
-        echo "block-aws secret already exists in k8s cluster.  If you need to update it, delete it first with 'kubectl -n heptio-ark delete secret cloud-credentials' and rerun this script"
+        echo "block-aws secret already exists in k8s cluster.  If you need to update it, delete it first with 'kubectl -n sumo-cron delete secret blockaws-secrets' and rerun this script"
     fi
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-cron.yaml"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-networkpolicy.yaml"
