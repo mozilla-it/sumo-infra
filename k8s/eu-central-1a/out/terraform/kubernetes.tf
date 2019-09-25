@@ -113,8 +113,8 @@ resource "aws_autoscaling_group" "master-eu-central-1a-masters-k8s-eu-central-1a
 resource "aws_autoscaling_group" "nodes-k8s-eu-central-1a-sumo-mozit-cloud" {
   name                 = "nodes.k8s.eu-central-1a.sumo.mozit.cloud"
   launch_configuration = "${aws_launch_configuration.nodes-k8s-eu-central-1a-sumo-mozit-cloud.id}"
-  max_size             = 12
-  min_size             = 6
+  max_size             = 8
+  min_size             = 4
   vpc_zone_identifier  = ["subnet-0af7e095ca6a919e6"]
 
   tag = {
@@ -214,8 +214,8 @@ resource "aws_key_pair" "kubernetes-k8s-eu-central-1a-sumo-mozit-cloud-3487caebf
 
 resource "aws_launch_configuration" "master-eu-central-1a-masters-k8s-eu-central-1a-sumo-mozit-cloud" {
   name_prefix                 = "master-eu-central-1a.masters.k8s.eu-central-1a.sumo.mozit.cloud-"
-  image_id                    = "ami-01f41dae26a9cdca7"
-  instance_type               = "m4.large"
+  image_id                    = "ami-0dbf54086870c8b19"
+  instance_type               = "m5.large"
   key_name                    = "${aws_key_pair.kubernetes-k8s-eu-central-1a-sumo-mozit-cloud-3487caebf6e06151c19ef85d3e2bba12.id}"
   iam_instance_profile        = "${aws_iam_instance_profile.masters-k8s-eu-central-1a-sumo-mozit-cloud.id}"
   security_groups             = ["${aws_security_group.masters-k8s-eu-central-1a-sumo-mozit-cloud.id}"]
@@ -237,8 +237,8 @@ resource "aws_launch_configuration" "master-eu-central-1a-masters-k8s-eu-central
 
 resource "aws_launch_configuration" "nodes-k8s-eu-central-1a-sumo-mozit-cloud" {
   name_prefix                 = "nodes.k8s.eu-central-1a.sumo.mozit.cloud-"
-  image_id                    = "ami-01f41dae26a9cdca7"
-  instance_type               = "m4.xlarge"
+  image_id                    = "ami-0dbf54086870c8b19"
+  instance_type               = "m5.large"
   key_name                    = "${aws_key_pair.kubernetes-k8s-eu-central-1a-sumo-mozit-cloud-3487caebf6e06151c19ef85d3e2bba12.id}"
   iam_instance_profile        = "${aws_iam_instance_profile.nodes-k8s-eu-central-1a-sumo-mozit-cloud.id}"
   security_groups             = ["${aws_security_group.nodes-k8s-eu-central-1a-sumo-mozit-cloud.id}"]
