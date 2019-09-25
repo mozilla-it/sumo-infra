@@ -238,7 +238,7 @@ resource "aws_launch_configuration" "master-eu-central-1a-masters-k8s-eu-central
 resource "aws_launch_configuration" "nodes-k8s-eu-central-1a-sumo-mozit-cloud" {
   name_prefix                 = "nodes.k8s.eu-central-1a.sumo.mozit.cloud-"
   image_id                    = "ami-0dbf54086870c8b19"
-  instance_type               = "m5.large"
+  instance_type               = "m5.xlarge"
   key_name                    = "${aws_key_pair.kubernetes-k8s-eu-central-1a-sumo-mozit-cloud-3487caebf6e06151c19ef85d3e2bba12.id}"
   iam_instance_profile        = "${aws_iam_instance_profile.nodes-k8s-eu-central-1a-sumo-mozit-cloud.id}"
   security_groups             = ["${aws_security_group.nodes-k8s-eu-central-1a-sumo-mozit-cloud.id}"]
@@ -307,6 +307,15 @@ resource "aws_security_group_rule" "all-node-to-node" {
   from_port                = 0
   to_port                  = 0
   protocol                 = "-1"
+}
+
+resource "aws_security_group_rule" "https-external-to-master-10-48-0-0--15" {
+  type              = "ingress"
+  security_group_id = "${aws_security_group.masters-k8s-eu-central-1a-sumo-mozit-cloud.id}"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["10.48.0.0/15"]
 }
 
 resource "aws_security_group_rule" "https-external-to-master-10-50-0-0--15" {
@@ -381,6 +390,15 @@ resource "aws_security_group_rule" "node-to-master-udp-1-65535" {
   protocol                 = "udp"
 }
 
+resource "aws_security_group_rule" "ssh-external-to-master-10-48-0-0--15" {
+  type              = "ingress"
+  security_group_id = "${aws_security_group.masters-k8s-eu-central-1a-sumo-mozit-cloud.id}"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["10.48.0.0/15"]
+}
+
 resource "aws_security_group_rule" "ssh-external-to-master-10-50-0-0--15" {
   type              = "ingress"
   security_group_id = "${aws_security_group.masters-k8s-eu-central-1a-sumo-mozit-cloud.id}"
@@ -388,6 +406,15 @@ resource "aws_security_group_rule" "ssh-external-to-master-10-50-0-0--15" {
   to_port           = 22
   protocol          = "tcp"
   cidr_blocks       = ["10.50.0.0/15"]
+}
+
+resource "aws_security_group_rule" "ssh-external-to-node-10-48-0-0--15" {
+  type              = "ingress"
+  security_group_id = "${aws_security_group.nodes-k8s-eu-central-1a-sumo-mozit-cloud.id}"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["10.48.0.0/15"]
 }
 
 resource "aws_security_group_rule" "ssh-external-to-node-10-50-0-0--15" {
