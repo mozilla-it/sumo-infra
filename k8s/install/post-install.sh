@@ -181,7 +181,6 @@ install_block-aws() {
         echo "block-aws secret already exists in k8s cluster.  If you need to update it, delete it first with 'kubectl -n sumo-cron delete secret blockaws-secrets' and rerun this script"
     fi
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-cron.yaml"
-    kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-networkpolicy.yaml"
     echo "Done installiing block-aws"
 }
 
