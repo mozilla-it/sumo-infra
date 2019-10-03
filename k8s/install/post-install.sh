@@ -160,6 +160,7 @@ install_cluster_autoscaler() {
 install_block-aws() {
     echo "Install block-aws"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-namespace.yaml"
+    kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-networkpolicy.yaml"
 
     # Check we have access to the secret
     if [ ! -f "${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws" ]; then
@@ -181,7 +182,6 @@ install_block-aws() {
         echo "block-aws secret already exists in k8s cluster.  If you need to update it, delete it first with 'kubectl -n sumo-cron delete secret blockaws-secrets' and rerun this script"
     fi
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-cron.yaml"
-    kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-networkpolicy.yaml"
     echo "Done installiing block-aws"
 }
 
