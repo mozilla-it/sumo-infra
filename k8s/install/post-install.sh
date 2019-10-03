@@ -160,6 +160,7 @@ install_cluster_autoscaler() {
 install_block-aws() {
     echo "Install block-aws"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-namespace.yaml"
+    kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-networkpolicy.yaml"
 
     # Check we have access to the secret
     if [ ! -f "${SECRETS_PATH}/${KOPS_SHORTNAME#k8s.}/credentials-block-aws" ]; then
