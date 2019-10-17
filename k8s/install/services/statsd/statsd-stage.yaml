@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: statsd
+  namespace: sumo-stage
+spec:
+  selector:
+    matchLabels:
+      app: statsd
+  template:
+    metadata:
+      labels:
+        app: statsd
+    spec:
+      containers:
+        - name: statsd
+          image: statsd/statsd:v0.8.5
+          command: ["/bin/sh","-c"]
+          args: ["/usr/local/bin/npm install statsd-influxdb-backend && cat /var/lib/statsd.config.js/config.js"]
+          volumeMounts:
+          - name: statsd-config
+            mountPath: /var/lib/statsd.config.js
+      volumes:
+      - name: statsd-config
+        configMap:
+          name: statsd-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: statsd-service
+  namespace: sumo-stage
+  labels:
+    app: statsd
+spec:
+  selector:
+    app: statsd
+  ports:
+    - name: statsd-tcp
+      port: 8125
+      protocol: TCP
+      targetPort: 8125
+    - name: statsd-udp
+      port: 8125
+      protocol: UDP
+      targetPort: 8125
+    - name: statsd-admin
+      port: 8126
+      protocol: TCP
+      targetPort: 8126
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: statsd-config
+  namespace: sumo-stage
+data:
+  config.js: |
+    {
+      port: 8125,
+      dumpMessages: true,
+      backends: [ "statsd-influxdb-backend" ],
+      influxdb: {
+            host: 'thestatsdhost',   // InfluxDB host. (default 127.0.0.1)
+            port: 8086,          // InfluxDB port. (default 8086)
+            version: 0.8,        // InfluxDB version. (default 0.8)
+            ssl: true,          // InfluxDB is hosted over SSL. (default false)
+            database: 'theinfluxdb',  // InfluxDB database instance. (required)
+            username: 'theinfluxuser',    // InfluxDB database username.
+            password: 'theinfluxpassword',    // InfluxDB database password.
+            flush: {
+                  enable: true       // Enable regular flush strategy. (default true)
+            },
+            proxy: {
+                  enable: false,       // Enable the proxy strategy. (default false)
+                  suffix: 'raw',       // Metric name suffix. (default 'raw')
+                  flushInterval: 1000  // Flush interval for the internal buffer.  // (default 1000)
+            },
+            includeStatsdMetrics: false, // Send internal statsd metrics to InfluxDB. (default false)
+            includeInfluxdbMetrics: false // Send internal backend metrics to InfluxDB. (default false) // Requires includeStatsdMetrics to be enabled.
+      }
+    }
