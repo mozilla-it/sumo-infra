@@ -214,8 +214,8 @@ resource "aws_key_pair" "kubernetes-k8s-us-west-2b-sumo-mozit-cloud-06875d4fa722
 
 resource "aws_launch_configuration" "master-us-west-2b-masters-k8s-us-west-2b-sumo-mozit-cloud" {
   name_prefix                 = "master-us-west-2b.masters.k8s.us-west-2b.sumo.mozit.cloud-"
-  image_id                    = "ami-0008325f0ded04d04"
-  instance_type               = "m4.large"
+  image_id                    = "ami-03735fa8e57c2db62"
+  instance_type               = "m5.large"
   key_name                    = "${aws_key_pair.kubernetes-k8s-us-west-2b-sumo-mozit-cloud-06875d4fa7222e744e44935bf1a981ab.id}"
   iam_instance_profile        = "${aws_iam_instance_profile.masters-k8s-us-west-2b-sumo-mozit-cloud.id}"
   security_groups             = ["${aws_security_group.masters-k8s-us-west-2b-sumo-mozit-cloud.id}"]
@@ -237,8 +237,8 @@ resource "aws_launch_configuration" "master-us-west-2b-masters-k8s-us-west-2b-su
 
 resource "aws_launch_configuration" "nodes-k8s-us-west-2b-sumo-mozit-cloud" {
   name_prefix                 = "nodes.k8s.us-west-2b.sumo.mozit.cloud-"
-  image_id                    = "ami-0008325f0ded04d04"
-  instance_type               = "m4.xlarge"
+  image_id                    = "ami-03735fa8e57c2db62"
+  instance_type               = "m5.xlarge"
   key_name                    = "${aws_key_pair.kubernetes-k8s-us-west-2b-sumo-mozit-cloud-06875d4fa7222e744e44935bf1a981ab.id}"
   iam_instance_profile        = "${aws_iam_instance_profile.nodes-k8s-us-west-2b-sumo-mozit-cloud.id}"
   security_groups             = ["${aws_security_group.nodes-k8s-us-west-2b-sumo-mozit-cloud.id}"]
@@ -318,6 +318,15 @@ resource "aws_security_group_rule" "https-external-to-master-10-48-0-0--15" {
   cidr_blocks       = ["10.48.0.0/15"]
 }
 
+resource "aws_security_group_rule" "https-external-to-master-10-50-0-0--15" {
+  type              = "ingress"
+  security_group_id = "${aws_security_group.masters-k8s-us-west-2b-sumo-mozit-cloud.id}"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["10.50.0.0/15"]
+}
+
 resource "aws_security_group_rule" "master-egress" {
   type              = "egress"
   security_group_id = "${aws_security_group.masters-k8s-us-west-2b-sumo-mozit-cloud.id}"
@@ -390,6 +399,15 @@ resource "aws_security_group_rule" "ssh-external-to-master-10-48-0-0--15" {
   cidr_blocks       = ["10.48.0.0/15"]
 }
 
+resource "aws_security_group_rule" "ssh-external-to-master-10-50-0-0--15" {
+  type              = "ingress"
+  security_group_id = "${aws_security_group.masters-k8s-us-west-2b-sumo-mozit-cloud.id}"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["10.50.0.0/15"]
+}
+
 resource "aws_security_group_rule" "ssh-external-to-node-10-48-0-0--15" {
   type              = "ingress"
   security_group_id = "${aws_security_group.nodes-k8s-us-west-2b-sumo-mozit-cloud.id}"
@@ -397,6 +415,15 @@ resource "aws_security_group_rule" "ssh-external-to-node-10-48-0-0--15" {
   to_port           = 22
   protocol          = "tcp"
   cidr_blocks       = ["10.48.0.0/15"]
+}
+
+resource "aws_security_group_rule" "ssh-external-to-node-10-50-0-0--15" {
+  type              = "ingress"
+  security_group_id = "${aws_security_group.nodes-k8s-us-west-2b-sumo-mozit-cloud.id}"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["10.50.0.0/15"]
 }
 
 terraform = {
