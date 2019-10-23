@@ -162,6 +162,14 @@ install_cluster_autoscaler() {
     echo "Done installing cluster autoscaler"
 }
 
+install_kubecost() {
+    echo "Install kubecost"
+    kubectl apply -f "${KOPS_INSTALLER}/services/kubecost/kubecost-namespace.yaml"
+    kubectl apply -n kubecost -f "${KOPS_INSTALLER}/services/kubecost/kubecost.yaml"
+    echo "Run 'kubectl -n kubecost port-forward service/kubecost-cost-analyzer 9090:9090' to connect to kubecost"
+    echo "Done installiing kubecost"
+}
+
 install_block-aws() {
     echo "Install block-aws"
     kubectl apply -f "${KOPS_INSTALLER}/services/block-aws/block-aws-namespace.yaml"
@@ -306,6 +314,7 @@ usage() {
     echo "  fluentd                 install fluentd"
     echo "  elb_service             install ELB service"
     echo "  yar                     install yar service"
+    echo "  kubecost                install kubecost for cost analysis"
     echo "  telegraf                install telegraf"
     echo "  all                     install all of the above components"
 }
@@ -334,6 +343,8 @@ if [ $# -eq 1 ]; then
             install_elb_service;;
         yar)
             install_yar;;
+        kubecost)
+            install_kubecost;;
         telegraf)
             install_telegraf;;
         all)
