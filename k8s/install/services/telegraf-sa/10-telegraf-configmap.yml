@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    k8s-app: telegraf-sa
+  name: telegraf-sa
+  namespace: monitoring
+data:
+  cluster_name: sumo-eu-central-1a
+  telegraf.conf: |
+    [global_tags]
+      product = "${CLUSTER_NAME}"
+      environment = "production"
+    [agent]
+      hostname = "$HOSTNAME"
+
+    # INPUTS
+    #
+    # Kube-state-metrics
+    [[inputs.prometheus]]
+      urls = ["http://kube-state-metrics.monitoring.svc.cluster.local:8080/metrics"]
+
+    # OUTPUTS
+    [[outputs.influxdb]]
+      urls = ["${INFLUX_URL}"]
+      database = "${INFLUX_DB}"
+      timeout  = "15s"
+      username = "${INFLUX_USER}"
+      password = "${INFLUX_PW}"

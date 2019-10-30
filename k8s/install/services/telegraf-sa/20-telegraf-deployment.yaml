@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: telegraf-sa
+  name: telegraf-sa
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegraf-sa
+  template:
+    metadata:
+      labels:
+        app: telegraf-sa
+    spec:
+      containers:
+      - image: telegraf:1.12.3-alpine
+        name: telegraf
+        env:
+        - name: INFLUX_USER
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-secrets
+              key: user
+        - name: INFLUX_DB
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-secrets
+              key: db
+        - name: INFLUX_PW
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-secrets
+              key: pw
+        - name: INFLUX_URL
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-secrets
+              key: url
+        - name: CLUSTER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: telegraf-sa
+              key: cluster_name
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        volumeMounts:
+          - name: telegraf
+            mountPath: /etc/telegraf
+            readOnly: true
+      volumes:
+      - name: telegraf
+        configMap:
+          name: telegraf-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
