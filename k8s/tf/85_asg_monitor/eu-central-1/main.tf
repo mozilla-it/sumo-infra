@@ -14,7 +14,7 @@ terraform {
 variable "slack_webhook_url" {}
 
 module "monitor_asgs" {
-  source            = "github.com/mozilla-it/asg-alert?ref=tags/1.0"
+  source            = "github.com/mozilla-it/asg-alert?ref=1.0"
   slack_webhook_url = "${var.slack_webhook_url}"
   slack_channel     = "it-sre-bot"
   slack_username    = "AWS"
