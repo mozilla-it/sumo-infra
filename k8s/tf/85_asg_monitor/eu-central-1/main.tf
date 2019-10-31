@@ -14,9 +14,13 @@ terraform {
 variable "slack_webhook_url" {}
 
 module "monitor_asgs" {
-  source = "github.com/mozilla-it/asg-alert?ref=tags/1.0"
+  source            = "github.com/mozilla-it/asg-alert?ref=tags/1.0"
   slack_webhook_url = "${var.slack_webhook_url}"
   slack_channel     = "it-sre-bot"
   slack_username    = "AWS"
-  asgs              = ["nodes.k8s.eu-central-1a.sumo.mozit.cloud", "master-eu-central-1a.masters.k8s.eu-central-1a.sumo.mozit.cloud"]
+
+  asgs = [
+    "nodes.k8s.eu-central-1a.sumo.mozit.cloud",
+    "master-eu-central-1a.masters.k8s.eu-central-1a.sumo.mozit.cloud",
+  ]
 }
