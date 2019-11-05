@@ -44,6 +44,8 @@ spec:
             configMapKeyRef:
               name: telegraf-sa
               key: cluster_name
+        - name: ENV
+          value: {{ ENV }}
         resources:
           limits:
             cpu: 100m
