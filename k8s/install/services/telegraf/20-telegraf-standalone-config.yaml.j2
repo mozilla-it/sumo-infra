@@ -6,11 +6,13 @@ metadata:
   name: telegraf-sa
   namespace: monitoring
 data:
-  cluster_name: sumo-eu-central-1a
+  cluster_name: {{ KOPS_CLUSTER_NAME }}
   telegraf.conf: |
     [global_tags]
+      account = "mozilla-sumo"
       product = "${CLUSTER_NAME}"
-      environment = "production"
+      k8s-cluster = "${CLUSTER_NAME}"
+      environment = "${ENV}"
     [agent]
       hostname = "$HOSTNAME"
 
