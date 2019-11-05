@@ -2,20 +2,40 @@ apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   labels:
-    k8s-app: telegraf
-  name: telegraf
+      app: telegraf-daemonset
+  name: telegraf-daemonset
   namespace: monitoring
 spec:
   selector:
     matchLabels:
-      name: telegraf
+      name: telegraf-daemonset
   template:
     metadata:
       labels:
-        name: telegraf
+        name: telegraf-daemonset
     spec:
       containers:
-      - env:
+      - image: telegraf:1.12.3-alpine
+        imagePullPolicy: IfNotPresent
+        name: telegraf-daemonset
+        ports:
+        - containerPort: 8125
+          protocol: UDP
+        volumeMounts:
+        - mountPath: /rootfs/sys
+          name: sys
+          readOnly: true
+        - mountPath: /rootfs/proc
+          name: proc
+          readOnly: true
+        - mountPath: /var/run/docker.sock
+          name: docker-socket
+        - mountPath: /var/run/utmp
+          name: utmp
+          readOnly: true
+        - mountPath: /etc/telegraf
+          name: config
+        env:
         - name: INFLUX_USER
           valueFrom:
             secretKeyRef:
@@ -39,7 +59,7 @@ spec:
         - name: CLUSTER_NAME
           valueFrom:
             configMapKeyRef:
-              name: telegraf
+              name: telegraf-daemonset
               key: cluster_name
         - name: VER
           value: "1.1"
@@ -56,32 +76,18 @@ spec:
           value: /rootfs/proc
         - name: HOST_SYS
           value: /rootfs/sys
-        image: telegraf:1.12.3-alpine
-        imagePullPolicy: IfNotPresent
-        name: telegraf
+        - name: ENV
+          value: {{ ENV }}
         resources:
           limits:
             cpu: 300m
-            memory: 500Mi
+            memory: 512Mi
           requests:
-            cpu: 150m
-            memory: 256Mi
-        volumeMounts:
-        - mountPath: /rootfs/sys
-          name: sys
-          readOnly: true
-        - mountPath: /rootfs/proc
-          name: proc
-          readOnly: true
-        - mountPath: /var/run/docker.sock
-          name: docker-socket
-        - mountPath: /var/run/utmp
-          name: utmp
-          readOnly: true
-        - mountPath: /etc/telegraf
-          name: config
-      serviceAccount: telegraf
-      serviceAccountName: telegraf
+            cpu: 100m
+            memory: 128Mi
+      serviceAccount: telegraf-daemonset
+      serviceAccountName: telegraf-daemonset
+      terminationGracePeriodSeconds: 30
       volumes:
       - hostPath:
           path: /sys
@@ -101,5 +107,5 @@ spec:
         name: utmp
       - configMap:
           defaultMode: 420
-          name: telegraf
+          name: telegraf-daemonset
         name: config
