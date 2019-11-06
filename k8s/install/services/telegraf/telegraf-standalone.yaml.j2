@@ -12,7 +12,7 @@ data:
       account = "mozilla-sumo"
       product = "${CLUSTER_NAME}"
       k8s-cluster = "${CLUSTER_NAME}"
-      environment = "${ENV}"
+      environment = "${ENVIRONMENT}"
     [agent]
       hostname = "$HOSTNAME"
 
@@ -77,7 +77,7 @@ spec:
               name: telegraf-sa
               key: cluster_name
         - name: ENV
-          value: {{ ENV }}
+          value: {{ ENVIRONMENT }}
         resources:
           limits:
             cpu: 100m

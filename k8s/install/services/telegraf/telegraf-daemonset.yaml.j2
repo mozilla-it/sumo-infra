@@ -98,7 +98,7 @@ data:
       accout = "mozilla-sumo"
       product = "${CLUSTER_NAME}"
       k8s-cluster = "${CLUSTER_NAME}"
-      environment = "${ENV}"
+      environment = "${ENVIRONMENT}"
       app = "sumo"
     [agent]
       hostname = "$HOSTNAME"
@@ -306,7 +306,7 @@ spec:
         - name: HOST_SYS
           value: /rootfs/sys
         - name: ENV
-          value: {{ ENV }}
+          value: {{ ENVIRONMENT }}
         resources:
           limits:
             cpu: 300m
