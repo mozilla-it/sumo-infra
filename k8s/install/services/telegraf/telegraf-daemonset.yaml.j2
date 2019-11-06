@@ -129,8 +129,11 @@ data:
       insecure_skip_verify = true
       interval = "60s"
 
-    # Input: Statsd Server
+    # Input: Statsd Server for PROD
     [[inputs.statsd]]
+      [inputs.statsd.tags]
+        environment = "prod"
+
       ## Protocol, must be "tcp", "udp4", "udp6" or "udp" (default=udp)
       protocol = "udp"
 
@@ -194,6 +197,27 @@ data:
       ## Maximum socket buffer size in bytes, once the buffer fills up, metrics
       ## will start dropping.  Defaults to the OS default.
       # read_buffer_size = 65535
+
+    # Input: Statsd Server for STAGE
+    [[inputs.statsd]]
+      [inputs.statsd.tags]
+        environment = "dev"
+
+      protocol = "udp"
+      service_address = ":8126"
+
+      max_tcp_connections = 250
+      tcp_keep_alive = false
+      delete_gauges = true
+      delete_counters = true
+      delete_sets = true
+      delete_timings = true
+
+      metric_separator = "_"
+      parse_data_dog_tags = false
+      datadog_extensions = true
+      allowed_pending_messages = 10000
+      percentile_limit = 1000
 
     # OUTPUTS
     [[outputs.influxdb]]
