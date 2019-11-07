@@ -35,7 +35,7 @@ variable "mysql_engine_version" {
 
   default = {
     # https://github.com/mozilla/kitsune/issues/2937
-    mysql = "5.6.34"
+    mysql = "5.6.44"
   }
 }
 
@@ -71,6 +71,8 @@ variable "vpc_id" {}
 
 variable "vpc_cidr" {}
 
-variable "it_vpn_cidr" {}
+variable "it_vpn_cidr" {
+  type = "list"
+}
 
 variable "db_subnet_group_name" {}

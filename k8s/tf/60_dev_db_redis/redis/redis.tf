@@ -14,6 +14,6 @@ resource "aws_elasticache_replication_group" "sumo-redis-rg" {
     "Stack"       = "SUMO-${var.redis_name}"
     "Terraform"   = "true"
     "Project"     = "sumo"
-    "Environment" = "dev"
+    "Environment" = "${var.redis_name}"
   }
 }
