@@ -19,6 +19,10 @@ Application repo [kitsune](https://github.com/mozilla/kitsune)
 
 Infrastructure repo [sumo-infra](https://github.com/mozilla-it/sumo-infra)
 
+Secrets repo [sumo-private](https://github.com/mozilla-it/sumo-private/) which includes the yar bot that blocks malicious IPs
+
+Block-aws repo [block-aws](https://github.com/mozilla-it/block-aws/)
+
 ## Monitoring
 [New Relic APM](https://rpm.newrelic.com/accounts/2239138/applications/153639011)
 
@@ -42,4 +46,4 @@ AWS account mozilla-sumo 095732026120
 | Status Dashboard | [Mozilla Websites StatusPage](https://mozilla.statuspage.io/) | [Mozilla Support StatusPage](https://manage.statuspage.io/pages/xy7xhsxcp3zc/components/dyyshh18k1g7/edit) | N/A | 
 | Logging | [Papertrail SUMO](https://my.papertrailapp.com/groups/13629141/events) | N/A | N/A |
 | Pager Duty | [PagerDuty support.mozilla.org-itsre Service](https://mozilla.pagerduty.com/services/PN78MXK/settings) | [PagerDuty support.mozilla.org-itsre Escalation Policy](https://mozilla.pagerduty.com/escalation_policies#PVGMF9K) | N/A |
-| Backups | [GitHub Kitsune repo](https://github.com/mozilla/kitsune), [GitHub sumo-infra repo](https://github.com/mozilla-it/sumo-infra), [GitHub sumo-private repo](https://github.com/mozilla-it/sumo-private/) | Link to RDS / S3 / AWS backups configuration | [RDS prod snapshots](https://us-west-2.console.aws.amazon.com/rds/home?region=us-west-2#db-snapshots:), [RDS dev snapshots](https://eu-central-1.console.aws.amazon.com/rds/home?region=eu-central-1#db-snapshots:) |
+| Backups | [GitHub Kitsune repo](https://github.com/mozilla/kitsune), [GitHub sumo-infra repo](https://github.com/mozilla-it/sumo-infra), [GitHub sumo-private repo](https://github.com/mozilla-it/sumo-private/), [GitHub block-aws repo](https://github.com/mozilla-it/block-aws/) | Link to RDS / S3 / AWS backups configuration | [RDS prod snapshots](https://us-west-2.console.aws.amazon.com/rds/home?region=us-west-2#db-snapshots:), [RDS dev snapshots](https://eu-central-1.console.aws.amazon.com/rds/home?region=eu-central-1#db-snapshots:) |
