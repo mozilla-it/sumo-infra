@@ -29,6 +29,16 @@ resource "aws_s3_bucket" "logs" {
 
 }
 
+module "sumo-user-media-test-bucket" {
+  bucket_name       = "mozit-sumo-user-media-test"
+  user_media_name   = "static-s3-user-test"
+  iam_policy_name   = "SUMOUserMediaTest"
+  logging_bucket_id = "${aws_s3_bucket.logs.id}"
+  logging_prefix    = "test-logs/"
+  region            = "${var.region}"
+  source            = "./user_media_s3"
+}
+
 module "sumo-user-media-dev-bucket" {
   bucket_name       = "mozit-sumo-user-media-dev"
   user_media_name   = "static-s3-user-dev"
@@ -74,6 +84,15 @@ resource "aws_s3_bucket" "static-media-logs" {
       days = 14
     }
   }
+}
+
+module "sumo-static-media-test-bucket" {
+  bucket_name       = "mozit-sumo-test-media"
+  iam_policy_name   = "SUMOStaticMediaTest"
+  logging_bucket_id = "${aws_s3_bucket.static-media-logs.id}"
+  logging_prefix    = "test-logs/"
+  region            = "${var.region}"
+  source            = "./static_media_s3"
 }
 
 module "sumo-static-media-stage-bucket" {
