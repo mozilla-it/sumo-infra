@@ -36,10 +36,10 @@ AWS account mozilla-sumo 095732026120
 | Service | Front End | Back End | Database |
 | --- | --- | --- | --- |
 | Synthetic Monitoring | [Synthetics](https://synthetics.newrelic.com/accounts/2239138/monitors/71c8c6de-65f0-44fb-bbe5-f6ddb70885f1), [Synthetics - Search](https://synthetics.newrelic.com/accounts/2239138/monitors/ea6bab9e-f423-4012-b292-9c8dd04e1df0), [SUMO](https://synthetics.newrelic.com/accounts/2239138/monitors/3a8a4356-ba8e-46ef-b9f6-2fcadcc5e2bf) | [SUMO Prod TP](https://synthetics.newrelic.com/accounts/2239138/monitors/6d16feba-9acc-4d65-96b3-62d30c2c0db7), [SUMO Prod Oregon A](https://synthetics.newrelic.com/accounts/2239138/monitors/3dd4fcc6-9ad8-4dbc-b949-2639f6cb113d), [SUMO Prod Oregon B](https://synthetics.newrelic.com/accounts/2239138/monitors/c06b3b01-e556-4099-89c6-f4b3c1e87181), [SUMO Prod Frankfurt](https://synthetics.newrelic.com/accounts/2239138/monitors/098b84d4-b344-4b74-b628-727740be554d) | N/A |
-| Application Monitoring	| Link to New Relic APM | Link to New Relic APM | Link to Influx dashboard |
-| Infrastructure Monitoring | Link to Influx Dashboard | | |
-| Cert Monitoring | Link to Influx and/or NR Synthetics	Link to Influx and/or NR Synthetics	Link to Influx and/or NR Synthetics | N/A | N/A |
-| Status Dashboard | Link to statuspage.io | N/A | N/A | 
-| Logging | Link to papertrail | Link to papertrail | N/A |
-| Pager Duty | Link to PD setup | | |
-| Backups | Link to github? | Link to RDS / S3 / AWS backups configuration | |
+| Application Monitoring	| [SUMO Prod Oregon A](https://rpm.newrelic.com/accounts/2239138/applications/153639010), [SUMO Prod Oregon B](https://rpm.newrelic.com/accounts/2239138/applications/153639233), [SUMO Prod Frankfurt](https://rpm.newrelic.com/accounts/2239138/applications/153284218) | N/A | [InfluxDB SUMO Dashboard](https://biff-5adb6e55.influxcloud.net/d/xQmdTPAZk/sumo?orgId=1&from=now-1h&to=now&var-env=prod&var-region=All) |
+| Infrastructure Monitoring | [InfluxDB SUMO Dashboard](https://biff-5adb6e55.influxcloud.net/d/xQmdTPAZk/sumo?orgId=1&from=now-1h&to=now&var-env=prod&var-region=All) | | |
+| Cert Monitoring | [InfluxDB Cert Monitoring](https://biff-5adb6e55.influxcloud.net/d/uy9KMJGWzsd/ssl-certs?orgId=1) | N/A | N/A |
+| Status Dashboard | [Mozilla Websites StatusPage](https://mozilla.statuspage.io/) | [Mozilla Support StatusPage](https://manage.statuspage.io/pages/xy7xhsxcp3zc/components/dyyshh18k1g7/edit) | N/A | 
+| Logging | [Papertrail SUMO](https://my.papertrailapp.com/groups/13629141/events) | N/A | N/A |
+| Pager Duty | [PagerDuty support.mozilla.org-itsre Service](https://mozilla.pagerduty.com/services/PN78MXK/settings) | [PagerDuty support.mozilla.org-itsre Escalation Policy](https://mozilla.pagerduty.com/escalation_policies#PVGMF9K) | N/A |
+| Backups | [GitHub Kitsune repo](https://github.com/mozilla/kitsune), [GitHub sumo-infra repo](https://github.com/mozilla-it/sumo-infra), [GitHub sumo-private repo](https://github.com/mozilla-it/sumo-private/) | Link to RDS / S3 / AWS backups configuration | [RDS prod snapshots](https://us-west-2.console.aws.amazon.com/rds/home?region=us-west-2#db-snapshots:), [RDS dev snapshots](https://eu-central-1.console.aws.amazon.com/rds/home?region=eu-central-1#db-snapshots:) |
