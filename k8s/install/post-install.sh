@@ -265,6 +265,12 @@ install_telegraf() {
     echo "Namespace: sumo-${ENVIRONMENT}"
     j2 "${SECRETS_PATH}/services/telegraf/telegraf-secrets.yaml.j2" | kubectl apply -f -
     j2 "${KOPS_INSTALLER}/services/telegraf/telegraf.yaml.j2" | kubectl apply -f -
+
+    ### New Telegraf architecture. This whole function will be cleaned up
+    kubectl create namespace monitoring
+    kubectl apply -f "${KOPS_INSTALLER}/services/kube-state-metrics/kube-state-metrics.yaml"
+    j2 "${KOPS_INSTALLER}/services/telegraf/telegraf-standalone.yaml.j2" | kubectl apply -f -
+
     echo "Done installing Telegraf"
 }
 

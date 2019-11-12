@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegraf
+  namespace: monitoring
+  labels:
+    app: telegraf
+data:
+  cluster_name: {{ KOPS_CLUSTER_NAME }}
+  telegraf.conf: |
+    [global_tags]
+      product = "${CLUSTER_NAME}"
+      environment = "production"
+      account = "mozilla-sumo"
+
+    [agent]
+      hostname = "$HOSTNAME"
+      interval = "60s"
+
+    # Kube-state-metrics
+    [[inputs.prometheus]]
+      namedrop = ["kube_*_created", "kube_*_metadate_resource_version", "kube_storageclass*"]
+      urls = ["http://kube-state-metrics.monitoring.svc.cluster.local:8080/metrics"]
+
+    # OUTPUTS
+    [[outputs.influxdb-sre-kube]]
+      urls = ["${INFLUX_URL}"]
+      database = "${INFLUX_DB}"
+      timeout  = "15s"
+      username = "${INFLUX_USER}"
+      password = "${INFLUX_PW}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: telegraf-standalone
+  name: telegraf-standalone
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegraf-standalone
+  template:
+    metadata:
+      labels:
+        app: telegraf-standalone
+    spec:
+      containers:
+      - image: telegraf:1.12.4-alpine
+        name: telegraf
+        env:
+        - name: INFLUX_USER
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-kube
+              key: user
+        - name: INFLUX_DB
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-kube
+              key: db
+        - name: INFLUX_PW
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-kube
+              key: pw
+        - name: INFLUX_URL
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-kube
+              key: url
+        - name: CLUSTER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: telegraf-standalone
+              key: cluster_name
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        volumeMounts:
+          - name: telegraf
+            mountPath: /etc/telegraf
+            readOnly: true
+      volumes:
+      - name: telegraf
+        configMap:
+          name: telegraf-standalone
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
