@@ -25,7 +25,7 @@ data:
       urls = ["http://kube-state-metrics.monitoring.svc.cluster.local:8080/metrics"]
 
     # OUTPUTS
-    [[outputs.influxdb-sre-kube]]
+    [[outputs.influxdb-sre]]
       urls = ["${INFLUX_URL}"]
       database = "${INFLUX_DB}"
       timeout  = "15s"
