@@ -267,9 +267,17 @@ install_telegraf() {
     j2 "${KOPS_INSTALLER}/services/telegraf/telegraf.yaml.j2" | kubectl apply -f -
 
     ### New Telegraf architecture. This whole function will be cleaned up
-    kubectl create namespace monitoring
+    kubectl get namespace monitoring > /dev/null
+    if [ $? -ne 0 ]; then
+        kubectl create namespace monitoring
+        if [ $? -ne 0 ]; then
+            echo "Error: could not create new namespace 'monitoring'"
+            exit 7
+        fi
+    fi
     kubectl apply -f "${KOPS_INSTALLER}/services/kube-state-metrics/kube-state-metrics.yaml"
     j2 "${KOPS_INSTALLER}/services/telegraf/telegraf-standalone.yaml.j2" | kubectl apply -f -
+    j2 "${SECRETS_PATH}/services/telegraf/telegraf-secrets-kube.yaml.j2" | kubectl apply -f -
 
     echo "Done installing Telegraf"
 }
