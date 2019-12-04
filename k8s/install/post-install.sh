@@ -17,7 +17,6 @@ die() {
 }
 
 if [ "${KOPS_CLUSTER_NAME}" != "$(kubectl config current-context)" ]; then
-    echo ${KOPS_CLUSTER_NAME}
     echo "Your kubeconfig is pointing to a different cluster than the environment claims, bailing"
     exit 1
 fi
