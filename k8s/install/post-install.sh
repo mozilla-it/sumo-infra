@@ -17,6 +17,7 @@ die() {
 }
 
 if [ "${KOPS_CLUSTER_NAME}" != "$(kubectl config current-context)" ]; then
+    echo ${KOPS_CLUSTER_NAME}
     echo "Your kubeconfig is pointing to a different cluster than the environment claims, bailing"
     exit 1
 fi
@@ -267,7 +268,8 @@ install_telegraf() {
     j2 "${KOPS_INSTALLER}/services/telegraf/telegraf.yaml.j2" | kubectl apply -f -
 
     ### New Telegraf architecture. This whole function will be cleaned up
-    kubectl get namespace monitoring > /dev/null
+    set +e
+    kubectl get namespace monitoring 1>&2
     if [ $? -ne 0 ]; then
         kubectl create namespace monitoring
         if [ $? -ne 0 ]; then
@@ -275,6 +277,7 @@ install_telegraf() {
             exit 7
         fi
     fi
+    set -e
     kubectl apply -f "${KOPS_INSTALLER}/services/kube-state-metrics/kube-state-metrics.yaml"
     j2 "${KOPS_INSTALLER}/services/telegraf/telegraf-standalone.yaml.j2" | kubectl apply -f -
     j2 "${SECRETS_PATH}/services/telegraf/telegraf-secrets-kube.yaml.j2" | kubectl apply -f -
@@ -285,8 +288,9 @@ install_telegraf() {
 install_namespaces() {
     echo "Installing namespaces"
 
+    set +e
     # Ensure the supporting ark terraform has already been applied
-    kubectl get namespace sumo_dev > /dev/null
+    kubectl get namespace sumo_dev 1>&2
     if [ $? -ne 0 ]; then
         kubectl create namespace sumo_dev
         if [ $? -ne 0 ]; then
@@ -294,6 +298,7 @@ install_namespaces() {
             exit 7
         fi
     fi
+    set -e
 }
 
 install_elb_service() {
