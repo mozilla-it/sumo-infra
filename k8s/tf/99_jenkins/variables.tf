@@ -66,14 +66,21 @@ variable "static_s3_prefix" {
   default = "mozit-sumo*-media*"
 }
 
-variable "nginx_htpasswd" {}
+variable "nginx_htpasswd" {
+}
 
-variable "jenkins_backup_dms" {}
+variable "jenkins_backup_dms" {
+}
 
-variable "papertrail_host" {}
+variable "papertrail_host" {
+}
 
-variable "papertrail_port" {}
+variable "papertrail_port" {
+}
 
-variable "slack_token" {}
+variable "slack_token" {
+}
 
-variable "gh_deploy_key" {}
+variable "gh_deploy_key" {
+}
+

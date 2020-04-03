@@ -31,13 +31,13 @@ variable "environment" {
 }
 
 variable "prod_public_subnets" {
-  type    = "list"
+  type    = list(string)
   default = ["subnet-09e56bef33ab1bcb4", "subnet-08d07fc06f7710c5e"]
 }
 
 # Tags to apply across the VPC resources
 variable "base_tags" {
-  type = "map"
+  type = map(string)
 
   default = {
     "method"      = "terraform"
@@ -48,3 +48,4 @@ variable "base_tags" {
     "source"      = "gh:mozilla-it/sumo-infra:mozilla/kitsune"
   }
 }
+

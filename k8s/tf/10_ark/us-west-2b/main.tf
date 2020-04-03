@@ -6,13 +6,14 @@ terraform {
   }
 }
 
-provider aws {
-  region = "${var.region}"
+provider "aws" {
+  region = var.region
 }
 
 module "ark_bucket" {
   source       = "github.com/mozilla-it/tf-ark-backups?ref=master"
-  region       = "${var.region}"
+  region       = var.region
   bucket_name  = "cluster-backups"
   cluster_name = "us-west-2b"
 }
+

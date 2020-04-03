@@ -4,23 +4,23 @@ resource "aws_key_pair" "sumo" {
   }
 
   key_name   = "sumo"
-  public_key = "${var.ssh_pubkey}"
+  public_key = var.ssh_pubkey
 }
 
 # Create a new load balancer
 resource "aws_lb" "ci" {
   name               = "${var.project}-${var.service}-lb"
-  subnets            = ["${data.aws_subnet_ids.subnet_id.ids}"]
-  security_groups    = ["${aws_security_group.lb.id}"]
+  subnets            = data.aws_subnet_ids.subnet_id.ids
+  security_groups    = [aws_security_group.lb.id]
   load_balancer_type = "application"
   internal           = true
 
-  tags = "${var.base_tags}"
+  tags = var.base_tags
 }
 
 resource "aws_lb_target_group" "ci-http" {
   name     = "${var.project}-${var.service}-tg-http"
-  vpc_id   = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
+  vpc_id   = data.terraform_remote_state.sumo-prod-us-west-2.outputs.vpc_id
   port     = 80
   protocol = "HTTP"
 
@@ -35,11 +35,11 @@ resource "aws_lb_target_group" "ci-http" {
     matcher             = "200,401"
   }
 
-  tags = "${var.base_tags}"
+  tags = var.base_tags
 }
 
 resource "aws_lb_listener" "ci-http" {
-  load_balancer_arn = "${aws_lb.ci.arn}"
+  load_balancer_arn = aws_lb.ci.arn
   port              = "80"
   protocol          = "HTTP"
 
@@ -55,15 +55,15 @@ resource "aws_lb_listener" "ci-http" {
 }
 
 resource "aws_lb_listener" "ci-https" {
-  load_balancer_arn = "${aws_lb.ci.arn}"
+  load_balancer_arn = aws_lb.ci.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "${data.aws_acm_certificate.ci.arn}"
+  certificate_arn   = data.aws_acm_certificate.ci.arn
 
   default_action {
     type             = "forward"
-    target_group_arn = "${aws_lb_target_group.ci-http.arn}"
+    target_group_arn = aws_lb_target_group.ci-http.arn
   }
 }
 
@@ -71,7 +71,7 @@ resource "aws_security_group" "lb" {
   name        = "${var.project}-${var.service}-lb-sg"
   description = "Allow inbound traffic from LB to CI"
 
-  vpc_id = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
+  vpc_id = data.terraform_remote_state.sumo-prod-us-west-2.outputs.vpc_id
 
   ingress {
     from_port   = 80
@@ -94,51 +94,56 @@ resource "aws_security_group" "lb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = "${var.base_tags}"
+  tags = var.base_tags
 }
 
 resource "aws_security_group" "ci" {
   name        = "${var.project}-${var.service}-sg"
   description = "Allow inbound traffic to CI"
 
-  vpc_id = "${data.terraform_remote_state.sumo-prod-us-west-2.vpc_id}"
+  vpc_id = data.terraform_remote_state.sumo-prod-us-west-2.outputs.vpc_id
 
-  tags = "${merge(map("Name", "${var.project}-${var.service}-sg"), var.base_tags)}"
+  tags = merge(
+    {
+      "Name" = "${var.project}-${var.service}-sg"
+    },
+    var.base_tags,
+  )
 }
 
 resource "aws_security_group_rule" "ci-ssh" {
   type              = "ingress"
   description       = "SSH via VPN"
-  security_group_id = "${aws_security_group.ci.id}"
+  security_group_id = aws_security_group.ci.id
   from_port         = "22"
   to_port           = "22"
   protocol          = "TCP"
-  cidr_blocks       = ["${var.mdc1_cidr}", "${var.mdc2_cidr}"]
+  cidr_blocks       = [var.mdc1_cidr, var.mdc2_cidr]
 }
 
 resource "aws_security_group_rule" "ci-http" {
   type                     = "ingress"
   description              = "HTTP via VPN"
-  security_group_id        = "${aws_security_group.ci.id}"
+  security_group_id        = aws_security_group.ci.id
   from_port                = "80"
   to_port                  = "80"
   protocol                 = "TCP"
-  source_security_group_id = "${aws_security_group.lb.id}"
+  source_security_group_id = aws_security_group.lb.id
 }
 
 resource "aws_security_group_rule" "ci-https" {
   type                     = "ingress"
   description              = "HTTPS via VPN"
-  security_group_id        = "${aws_security_group.ci.id}"
+  security_group_id        = aws_security_group.ci.id
   from_port                = "443"
   to_port                  = "443"
   protocol                 = "TCP"
-  source_security_group_id = "${aws_security_group.lb.id}"
+  source_security_group_id = aws_security_group.lb.id
 }
 
 resource "aws_security_group_rule" "ci-egress" {
   type              = "egress"
-  security_group_id = "${aws_security_group.ci.id}"
+  security_group_id = aws_security_group.ci.id
   from_port         = "0"
   to_port           = "0"
   protocol          = "-1"
@@ -146,11 +151,11 @@ resource "aws_security_group_rule" "ci-egress" {
 }
 
 resource "aws_autoscaling_group" "ci" {
-  vpc_zone_identifier = ["${data.aws_subnet_ids.subnet_id.ids}"]
+  vpc_zone_identifier = data.aws_subnet_ids.subnet_id.ids
 
   # This is on purpose, when the LC changes, will force creation of a new ASG
   name                      = "${var.project}-${var.service} - ${aws_launch_configuration.ci.name}"
-  target_group_arns         = ["${aws_lb_target_group.ci-http.arn}"]
+  target_group_arns         = [aws_lb_target_group.ci-http.arn]
   min_elb_capacity          = 1
   wait_for_capacity_timeout = "0"
 
@@ -166,7 +171,7 @@ resource "aws_autoscaling_group" "ci" {
   # Less than ideal but the initial sync takes such a long time
   health_check_type    = "EC2"
   force_delete         = true
-  launch_configuration = "${aws_launch_configuration.ci.name}"
+  launch_configuration = aws_launch_configuration.ci.name
 
   tag {
     key                 = "Name"
@@ -187,43 +192,43 @@ resource "aws_autoscaling_group" "ci" {
 }
 
 data "template_file" "user_data" {
-  template = "${file("${path.module}/templates/user_data.tpl")}"
+  template = file("${path.module}/templates/user_data.tpl")
 
   vars = {
-    backup_dir          = "${var.backup_dir}"
-    backup_bucket       = "${aws_s3_bucket.backup.id}"
-    nginx_htpasswd      = "${var.nginx_htpasswd}"
-    jenkins_backup_dms  = "${var.jenkins_backup_dms}"
-    papertrail_host     = "${var.papertrail_host}"
-    papertrail_port     = "${var.papertrail_port}"
-    slack_token         = "${var.slack_token}"
-    parameter_root_name = "${var.parameter_root_name}"
+    backup_dir          = var.backup_dir
+    backup_bucket       = aws_s3_bucket.backup.id
+    nginx_htpasswd      = var.nginx_htpasswd
+    jenkins_backup_dms  = var.jenkins_backup_dms
+    papertrail_host     = var.papertrail_host
+    papertrail_port     = var.papertrail_port
+    slack_token         = var.slack_token
+    parameter_root_name = var.parameter_root_name
   }
 }
 
 resource "aws_launch_configuration" "ci" {
   name_prefix = "${var.project}-${var.service}-"
 
-  image_id = "${data.aws_ami.ubuntu.id}"
+  image_id = data.aws_ami.ubuntu.id
 
-  instance_type               = "${var.instance_type}"
-  key_name                    = "${aws_key_pair.sumo.key_name}"
+  instance_type               = var.instance_type
+  key_name                    = aws_key_pair.sumo.key_name
   associate_public_ip_address = false
-  user_data                   = "${data.template_file.user_data.rendered}"
+  user_data                   = data.template_file.user_data.rendered
 
   lifecycle {
     create_before_destroy = true
   }
 
   security_groups = [
-    "${aws_security_group.ci.id}",
+    aws_security_group.ci.id,
   ]
 
-  iam_instance_profile = "${aws_iam_instance_profile.ci.name}"
+  iam_instance_profile = aws_iam_instance_profile.ci.name
 
   enable_monitoring = false
 
-  root_block_device = {
+  root_block_device {
     volume_size           = "250"
     volume_type           = "gp2"
     delete_on_termination = false
@@ -231,16 +236,16 @@ resource "aws_launch_configuration" "ci" {
 }
 
 resource "aws_route53_record" "ci" {
-  zone_id = "${var.route53_zone}"
+  zone_id = var.route53_zone
   name    = "ci.sumo.mozit.cloud"
   type    = "CNAME"
   ttl     = 60
-  records = ["${aws_lb.ci.dns_name}"]
+  records = [aws_lb.ci.dns_name]
 }
 
 resource "random_id" "rand-var" {
   keepers = {
-    backup_bucket = "${var.backup_bucket}"
+    backup_bucket = var.backup_bucket
   }
 
   byte_length = 8
@@ -258,16 +263,20 @@ resource "aws_s3_bucket" "backup" {
     }
   }
 
-  tags = "${merge(
-            map("Name", "${var.project}-${var.service}-s3backup"),
-            map("purpose", "Backup bucket for CI system"),
-            var.base_tags
-          )}"
+  tags = merge(
+    {
+      "Name" = "${var.project}-${var.service}-s3backup"
+    },
+    {
+      "purpose" = "Backup bucket for CI system"
+    },
+    var.base_tags,
+  )
 }
 
 resource "aws_iam_instance_profile" "ci" {
   name = "${var.project}-${var.service}-${var.region}"
-  role = "${aws_iam_role.ci.name}"
+  role = aws_iam_role.ci.name
 }
 
 resource "aws_iam_role" "ci" {
@@ -289,11 +298,12 @@ resource "aws_iam_role" "ci" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy" "ci-backup" {
   name = "${var.project}-${var.service}-backups-${var.region}"
-  role = "${aws_iam_role.ci.id}"
+  role = aws_iam_role.ci.id
 
   policy = <<EOF
 {
@@ -331,11 +341,12 @@ resource "aws_iam_role_policy" "ci-backup" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy" "static-assets" {
   name = "${var.project}-${var.service}-static-assets"
-  role = "${aws_iam_role.ci.id}"
+  role = aws_iam_role.ci.id
 
   policy = <<EOF
 {
@@ -363,21 +374,22 @@ resource "aws_iam_role_policy" "static-assets" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy_attachment" "ssm" {
-  role       = "${aws_iam_role.ci.id}"
+  role       = aws_iam_role.ci.id
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 locals {
   # Normalise the parameter name, and remove any duplicate slashes
-  parameter_root_name = "${join("/",compact(split("/", var.parameter_root_name)))}"
+  parameter_root_name = join("/", compact(split("/", var.parameter_root_name)))
 }
 
 resource "aws_iam_role_policy" "ci-ssm" {
   name = "${var.project}-${var.service}-ssm-parameter"
-  role = "${aws_iam_role.ci.id}"
+  role = aws_iam_role.ci.id
 
   policy = <<EOF
 {
@@ -412,21 +424,23 @@ resource "aws_iam_role_policy" "ci-ssm" {
   ]
 }
 EOF
+
 }
 
 resource "aws_kms_key" "ci-ssm" {
   description             = "${var.project}-${var.service}-ssm-parameter"
   deletion_window_in_days = 10
   enable_key_rotation     = true
-  tags                    = "${var.base_tags}"
+  tags                    = var.base_tags
 }
 
 resource "aws_ssm_parameter" "ci" {
   name        = "/${local.parameter_root_name}"
   description = "SSH deploy key for l10n locale repository"
   type        = "SecureString"
-  value       = "${var.gh_deploy_key}"
-  key_id      = "${aws_kms_key.ci-ssm.key_id}"
+  value       = var.gh_deploy_key
+  key_id      = aws_kms_key.ci-ssm.key_id
 
-  tags = "${var.base_tags}"
+  tags = var.base_tags
 }
+

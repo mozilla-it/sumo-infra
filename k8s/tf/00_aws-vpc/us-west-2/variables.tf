@@ -50,3 +50,4 @@ variable "base_tags" {
     "Region"    = "us-west-2"
   }
 }
+

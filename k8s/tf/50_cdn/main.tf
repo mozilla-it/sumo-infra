@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "${var.region}"
+  region = var.region
 }
 
 terraform {
@@ -26,16 +26,15 @@ resource "aws_s3_bucket" "logs" {
       days = 14
     }
   }
-
 }
 
 module "sumo-user-media-test-bucket" {
   bucket_name       = "mozit-sumo-user-media-test"
   user_media_name   = "static-s3-user-test"
   iam_policy_name   = "SUMOUserMediaTest"
-  logging_bucket_id = "${aws_s3_bucket.logs.id}"
+  logging_bucket_id = aws_s3_bucket.logs.id
   logging_prefix    = "test-logs/"
-  region            = "${var.region}"
+  region            = var.region
   source            = "./user_media_s3"
 }
 
@@ -43,9 +42,9 @@ module "sumo-user-media-dev-bucket" {
   bucket_name       = "mozit-sumo-user-media-dev"
   user_media_name   = "static-s3-user-dev"
   iam_policy_name   = "SUMOUserMediaDev"
-  logging_bucket_id = "${aws_s3_bucket.logs.id}"
+  logging_bucket_id = aws_s3_bucket.logs.id
   logging_prefix    = "dev-logs/"
-  region            = "${var.region}"
+  region            = var.region
   source            = "./user_media_s3"
 }
 
@@ -53,9 +52,9 @@ module "sumo-user-media-stage-bucket" {
   bucket_name       = "mozit-sumo-user-media-stage"
   user_media_name   = "static-s3-user-stage"
   iam_policy_name   = "SUMOUserMediaStage"
-  logging_bucket_id = "${aws_s3_bucket.logs.id}"
+  logging_bucket_id = aws_s3_bucket.logs.id
   logging_prefix    = "stage-logs/"
-  region            = "${var.region}"
+  region            = var.region
   source            = "./user_media_s3"
 }
 
@@ -63,9 +62,9 @@ module "sumo-user-media-prod-bucket" {
   bucket_name       = "mozit-sumo-user-media-prod"
   user_media_name   = "static-s3-user-prod"
   iam_policy_name   = "SUMOUserMediaProd"
-  logging_bucket_id = "${aws_s3_bucket.logs.id}"
+  logging_bucket_id = aws_s3_bucket.logs.id
   logging_prefix    = "prod-logs/"
-  region            = "${var.region}"
+  region            = var.region
   source            = "./user_media_s3"
 }
 
@@ -89,27 +88,27 @@ resource "aws_s3_bucket" "static-media-logs" {
 module "sumo-static-media-test-bucket" {
   bucket_name       = "mozit-sumo-test-media"
   iam_policy_name   = "SUMOStaticMediaTest"
-  logging_bucket_id = "${aws_s3_bucket.static-media-logs.id}"
+  logging_bucket_id = aws_s3_bucket.static-media-logs.id
   logging_prefix    = "test-logs/"
-  region            = "${var.region}"
+  region            = var.region
   source            = "./static_media_s3"
 }
 
 module "sumo-static-media-stage-bucket" {
   bucket_name       = "mozit-sumo-stage-media"
   iam_policy_name   = "SUMOStaticMediaStage"
-  logging_bucket_id = "${aws_s3_bucket.static-media-logs.id}"
+  logging_bucket_id = aws_s3_bucket.static-media-logs.id
   logging_prefix    = "stage-logs/"
-  region            = "${var.region}"
+  region            = var.region
   source            = "./static_media_s3"
 }
 
 module "sumo-static-media-prod-bucket" {
   bucket_name       = "mozit-sumo-prod-media"
   iam_policy_name   = "SUMOStaticMediaProd"
-  logging_bucket_id = "${aws_s3_bucket.static-media-logs.id}"
+  logging_bucket_id = aws_s3_bucket.static-media-logs.id
   logging_prefix    = "prod-logs/"
-  region            = "${var.region}"
+  region            = var.region
   source            = "./static_media_s3"
 }
 
@@ -212,8 +211,9 @@ module "sumo-failover-cf" {
   distribution_name = "SUMOFailoverCDN"
   origin_name       = "prod-frankfurt.sumo.mozit.cloud"
   min_ttl           = 0
-  max_ttl           = 28800                                                                                 /* 8 hours */
-  default_ttl       = 14400                                                                                 /* 4 hours */
+  max_ttl           = 28800 /* 8 hours */
+  default_ttl       = 14400 /* 4 hours */
   s3_logging_bucket = "mozit-sumo-static-media-logs.s3.us-west-2.amazonaws.com"
   s3_logging_prefix = "sumo-failover-cdn"
 }
+
