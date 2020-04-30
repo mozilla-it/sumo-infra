@@ -1,9 +1,9 @@
 resource "aws_s3_bucket" "sumo-user-media" {
-  bucket = "${var.bucket_name}"
-  region = "${var.region}"
+  bucket = var.bucket_name
+  region = var.region
   acl    = "log-delivery-write"
 
-  force_destroy = ""
+  force_destroy = false
 
   cors_rule {
     allowed_headers = ["*"]
@@ -12,11 +12,11 @@ resource "aws_s3_bucket" "sumo-user-media" {
     max_age_seconds = 3000
   }
 
-  hosted_zone_id = "${lookup(var.hosted-zone-id-defs, var.region)}"
+  hosted_zone_id = var.hosted-zone-id-defs[var.region]
 
   logging {
-    target_bucket = "${var.logging_bucket_id}"
-    target_prefix = "${var.logging_prefix}"
+    target_bucket = var.logging_bucket_id
+    target_prefix = var.logging_prefix
   }
 
   website {
@@ -49,10 +49,11 @@ resource "aws_s3_bucket" "sumo-user-media" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_user" "user-media" {
-  name = "${var.user_media_name}"
+  name = var.user_media_name
 }
 
 resource "aws_iam_policy" "user-media" {
@@ -82,9 +83,11 @@ resource "aws_iam_policy" "user-media" {
     ]
 }
 EOF
+
 }
 
 resource "aws_iam_user_policy_attachment" "user-media" {
-  user       = "${aws_iam_user.user-media.name}"
-  policy_arn = "${aws_iam_policy.user-media.arn}"
+  user       = aws_iam_user.user-media.name
+  policy_arn = aws_iam_policy.user-media.arn
 }
+

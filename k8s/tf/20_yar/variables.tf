@@ -16,3 +16,4 @@ variable "base_tags" {
     "source"      = "gh:mozilla-it/sumo-infra:mozilla-it/sumo-private"
   }
 }
+

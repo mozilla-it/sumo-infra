@@ -1,14 +1,20 @@
-variable "mysql_db_name" {}
+variable "mysql_db_name" {
+}
 
-variable "mysql_username" {}
+variable "mysql_username" {
+}
 
-variable "mysql_password" {}
+variable "mysql_password" {
+}
 
-variable "mysql_identifier" {}
+variable "mysql_identifier" {
+}
 
-variable "mysql_env" {}
+variable "mysql_env" {
+}
 
-variable "mysql_security_group_name" {}
+variable "mysql_security_group_name" {
+}
 
 variable "mysql_storage_gb" {
   default     = "100"
@@ -67,10 +73,15 @@ variable "mysql_allow_major_version_upgrade" {
   default = false
 }
 
-variable "vpc_id" {}
+variable "vpc_id" {
+}
 
-variable "vpc_cidr" {}
+variable "vpc_cidr" {
+}
 
-variable "db_subnet_group" {}
+variable "db_subnet_group" {
+}
 
-variable "it_vpn_cidr" {}
+variable "it_vpn_cidr" {
+}
+

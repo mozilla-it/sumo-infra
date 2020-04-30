@@ -1,6 +1,6 @@
 resource "aws_iam_user" "yar" {
-  name = "${var.iam_user}"
-  tags = "${var.base_tags}"
+  name = var.iam_user
+  tags = var.base_tags
 }
 
 resource "aws_iam_policy" "yar" {
@@ -14,7 +14,7 @@ resource "aws_iam_policy" "yar" {
         {
             "Effect": "Allow",
             "Action": "ec2:DeleteNetworkAclEntry",
-            "Resource": "arn:aws:ec2:us-west-2:${data.aws_caller_identity.id.account_id}:network-acl/${data.aws_network_acls.default.ids[0]}"
+            "Resource": "arn:aws:ec2:us-west-2:${data.aws_caller_identity.id.account_id}:network-acl/${tolist(data.aws_network_acls.default.ids)[0]}"
         },
         {
             "Effect": "Allow",
@@ -29,9 +29,11 @@ resource "aws_iam_policy" "yar" {
 }
 
 EOF
+
 }
 
 resource "aws_iam_user_policy_attachment" "yar" {
-  user       = "${aws_iam_user.yar.name}"
-  policy_arn = "${aws_iam_policy.yar.arn}"
+  user       = aws_iam_user.yar.name
+  policy_arn = aws_iam_policy.yar.arn
 }
+

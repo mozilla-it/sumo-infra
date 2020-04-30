@@ -1,7 +1,7 @@
 data "terraform_remote_state" "vpc" {
   backend = "s3"
 
-  config {
+  config = {
     bucket = "sumo-state-095732026120"
     key    = "terraform/sumo-infra-eu-central-1"
     region = "us-west-2"
@@ -10,7 +10,7 @@ data "terraform_remote_state" "vpc" {
 
 # Identify database subnets in our VPC and region
 data "aws_subnet_ids" "database" {
-  vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
   tags = {
     Name    = "sumo-backup-db-${var.region}*"
@@ -20,7 +20,7 @@ data "aws_subnet_ids" "database" {
 
 # Identify elasticache/redis subnets in our VPC and region
 data "aws_subnet_ids" "elasticache" {
-  vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
+  vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
   tags = {
     Name    = "sumo-backup-elasticache-${var.region}*"
@@ -30,8 +30,9 @@ data "aws_subnet_ids" "elasticache" {
 
 # Get a list of databse subnet objects in our VPC and region
 data "aws_subnet" "database" {
-  count = "${length(data.aws_subnet_ids.database.ids)}"
-  id    = "${data.aws_subnet_ids.database.ids[count.index]}"
+   for_each = data.aws_subnet_ids.database.ids
+   id    = each.value
+
 }
 
 data "aws_security_groups" "kops_sg" {
@@ -41,7 +42,8 @@ data "aws_security_groups" "kops_sg" {
   }
 
   filter {
-    name   = "vpc-id"
-    values = ["${data.terraform_remote_state.vpc.vpc_id}"]
+    name = "vpc-id"
+    values = [data.terraform_remote_state.vpc.outputs.vpc_id]
   }
 }
+

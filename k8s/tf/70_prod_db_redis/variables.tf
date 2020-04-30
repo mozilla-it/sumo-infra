@@ -7,4 +7,6 @@ variable "it_vpn_cidr" {
   default = "10.48.0.0/15"
 }
 
-variable "mysql_prod_password" {}
+variable "mysql_prod_password" {
+}
+
