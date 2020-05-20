@@ -26,3 +26,6 @@ variable "nodes_security_groups" {
 variable "redis_subnet" {
 }
 
+variable "redis_failover" {
+  default = false
+}
