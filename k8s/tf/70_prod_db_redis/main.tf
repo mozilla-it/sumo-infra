@@ -7,6 +7,19 @@ module "redis-shared" {
   redis_subnet          = data.terraform_remote_state.vpc.outputs.redis_subnet_group
 }
 
+
+module "redis-test" {
+  source                = "./redis"
+  redis_name            = "test"
+  redis_node_size       = "cache.m5.large"
+  redis_param_group     = "default.redis5.0"
+  redis_engine_version  = "5.0.5"
+  redis_num_nodes       = 3
+  redis_failover        = true
+  nodes_security_groups = join(",", data.aws_security_groups.kops_sg.ids)
+  redis_subnet          = data.terraform_remote_state.vpc.outputs.redis_subnet_group
+}
+
 module "mysql-prod" {
   source    = "./rds-multi-az"
   mysql_env = "prod"
