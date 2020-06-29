@@ -37,3 +37,7 @@ resource "aws_iam_user_policy_attachment" "yar" {
   policy_arn = aws_iam_policy.yar.arn
 }
 
+module "ecr" {
+  source    = "github.com/mozilla-it/terraform-modules//aws/ecr?ref=master"
+  repo_name = "yar"
+}
