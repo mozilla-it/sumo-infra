@@ -12,30 +12,52 @@ locals {
     "git.branch" = "master"
   }
 
-  node_groups = {
-    default_node_group = {
-      desired_capacity = 3,
-      min_capacity     = 3,
-      disk_size        = 100,
-      max_capacity     = 50,
-      instance_type    = "m5.large",
-      subnets          = data.terraform_remote_state.vpc.outputs.private_subnets
+  worker_groups = [
+    {
+      name                  = "k8s-worker-green"
+      ami_id                = "ami-06cfd5b2a2d58e09a"
+      asg_desired_capacity  = "2"
+      asg_max_size          = "50"
+      asg_min_size          = "1"
+      autoscaling_enabled   = true
+      protect_from_scale_in = true
+      instance_type         = "m5.large"
+      root_volume_size      = "100"
+      subnets               = data.terraform_remote_state.vpc.outputs.private_subnets
+    },
+    {
+      name                  = "k8s-worker-blue"
+      ami_id                = "ami-06cfd5b2a2d58e09a"
+      asg_desired_capacity  = "0"
+      asg_max_size          = "0"
+      asg_min_size          = "0"
+      autoscaling_enabled   = true
+      protect_from_scale_in = true
+      instance_type         = "m5.large"
+      root_volume_size      = "100"
+      subnets               = data.terraform_remote_state.vpc.outputs.private_subnets
     }
-  }
+  ]
 
   subnet_az = [for s in data.aws_subnet.public : s.availability_zone]
   subnet_id = [for s in data.aws_subnet.public : s.id]
 }
 
 module "eks-eu-central-1" {
-  source                        = "github.com/mozilla-it/terraform-modules//aws/eks?ref=master"
-  cluster_name                  = "sumo-eks-eu-central-1"
-  cluster_version               = "1.17"
-  vpc_id                        = data.terraform_remote_state.vpc.outputs.vpc_id
-  cluster_subnets               = data.terraform_remote_state.vpc.outputs.public_subnets
-  cluster_features              = local.cluster_features
-  flux_settings                 = local.flux_settings
-  node_groups                   = local.node_groups
-  admin_users_arn               = ["arn:aws:iam::783633885093:role/maws-admin", "arn:aws:iam::517826968395:role/itsre-admin"]
-  region                        = "eu-central-1"
+  source                                             = "github.com/mozilla-it/terraform-modules//aws/eks?ref=7420ed9063cf5acbd823b378614d304d25f29bc9"
+  cluster_name                                       = "sumo-eks-eu-central-1"
+  cluster_version                                    = "1.17"
+  vpc_id                                             = data.terraform_remote_state.vpc.outputs.vpc_id
+  cluster_subnets                                    = data.terraform_remote_state.vpc.outputs.public_subnets
+  cluster_features                                   = local.cluster_features
+  flux_settings                                      = local.flux_settings
+  admin_users_arn                                    = ["arn:aws:iam::783633885093:role/maws-admin", "arn:aws:iam::517826968395:role/itsre-admin", "arn:aws:iam::095732026120:role/maws-sumo-poweruser"]
+  region                                             = "eu-central-1"
+  worker_groups                                      = local.worker_groups
+  worker_create_cluster_primary_security_group_rules = true
+  worker_additional_security_group_ids               = [data.aws_security_group.k8s_nodes.id]
+}
+
+data "aws_security_group" "k8s_nodes" {
+  name = "nodes.k8s.eu-central-1a.sumo.mozit.cloud"
 }
