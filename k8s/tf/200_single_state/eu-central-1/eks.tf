@@ -44,7 +44,7 @@ locals {
 }
 
 module "eks-eu-central-1" {
-  source                                             = "github.com/mozilla-it/terraform-modules//aws/eks?ref=7420ed9063cf5acbd823b378614d304d25f29bc9"
+  source                                             = "github.com/mozilla-it/terraform-modules//aws/eks?ref=master"
   cluster_name                                       = "sumo-eks-eu-central-1"
   cluster_version                                    = "1.17"
   vpc_id                                             = data.terraform_remote_state.vpc.outputs.vpc_id
