@@ -18,3 +18,14 @@ resource "aws_route53_record" "test_sumo_mozit_cloud" {
   }
 }
 
+data "aws_elb" "dev_sumo" {
+  name = "acb4a8e968d624c94b05a3a3c5e5cfa3"
+}
+
+resource "aws_route53_record" "dev_sumo_mozit_cloud" {
+  zone_id = data.aws_route53_zone.sumo_mozit_cloud.zone_id
+  name    = "dev.sumo.mozit.cloud"
+  type    = "CNAME"
+  ttl     = "3660"
+  records = [ data.aws_elb.dev_sumo.dns_name ]
+}
