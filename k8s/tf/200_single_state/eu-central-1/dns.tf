@@ -27,5 +27,5 @@ resource "aws_route53_record" "dev_sumo_mozit_cloud" {
   name    = "dev.sumo.mozit.cloud"
   type    = "CNAME"
   ttl     = "3660"
-  records = [ data.aws_elb.dev_sumo.dns_name ]
+  records = [data.aws_elb.dev_sumo.dns_name]
 }

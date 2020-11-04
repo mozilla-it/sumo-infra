@@ -16,7 +16,7 @@ locals {
     {
       name                  = "k8s-worker-green"
       ami_id                = "ami-06cfd5b2a2d58e09a"
-      asg_desired_capacity  = "2"
+      asg_desired_capacity  = "3"
       asg_max_size          = "50"
       asg_min_size          = "1"
       autoscaling_enabled   = true
@@ -24,6 +24,10 @@ locals {
       instance_type         = "m5.large"
       root_volume_size      = "100"
       subnets               = data.terraform_remote_state.vpc.outputs.private_subnets
+      tags = [
+        { key : "k8s.io/cluster-autoscaler/enabled", value : "true", propagate_at_launch : "true" },
+        { key : "k8s.io/cluster-autoscaler/sumo-eks-eu-central-1", value : "true", propagate_at_launch : "true" }
+      ]
     },
     {
       name                  = "k8s-worker-blue"
@@ -36,6 +40,10 @@ locals {
       instance_type         = "m5.large"
       root_volume_size      = "100"
       subnets               = data.terraform_remote_state.vpc.outputs.private_subnets
+      tags = [
+        { key : "k8s.io/cluster-autoscaler/enabled", value : "true", propagate_at_launch : "true" },
+        { key : "k8s.io/cluster-autoscaler/sumo-eks-eu-central-1", value : "true", propagate_at_launch : "true" }
+      ]
     }
   ]
 
