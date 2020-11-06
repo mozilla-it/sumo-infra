@@ -29,3 +29,15 @@ resource "aws_route53_record" "dev_sumo_mozit_cloud" {
   ttl     = "3660"
   records = [data.aws_elb.dev_sumo.dns_name]
 }
+
+data "aws_elb" "stage_frankfurt_sumo" {
+  name = "a239fd6aba1964eacbaa125e8138b0d8"
+}
+
+resource "aws_route53_record" "stage-frankfurt_sumo_mozit_cloud" {
+  zone_id = data.aws_route53_zone.sumo_mozit_cloud.zone_id
+  name    = "stage-frankfurt.sumo.mozit.cloud"
+  type    = "CNAME"
+  ttl     = "300"
+  records = [data.aws_elb.stage_frankfurt_sumo.dns_name]
+}
