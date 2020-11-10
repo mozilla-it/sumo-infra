@@ -15,10 +15,10 @@ locals {
   worker_groups = [
     {
       name                  = "k8s-worker-green"
-      ami_id                = "ami-06cfd5b2a2d58e09a"
-      asg_desired_capacity  = "3"
-      asg_max_size          = "50"
-      asg_min_size          = "1"
+      ami_id                = "ami-045e4ecd708ac12ba"
+      asg_desired_capacity  = "0"
+      asg_max_size          = "0"
+      asg_min_size          = "0"
       autoscaling_enabled   = true
       protect_from_scale_in = true
       instance_type         = "m5.large"
@@ -31,10 +31,10 @@ locals {
     },
     {
       name                  = "k8s-worker-blue"
-      ami_id                = "ami-06cfd5b2a2d58e09a"
-      asg_desired_capacity  = "0"
-      asg_max_size          = "0"
-      asg_min_size          = "0"
+      ami_id                = "ami-045e4ecd708ac12ba"
+      asg_desired_capacity  = "3"
+      asg_max_size          = "30"
+      asg_min_size          = "3"
       autoscaling_enabled   = true
       protect_from_scale_in = true
       instance_type         = "m5.large"
@@ -54,7 +54,7 @@ locals {
 module "eks-eu-central-1" {
   source                                             = "github.com/mozilla-it/terraform-modules//aws/eks?ref=master"
   cluster_name                                       = "sumo-eks-eu-central-1"
-  cluster_version                                    = "1.17"
+  cluster_version                                    = "1.18"
   vpc_id                                             = data.terraform_remote_state.vpc.outputs.vpc_id
   cluster_subnets                                    = data.terraform_remote_state.vpc.outputs.public_subnets
   cluster_features                                   = local.cluster_features
