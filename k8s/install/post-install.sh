@@ -253,21 +253,6 @@ install_ark() {
     echo "Done installing ark"
 }
 
-install_telegraf() {
-    echo "Installing Telegraf"
-    if [ -z "$SECRETS_PATH" -o -z "$KOPS_INSTALLER" ]; then
-        echo "Missing required environment variables, bailing"
-        exit 1
-    fi
-
-    # Ensure you have correctly exported K8S_NAMESPACE
-    echo "Cluster: ${KOPS_CLUSTER_NAME}"
-    echo "Namespace: sumo-${ENVIRONMENT}"
-    j2 "${SECRETS_PATH}/services/telegraf/telegraf-secrets.yaml.j2" | kubectl apply -f -
-    j2 "${KOPS_INSTALLER}/services/telegraf/telegraf.yaml.j2" | kubectl apply -f -
-    echo "Done installing Telegraf"
-}
-
 install_namespaces() {
     echo "Installing namespaces"
 
@@ -296,7 +281,6 @@ install_all() {
     install_ark
     install_newrelic
     install_metrics-server
-    install_telegraf
 }
 
 # Turn off annoying set -u in case someone sources this script
@@ -315,7 +299,6 @@ usage() {
     echo "  elb_service             install ELB service"
     echo "  yar                     install yar service"
     echo "  kubecost                install kubecost for cost analysis"
-    echo "  telegraf                install telegraf"
     echo "  all                     install all of the above components"
 }
 
@@ -345,8 +328,6 @@ if [ $# -eq 1 ]; then
             install_yar;;
         kubecost)
             install_kubecost;;
-        telegraf)
-            install_telegraf;;
         all)
             install_all;;
         -h|--help)
