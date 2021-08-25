@@ -5,29 +5,30 @@ resource "aws_kms_key" "key" {
 }
 
 resource "aws_db_instance" "sumo_rds" {
-  allocated_storage           = var.mysql_storage_gb
-  allow_major_version_upgrade = var.mysql_allow_major_version_upgrade
-  auto_minor_version_upgrade  = var.mysql_auto_minor_version_upgrade
-  backup_retention_period     = var.mysql_backup_retention_days
-  backup_window               = var.mysql_backup_window
-  db_subnet_group_name        = var.db_subnet_group
-  depends_on                  = [aws_security_group.sumo_rds_sg]
-  engine                      = var.mysql_engine
-  engine_version              = var.mysql_engine_version[var.mysql_engine]
-  identifier                  = var.mysql_identifier
-  instance_class              = var.mysql_instance_class
-  maintenance_window          = var.mysql_maintenance_window
-  multi_az                    = true
-  name                        = var.mysql_db_name
-  password                    = var.mysql_password
-  publicly_accessible         = false
-  storage_encrypted           = var.mysql_storage_encrypted
-  storage_type                = var.mysql_storage_type
-  username                    = var.mysql_username
-  vpc_security_group_ids      = [aws_security_group.sumo_rds_sg.id]
-  final_snapshot_identifier   = "sumo-final-db-snapshot"
-  kms_key_id                  = aws_kms_key.key.arn
-  deletion_protection         = true
+  allocated_storage            = var.mysql_storage_gb
+  allow_major_version_upgrade  = var.mysql_allow_major_version_upgrade
+  auto_minor_version_upgrade   = var.mysql_auto_minor_version_upgrade
+  backup_retention_period      = var.mysql_backup_retention_days
+  backup_window                = var.mysql_backup_window
+  db_subnet_group_name         = var.db_subnet_group
+  depends_on                   = [aws_security_group.sumo_rds_sg]
+  engine                       = var.mysql_engine
+  engine_version               = var.mysql_engine_version[var.mysql_engine]
+  identifier                   = var.mysql_identifier
+  instance_class               = var.mysql_instance_class
+  maintenance_window           = var.mysql_maintenance_window
+  multi_az                     = true
+  name                         = var.mysql_db_name
+  password                     = var.mysql_password
+  publicly_accessible          = false
+  storage_encrypted            = var.mysql_storage_encrypted
+  storage_type                 = var.mysql_storage_type
+  username                     = var.mysql_username
+  vpc_security_group_ids       = [aws_security_group.sumo_rds_sg.id]
+  final_snapshot_identifier    = "sumo-final-db-snapshot"
+  kms_key_id                   = aws_kms_key.key.arn
+  deletion_protection          = true
+  performance_insights_enabled = true
 
   enabled_cloudwatch_logs_exports = [
     "error",
@@ -71,4 +72,3 @@ resource "aws_security_group" "sumo_rds_sg" {
     "Environment" = "prod"
   }
 }
-
