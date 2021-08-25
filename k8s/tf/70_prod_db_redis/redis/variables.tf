@@ -29,3 +29,7 @@ variable "redis_subnet" {
 variable "redis_failover" {
   default = false
 }
+
+variable "multi_az_enabled" {
+  default = true
+}

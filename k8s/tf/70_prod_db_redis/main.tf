@@ -1,13 +1,3 @@
-module "redis-shared" {
-  source                = "./redis"
-  redis_name            = "shared"
-  redis_node_size       = "cache.m3.large"
-  redis_num_nodes       = 3
-  nodes_security_groups = join(",", data.aws_security_groups.kops_sg.ids)
-  redis_subnet          = data.terraform_remote_state.vpc.outputs.redis_subnet_group
-}
-
-
 module "redis-test" {
   source                = "./redis"
   redis_name            = "test"
@@ -34,10 +24,12 @@ module "mysql-prod" {
   mysql_security_group_name   = "sumo_rds_sg_prod"
   mysql_storage_gb            = 250
   mysql_storage_type          = "gp2"
+  mysql_engine_version = {
+    mysql = "5.6.51"
+  }
 
   db_subnet_group = data.terraform_remote_state.vpc.outputs.db_subnet_group
   vpc_id          = data.terraform_remote_state.vpc.outputs.vpc_id
   vpc_cidr        = data.terraform_remote_state.vpc.outputs.cidr_block
   it_vpn_cidr     = var.it_vpn_cidr
 }
-

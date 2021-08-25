@@ -7,6 +7,7 @@ resource "aws_elasticache_replication_group" "sumo-redis-rg" {
   parameter_group_name          = var.redis_param_group
   engine_version                = var.redis_engine_version
   automatic_failover_enabled    = var.redis_failover
+  multi_az_enabled              = var.multi_az_enabled
 
   subnet_group_name  = var.redis_subnet
   security_group_ids = split(",", var.nodes_security_groups)
@@ -19,4 +20,3 @@ resource "aws_elasticache_replication_group" "sumo-redis-rg" {
     "Environment" = "prod"
   }
 }
-
