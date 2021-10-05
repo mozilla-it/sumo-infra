@@ -10,3 +10,6 @@ variable "it_vpn_cidr" {
 variable "mysql_prod_password" {
 }
 
+variable "cloud_sql_cidr" {
+  default = "34.72.95.189/32"
+}
