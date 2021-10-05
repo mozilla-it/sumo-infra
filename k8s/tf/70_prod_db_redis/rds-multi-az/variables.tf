@@ -85,3 +85,6 @@ variable "db_subnet_group" {
 variable "it_vpn_cidr" {
 }
 
+variable "cloud_sql_cidr" {
+  description = "IP address of Cloud SQL replica"
+}

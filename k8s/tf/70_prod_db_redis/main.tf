@@ -32,4 +32,5 @@ module "mysql-prod" {
   vpc_id          = data.terraform_remote_state.vpc.outputs.vpc_id
   vpc_cidr        = data.terraform_remote_state.vpc.outputs.cidr_block
   it_vpn_cidr     = var.it_vpn_cidr
+  cloud_sql_cidr  = var.cloud_sql_cidr
 }

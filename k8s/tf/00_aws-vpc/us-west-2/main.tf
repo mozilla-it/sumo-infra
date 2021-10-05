@@ -2,7 +2,7 @@
 
 provider "aws" {
   region  = var.region
-  version = "~> 2"
+  version = "~> 3"
 }
 
 terraform {
@@ -29,6 +29,14 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = true
 
+  # Enable public access to the database subnets
+  create_database_subnet_group           = true
+  create_database_subnet_route_table     = true
+  create_database_internet_gateway_route = true
+
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
   # For VPN
   enable_vpn_gateway                 = true
   propagate_private_route_tables_vgw = true
@@ -47,7 +55,8 @@ module "vpc" {
   )
   public_subnet_tags = merge(
     {
-      "Purpose" = "kubernetes"
+      "Purpose"                                  = "kubernetes"
+      "kubernetes.io/cluster/sumo-eks-us-west-2" = "shared"
     },
     var.base_tags,
   )
@@ -120,4 +129,3 @@ resource "aws_customer_gateway" "mdc2" {
     var.base_tags,
   )
 }
-

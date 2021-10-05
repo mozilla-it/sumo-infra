@@ -20,7 +20,7 @@ resource "aws_db_instance" "sumo_rds" {
   multi_az                     = true
   name                         = var.mysql_db_name
   password                     = var.mysql_password
-  publicly_accessible          = false
+  publicly_accessible          = true
   storage_encrypted            = var.mysql_storage_encrypted
   storage_type                 = var.mysql_storage_type
   username                     = var.mysql_username
@@ -54,7 +54,7 @@ resource "aws_security_group" "sumo_rds_sg" {
     from_port   = var.mysql_port
     to_port     = var.mysql_port
     protocol    = "TCP"
-    cidr_blocks = [var.vpc_cidr, var.it_vpn_cidr]
+    cidr_blocks = [var.vpc_cidr, var.it_vpn_cidr, var.cloud_sql_cidr]
   }
 
   egress {
