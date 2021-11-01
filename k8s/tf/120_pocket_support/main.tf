@@ -1,7 +1,9 @@
 
+locals {
+  pocket_helpcenter_record = "pocket-helpcenter.sumo.mozit.cloud"
+}
 provider "aws" {
-  region  = var.region
-  version = ">= 0.12"
+  region = var.region
 }
 
 terraform {
@@ -13,7 +15,8 @@ terraform {
 }
 
 resource "aws_s3_bucket" "pocket_helpcenter" {
-  acl = "public-read"
+  acl    = "public-read"
+  bucket = "pocket-helpcenter-static-media"
 
   cors_rule {
     allowed_headers = ["*"]
@@ -35,6 +38,7 @@ resource "aws_cloudfront_distribution" "pocket_helpcenter" {
   http_version    = "http2"
   is_ipv6_enabled = false
   price_class     = "PriceClass_All"
+  aliases         = [local.pocket_helpcenter_record]
 
   origin {
     origin_id   = "pocket-helpcenter"
@@ -86,13 +90,13 @@ data "aws_route53_zone" "sumo_mozit_cloud" {
 
 resource "aws_route53_record" "pocket_helpcenter" {
   zone_id = data.aws_route53_zone.sumo_mozit_cloud.zone_id
-  name    = "pocket-helpcenter.sumo.mozit.cloud"
+  name    = local.pocket_helpcenter_record
   type    = "A"
 
   alias {
     name                   = aws_cloudfront_distribution.pocket_helpcenter.domain_name
     zone_id                = data.aws_route53_zone.sumo_mozit_cloud.zone_id
-    evaluate_target_health = true
+    evaluate_target_health = false
   }
 }
 
