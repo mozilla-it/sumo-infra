@@ -5,6 +5,10 @@ locals {
 provider "aws" {
   region = var.region
 }
+provider "aws" {
+  alias  = "east"
+  region = "us-east-1"
+}
 
 terraform {
   backend "s3" {
@@ -78,10 +82,33 @@ resource "aws_cloudfront_distribution" "pocket_helpcenter" {
   }
 
   viewer_certificate {
-    acm_certificate_arn      = data.aws_acm_certificate.cert.arn
+    acm_certificate_arn      = aws_acm_certificate.pocket_helpcenter_cdn.arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1"
   }
+}
+
+resource "aws_acm_certificate" "pocket_helpcenter_cdn" {
+  domain_name       = local.pocket_helpcenter_record
+  validation_method = "DNS"
+  provider          = aws.east
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "pocket_helpcenter_validation" {
+  zone_id = data.aws_route53_zone.sumo_mozit_cloud.zone_id
+  name    = tolist(aws_acm_certificate.pocket_helpcenter_cdn.domain_validation_options)[0].resource_record_name
+  type    = tolist(aws_acm_certificate.pocket_helpcenter_cdn.domain_validation_options)[0].resource_record_type
+  records = [tolist(aws_acm_certificate.pocket_helpcenter_cdn.domain_validation_options)[0].resource_record_value]
+  ttl     = 60
+}
+
+resource "aws_acm_certificate_validation" "pocket_helpcenter_cdn" {
+  provider                = aws.east
+  certificate_arn         = aws_acm_certificate.pocket_helpcenter_cdn.arn
+  validation_record_fqdns = [aws_route53_record.pocket_helpcenter_validation.fqdn]
 }
 
 data "aws_route53_zone" "sumo_mozit_cloud" {
