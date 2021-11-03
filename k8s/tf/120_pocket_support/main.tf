@@ -122,7 +122,7 @@ resource "aws_route53_record" "pocket_helpcenter" {
 
   alias {
     name                   = aws_cloudfront_distribution.pocket_helpcenter.domain_name
-    zone_id                = data.aws_route53_zone.sumo_mozit_cloud.zone_id
+    zone_id                = aws_cloudfront_distribution.pocket_helpcenter.hosted_zone_id
     evaluate_target_health = false
   }
 }
