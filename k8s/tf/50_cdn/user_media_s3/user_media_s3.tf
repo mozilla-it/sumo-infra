@@ -1,6 +1,5 @@
 resource "aws_s3_bucket" "sumo-user-media" {
   bucket = var.bucket_name
-  region = var.region
   acl    = "log-delivery-write"
 
   force_destroy = false
@@ -90,4 +89,3 @@ resource "aws_iam_user_policy_attachment" "user-media" {
   user       = aws_iam_user.user-media.name
   policy_arn = aws_iam_policy.user-media.arn
 }
-
