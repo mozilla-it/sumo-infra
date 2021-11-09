@@ -1,6 +1,5 @@
 resource "aws_s3_bucket" "sumo-static-media" {
   bucket = var.bucket_name
-  region = var.region
   acl    = "log-delivery-write"
 
   force_destroy = false
@@ -55,4 +54,3 @@ resource "aws_s3_bucket" "sumo-static-media" {
 EOF
 
 }
-
