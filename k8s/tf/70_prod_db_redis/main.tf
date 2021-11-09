@@ -19,13 +19,13 @@ module "mysql-prod" {
   mysql_username              = "root"
   mysql_password              = var.mysql_prod_password
   mysql_identifier            = "sumo"
-  mysql_instance_class        = "db.m5.4xlarge"
+  mysql_instance_class        = "db.m5.2xlarge"
   mysql_backup_retention_days = 14
   mysql_security_group_name   = "sumo_rds_sg_prod"
   mysql_storage_gb            = 250
   mysql_storage_type          = "gp2"
   mysql_engine_version = {
-    mysql = "5.6.51"
+    mysql = "5.7"
   }
 
   db_subnet_group = data.terraform_remote_state.vpc.outputs.db_subnet_group
