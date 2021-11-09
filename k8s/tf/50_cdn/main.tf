@@ -85,8 +85,14 @@ resource "aws_s3_bucket" "static-media-logs" {
   }
 }
 
+locals {
+  static_test_bucket  = "mozit-sumo-test-media"
+  static_stage_bucket = "mozit-sumo-stage-media"
+  static_prod_bucket  = "mozit-sumo-prod-media"
+}
+
 module "sumo-static-media-test-bucket" {
-  bucket_name       = "mozit-sumo-test-media"
+  bucket_name       = local.static_test_bucket
   iam_policy_name   = "SUMOStaticMediaTest"
   logging_bucket_id = aws_s3_bucket.static-media-logs.id
   logging_prefix    = "test-logs/"
@@ -95,7 +101,7 @@ module "sumo-static-media-test-bucket" {
 }
 
 module "sumo-static-media-stage-bucket" {
-  bucket_name       = "mozit-sumo-stage-media"
+  bucket_name       = local.static_stage_bucket
   iam_policy_name   = "SUMOStaticMediaStage"
   logging_bucket_id = aws_s3_bucket.static-media-logs.id
   logging_prefix    = "stage-logs/"
@@ -104,12 +110,45 @@ module "sumo-static-media-stage-bucket" {
 }
 
 module "sumo-static-media-prod-bucket" {
-  bucket_name       = "mozit-sumo-prod-media"
+  bucket_name       = local.static_prod_bucket
   iam_policy_name   = "SUMOStaticMediaProd"
   logging_bucket_id = aws_s3_bucket.static-media-logs.id
   logging_prefix    = "prod-logs/"
   region            = var.region
   source            = "./static_media_s3"
+}
+
+resource "aws_iam_user" "circleci-s3-user" {
+  name = "static-s3-user-circleci"
+}
+
+data "aws_iam_policy_document" "circleci-s3-user" {
+  statement {
+    resources = [
+      "arn:aws:s3:::${local.static_stage_bucket}",
+      "arn:aws:s3:::${local.static_stage_bucket}/*",
+      "arn:aws:s3:::${local.static_prod_bucket}",
+      "arn:aws:s3:::${local.static_prod_bucket}/*",
+    ]
+    actions = [
+      "s3:DeleteObject",
+      "s3:GetBucketLocation",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:PutObject",
+      "s3:PutObjectAcl",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "circleci-s3-user" {
+  name   = "circleci-s3-user-s3-sync"
+  policy = data.aws_iam_policy_document.circleci-s3-user.json
+}
+
+resource "aws_iam_user_policy_attachment" "circleci-s3-user" {
+  user       = aws_iam_user.circleci-s3-user.name
+  policy_arn = aws_iam_policy.circleci-s3-user.arn
 }
 
 #####################################################################
@@ -216,4 +255,3 @@ module "sumo-failover-cf" {
   s3_logging_bucket = "mozit-sumo-static-media-logs.s3.us-west-2.amazonaws.com"
   s3_logging_prefix = "sumo-failover-cdn"
 }
-
