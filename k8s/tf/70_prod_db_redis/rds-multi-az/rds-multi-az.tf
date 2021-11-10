@@ -29,6 +29,7 @@ resource "aws_db_instance" "sumo_rds" {
   kms_key_id                   = aws_kms_key.key.arn
   deletion_protection          = true
   performance_insights_enabled = true
+  # apply_immediately            = true
 
   enabled_cloudwatch_logs_exports = [
     "error",
