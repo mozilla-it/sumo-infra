@@ -15,15 +15,15 @@ module "mysql-prod" {
   mysql_env = "prod"
 
   # DBName must begin with a letter and contain only alphanumeric characters
-  mysql_db_name               = "sumo_prod"
-  mysql_username              = "root"
-  mysql_password              = var.mysql_prod_password
-  mysql_identifier            = "sumo"
-  mysql_instance_class        = "db.m5.2xlarge"
-  mysql_backup_retention_days = 14
-  mysql_security_group_name   = "sumo_rds_sg_prod"
-  mysql_storage_gb            = 250
-  mysql_storage_type          = "gp2"
+  mysql_db_name                     = "sumo_prod"
+  mysql_username                    = "root"
+  mysql_password                    = var.mysql_prod_password
+  mysql_identifier                  = "sumo"
+  mysql_instance_class              = "db.m5.2xlarge"
+  mysql_backup_retention_days       = 14
+  mysql_security_group_name         = "sumo_rds_sg_prod"
+  mysql_storage_gb                  = 250
+  mysql_storage_type                = "gp2"
   mysql_allow_major_version_upgrade = true
   mysql_engine_version = {
     mysql = "5.7"
