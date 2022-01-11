@@ -3,7 +3,7 @@ data "aws_route53_zone" "sumo_mozit_cloud" {
 }
 
 data "aws_elb" "stage_sumo" {
-  name = "ae7df1f61be8546b3a9d822d231ef1c8"
+  name = "af66a7e87cd014b2e8a364f2ee250402"
 }
 
 resource "aws_route53_record" "stage_sumo_mozit_cloud" {
