@@ -9,13 +9,9 @@ data "aws_elb" "stage_frankfurt_sumo" {
 resource "aws_route53_record" "stage-frankfurt_sumo_mozit_cloud" {
   zone_id = data.aws_route53_zone.sumo_mozit_cloud.zone_id
   name    = "stage-frankfurt.sumo.mozit.cloud"
-  type    = "A"
-
-  alias {
-    name                   = data.aws_elb.stage_frankfurt_sumo.dns_name
-    zone_id                = data.aws_elb.stage_frankfurt_sumo.zone_id
-    evaluate_target_health = true
-  }
+  type    = "CNAME"
+  ttl     = "300"
+  records = [data.aws_elb.stage_frankfurt_sumo.dns_name]
 }
 
 data "aws_elb" "dev_sumo" {
