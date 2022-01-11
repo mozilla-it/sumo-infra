@@ -10,7 +10,7 @@ locals {
     blue_node_group = {
       desired_capacity = 3,
       disk_size        = 100,
-      instance_types   = ["t3.large"],
+      instance_types   = ["m5.xlarge"],
       max_capacity     = 10,
       min_capacity     = 3,
       subnets          = data.terraform_remote_state.vpc.outputs.private_subnets
