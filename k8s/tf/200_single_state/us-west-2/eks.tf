@@ -1,9 +1,10 @@
 locals {
   cluster_features = {
-    "aws_calico"       = true
-    "configmapsecrets" = true
-    "external_secrets" = true
-    "prometheus"       = true
+    "aws_calico"         = true
+    "configmapsecrets"   = true
+    "external_secrets"   = true
+    "prometheus"         = true
+    "fluentd_papertrail" = true
   }
 
   node_groups = {
