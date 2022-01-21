@@ -46,7 +46,7 @@ spec:
         spec:
           containers:
           - name: block-aws-cron
-            image: itsre/block-aws:bd1f9ae
+            image: itsre/block-aws:6058413
             env:
               - name: DMS_URL
                 valueFrom:
