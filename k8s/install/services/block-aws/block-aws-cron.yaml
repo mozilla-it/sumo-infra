@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -29,7 +30,7 @@ roleRef:
   name: grant-netpol-access
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: block-aws-cron
@@ -45,7 +46,7 @@ spec:
         spec:
           containers:
           - name: block-aws-cron
-            image: itsre/block-aws:96608be
+            image: itsre/block-aws:bd1f9ae
             env:
               - name: DMS_URL
                 valueFrom:
