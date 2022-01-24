@@ -12,6 +12,8 @@ test: check-env
 delete: check-env
 	j2 ${MANIFEST_FILE} | kubectl delete -f -
 
+diff: check-env
+	j2 ${MANIFEST_FILE} | kubectl diff -f -
 
 # Note that ifndef and endif are not indented to process env vars
 # before the rest of the script
