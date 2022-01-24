@@ -32,4 +32,11 @@ module "eks-us-west-2" {
   admin_users_arn  = ["arn:aws:iam::783633885093:role/maws-admin", "arn:aws:iam::517826968395:role/itsre-admin", "arn:aws:iam::095732026120:role/maws-sumo-poweruser"]
   region           = "us-west-2"
   node_groups      = local.node_groups
+
+  velero_settings = {
+    "initContainers[0].image"                             = "velero/velero-plugin-for-aws:v1.3.0"
+    "schedules.daily.template.storageLocation"            = "default"
+    "schedules.daily.template.volumeSnapshotLocations[0]" = "default"
+  }
+
 }

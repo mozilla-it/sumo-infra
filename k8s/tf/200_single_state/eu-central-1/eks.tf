@@ -7,9 +7,6 @@ locals {
     "fluentd_papertrail" = true
   }
 
-  fluentd_papertrail_settings = {
-    "externalSecrets.region" = "eu-central-1"
-  }
 
   node_groups = {
     blue_node_group = {
@@ -27,7 +24,7 @@ locals {
 }
 
 module "eks-eu-central-1" {
-  source           = "github.com/mozilla-it/terraform-modules//aws/eks?ref=master"
+  source           = "github.com/mozilla-it/terraform-modules//aws/eks?ref=eks-papertrail-region"
   cluster_name     = "sumo-eks-eu-central-1"
   cluster_version  = "1.21"
   vpc_id           = data.terraform_remote_state.vpc.outputs.vpc_id
@@ -36,4 +33,15 @@ module "eks-eu-central-1" {
   admin_users_arn  = ["arn:aws:iam::783633885093:role/maws-admin", "arn:aws:iam::517826968395:role/itsre-admin", "arn:aws:iam::095732026120:role/maws-sumo-poweruser"]
   region           = "eu-central-1"
   node_groups      = local.node_groups
+
+  fluentd_papertrail_settings = {
+    "externalSecrets.region" = "eu-central-1"
+  }
+
+  velero_settings = {
+    "initContainers[0].image"                             = "velero/velero-plugin-for-aws:v1.3.0"
+    "schedules.daily.template.storageLocation"            = "default"
+    "schedules.daily.template.volumeSnapshotLocations[0]" = "default"
+  }
+
 }
