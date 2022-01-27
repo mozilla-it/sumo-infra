@@ -13,7 +13,7 @@ data "aws_subnet" "public" {
   id       = each.value
 }
 
-data "aws_caller_identity" "id" {}
+data "aws_caller_identity" "current" {}
 
 data "aws_network_acls" "default" {
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id

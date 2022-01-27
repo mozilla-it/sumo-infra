@@ -18,7 +18,7 @@ resource "aws_iam_policy" "yar_iam_role_policy" {
       {
         "Effect" : "Allow",
         "Action" : "ec2:DeleteNetworkAclEntry",
-        "Resource" : "arn:aws:ec2:us-west-2:${data.aws_caller_identity.id.account_id}:network-acl/${tolist(data.aws_network_acls.default.ids)[0]}"
+        "Resource" : "arn:aws:ec2:us-west-2:${data.aws_caller_identity.current.account_id}:network-acl/${tolist(data.aws_network_acls.default.ids)[0]}"
       },
       {
         "Effect" : "Allow",
