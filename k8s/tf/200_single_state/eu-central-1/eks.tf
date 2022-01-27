@@ -38,10 +38,6 @@ module "eks-eu-central-1" {
   region      = "eu-central-1"
   node_groups = local.node_groups
 
-  fluentd_papertrail_settings = {
-    "externalSecrets.region" = "eu-central-1"
-  }
-
   velero_settings = {
     "initContainers[0].image"                             = "velero/velero-plugin-for-aws:v1.3.0"
     "schedules.daily.template.storageLocation"            = "default"
