@@ -1,9 +1,7 @@
 export MANIFEST_FILE ?= "newrelic-logs.yaml.j2"
-export FLUENTD_CPU_LIMIT ?= 100m
-export FLUENTD_MEMORY_LIMIT ?= 256Mi
 export NR_LICENSE_B64 = $(shell printf "${NR_LICENSE_KEY}" | base64)
 
-install-fluentd: check-env
+install: check-env
 	j2 ${MANIFEST_FILE} | kubectl apply -f -
 
 test: check-env
