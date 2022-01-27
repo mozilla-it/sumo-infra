@@ -3,18 +3,19 @@ locals {
     "aws_calico"         = true
     "configmapsecrets"   = true
     "external_secrets"   = true
-    "prometheus"         = true
     "fluentd_papertrail" = true
   }
 
   node_groups = {
     blue_node_group = {
+      release_version  = "1.21.5-20220123"
       desired_capacity = 3,
-      disk_size        = 100,
-      instance_types   = ["m5.xlarge"],
-      max_capacity     = 10,
       min_capacity     = 3,
-      subnets          = data.terraform_remote_state.vpc.outputs.private_subnets
+      max_capacity     = 10,
+
+      disk_size      = 100,
+      instance_types = ["m5.xlarge"],
+      subnets        = data.terraform_remote_state.vpc.outputs.private_subnets
     }
   }
 
@@ -29,9 +30,13 @@ module "eks-us-west-2" {
   vpc_id           = data.terraform_remote_state.vpc.outputs.vpc_id
   cluster_subnets  = data.terraform_remote_state.vpc.outputs.public_subnets
   cluster_features = local.cluster_features
-  admin_users_arn  = ["arn:aws:iam::783633885093:role/maws-admin", "arn:aws:iam::517826968395:role/itsre-admin", "arn:aws:iam::095732026120:role/maws-sumo-poweruser"]
-  region           = "us-west-2"
-  node_groups      = local.node_groups
+  admin_users_arn = [
+    "arn:aws:iam::783633885093:role/maws-admin",
+    "arn:aws:iam::517826968395:role/itsre-admin",
+    "arn:aws:iam::095732026120:role/maws-sumo-poweruser"
+  ]
+  region      = "us-west-2"
+  node_groups = local.node_groups
 
   velero_settings = {
     "initContainers[0].image"                             = "velero/velero-plugin-for-aws:v1.3.0"
