@@ -66,4 +66,4 @@ resource "aws_cloudwatch_metric_alarm" "prod_lb_dns_name" {
   dimensions = {
     HealthCheckId = aws_route53_health_check.prod.id
   }
-
+}
