@@ -9,9 +9,9 @@ locals {
   node_groups = {
     blue_node_group = {
       release_version  = "1.21.5-20220123"
-      desired_capacity = 3,
-      min_capacity     = 3,
-      max_capacity     = 10,
+      desired_capacity = 10,
+      min_capacity     = 10,
+      max_capacity     = 20,
 
       disk_size      = 100,
       instance_types = ["m5.xlarge"],
