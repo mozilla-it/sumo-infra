@@ -21,7 +21,10 @@ data "aws_subnet_ids" "database" {
 data "aws_security_groups" "kops_sg" {
   filter {
     name   = "group-name"
-    values = ["nodes.k8s.${var.region}*.sumo.mozit.cloud"]
+    values = [
+      "nodes.k8s.${var.region}*.sumo.mozit.cloud",
+      "eks-cluster-sg-sumo-eks-us-west-2-1883690534"
+    ]
   }
 
   filter {
