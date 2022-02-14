@@ -33,7 +33,6 @@ resource "aws_cloudwatch_metric_alarm" "stage_lb_dns_name" {
   }
 }
 
-# to be done after migration
 resource "aws_route53_health_check" "prod" {
   fqdn              = "prod-oregon.sumo.mozit.cloud"
   port              = 443
