@@ -1,6 +1,7 @@
 locals {
   cluster_features = {
-    "aws_calico"         = true
+    # "aws_calico"         = true # added using helm, ref: https://docs.aws.amazon.com/eks/latest/userguide/calico.html
+    # "aws-load-balancer-controller" # added using eks and helm, ref: https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
     "configmapsecrets"   = true
     "external_secrets"   = true
     "fluentd_papertrail" = true
