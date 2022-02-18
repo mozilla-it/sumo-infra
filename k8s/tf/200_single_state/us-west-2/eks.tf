@@ -1,7 +1,8 @@
+# Added aws-load-balancer-controller using eksctl and helm, ref: https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
+
 locals {
   cluster_features = {
-    "aws_calico" = true
-    # "aws-load-balancer-controller" # added using eksctl and helm, ref: https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
+    "aws_calico"         = true
     "configmapsecrets"   = true
     "external_secrets"   = true
     "fluentd_papertrail" = true
