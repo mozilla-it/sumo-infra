@@ -3,7 +3,7 @@ data "aws_route53_zone" "sumo_mozit_cloud" {
 }
 
 data "aws_elb" "prod_oregon_sumo" {
-  name = "afcd59e18d6334565b2eb1e439217b36"
+  name = "sumo-prod-regional-lb"
 }
 
 resource "aws_route53_record" "prod-oregon_sumo_mozit_cloud" {
