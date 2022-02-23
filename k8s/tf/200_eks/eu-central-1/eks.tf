@@ -1,19 +1,17 @@
 locals {
   cluster_features = {
-    "aws_calico"         = true
     "configmapsecrets"   = true
     "external_secrets"   = true
     "fluentd_papertrail" = true
   }
 
   node_groups = {
-    blue_node_group = {
-      release_version  = "1.21.5-20220123"
-      desired_capacity = 10,
-      min_capacity     = 10,
-      max_capacity     = 20,
+    green_ng = {
+      desired_capacity = 6,
+      min_capacity     = 6,
+      max_capacity     = 10,
 
-      disk_size      = 100,
+      disk_size      = 250,
       instance_types = ["m5.xlarge"],
       subnets        = data.terraform_remote_state.vpc.outputs.private_subnets
     }
@@ -23,9 +21,9 @@ locals {
   subnet_id = [for s in data.aws_subnet.public : s.id]
 }
 
-module "eks-us-west-2" {
+module "eks-eu-central-1" {
   source           = "github.com/mozilla-it/terraform-modules//aws/eks?ref=master"
-  cluster_name     = "sumo-eks-us-west-2"
+  cluster_name     = "sumo-eks-eu-central-1"
   cluster_version  = "1.21"
   vpc_id           = data.terraform_remote_state.vpc.outputs.vpc_id
   cluster_subnets  = data.terraform_remote_state.vpc.outputs.public_subnets
@@ -35,7 +33,7 @@ module "eks-us-west-2" {
     "arn:aws:iam::517826968395:role/itsre-admin",
     "arn:aws:iam::095732026120:role/maws-sumo-poweruser"
   ]
-  region      = "us-west-2"
+  region      = "eu-central-1"
   node_groups = local.node_groups
 
   velero_settings = {
