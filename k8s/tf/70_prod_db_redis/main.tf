@@ -20,7 +20,7 @@ module "mysql-prod" {
   mysql_password                    = var.mysql_prod_password
   mysql_identifier                  = "sumo"
   mysql_instance_class              = "db.m5.4xlarge"
-  mysql_backup_retention_days       = 14
+  mysql_backup_retention_days       = 31
   mysql_security_group_name         = "sumo_rds_sg_prod"
   mysql_storage_gb                  = 250
   mysql_storage_type                = "gp2"
