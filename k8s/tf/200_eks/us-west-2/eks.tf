@@ -1,3 +1,4 @@
+# Added aws-load-balancer-controller using eksctl and helm, ref: https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
 locals {
   cluster_features = {
     "configmapsecrets"   = true
