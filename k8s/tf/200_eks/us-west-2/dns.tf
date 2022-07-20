@@ -2,16 +2,19 @@ data "aws_route53_zone" "sumo_mozit_cloud" {
   name = "sumo.mozit.cloud"
 }
 
-data "aws_elb" "prod_oregon_sumo" {
-  name = "sumo-prod-regional-lb"
+data "aws_lb" "prod_oregon_sumo" {
+  name = "k8s-sumoprod-sumoprod-6008bc7924"
 }
 
 resource "aws_route53_record" "prod-oregon_sumo_mozit_cloud" {
   zone_id = data.aws_route53_zone.sumo_mozit_cloud.zone_id
   name    = "prod-oregon.sumo.mozit.cloud"
-  type    = "CNAME"
-  ttl     = "60"
-  records = [data.aws_elb.prod_oregon_sumo.dns_name]
+  type    = "A"
+  alias {
+    name = data.aws_lb.prod_oregon_sumo.dns_name
+    zone_id = data.aws_lb.prod_oregon_sumo.zone_id
+    evaluate_target_health = false
+  }
 }
 
 data "aws_lb" "stage_sumo" {
@@ -21,7 +24,10 @@ data "aws_lb" "stage_sumo" {
 resource "aws_route53_record" "stage_sumo_mozit_cloud" {
   zone_id = data.aws_route53_zone.sumo_mozit_cloud.zone_id
   name    = "stage-oregon.sumo.mozit.cloud"
-  type    = "CNAME"
-  ttl     = "3660"
-  records = [data.aws_lb.stage_sumo.dns_name]
+  type    = "A"
+  alias {
+    name = data.aws_lb.stage_sumo.dns_name
+    zone_id = data.aws_lb.stage_sumo.zone_id
+    evaluate_target_health = false
+  }
 }
