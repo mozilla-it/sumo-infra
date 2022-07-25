@@ -10,6 +10,7 @@ variable "it_vpn_cidr" {
 variable "mysql_prod_password" {
 }
 
+# see https://github.com/mozilla-services/cloudops-infra/pull/4216
 variable "cloud_sql_cidr" {
-  default = "34.72.95.189/32"
+  default = "34.173.94.217/32"
 }
