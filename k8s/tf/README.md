@@ -28,18 +28,10 @@ Note: The static user content IAM user credentials are not created here due to s
 
 This builds and configures the region-wide us-west-2 ELB in AWS that glues up the `nodes.k8s.us-west-2(a|b).sumo.mozit.cloud` Auto Scaling Groups that the production traffic policy points at.
 
-# ./99_jenkins
-
-This module is run by interacting with Terraform through the shell wrapper `./tf-do <init|plan|apply|destroy>`. You must export `TF_SECRETS_PATH` to the path where the Jenkins tfvars file is stored (secrets repo).
-
-Note: the 'static_s3_prefix' in variables.tf must pattern match the naming schema in ./50_cdn/ for proper IAM permissions application.
-
-```
-variable "static_s3_prefix" {
-  default = "mozit-sumo*-media*"
-}
-```
-
 # ./120_pocket_support
 
 Infrastructure related to Pocket Help Center. Public S3 bucket and a CloudFront distribution with a custom domain.
+
+# ./200_eks
+
+EKS configuration.

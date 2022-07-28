@@ -1,1 +1,0 @@
-../install/post-install.sh
