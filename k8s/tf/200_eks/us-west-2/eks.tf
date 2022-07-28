@@ -8,8 +8,8 @@ locals {
 
   node_groups = {
     green_ng = {
-      desired_capacity = 3,
-      min_capacity     = 3,
+      desired_capacity = 12,
+      min_capacity     = 12,
       max_capacity     = 20,
 
       disk_size      = 250,
