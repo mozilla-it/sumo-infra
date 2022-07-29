@@ -11,8 +11,8 @@ resource "aws_route53_record" "prod-oregon_sumo_mozit_cloud" {
   name    = "prod-oregon.sumo.mozit.cloud"
   type    = "A"
   alias {
-    name = data.aws_lb.prod_oregon_sumo.dns_name
-    zone_id = data.aws_lb.prod_oregon_sumo.zone_id
+    name                   = data.aws_lb.prod_oregon_sumo.dns_name
+    zone_id                = data.aws_lb.prod_oregon_sumo.zone_id
     evaluate_target_health = false
   }
 }
@@ -26,8 +26,8 @@ resource "aws_route53_record" "stage_sumo_mozit_cloud" {
   name    = "stage-oregon.sumo.mozit.cloud"
   type    = "A"
   alias {
-    name = data.aws_lb.stage_sumo.dns_name
-    zone_id = data.aws_lb.stage_sumo.zone_id
+    name                   = data.aws_lb.stage_sumo.dns_name
+    zone_id                = data.aws_lb.stage_sumo.zone_id
     evaluate_target_health = false
   }
 }
