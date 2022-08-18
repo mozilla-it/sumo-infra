@@ -11,8 +11,8 @@ resource "aws_route53_record" "prod-frankfurt_sumo_mozit_cloud" {
   name    = "prod-frankfurt.sumo.mozit.cloud"
   type    = "A"
   alias {
-    name = data.aws_lb.prod_frankfurt_sumo.dns_name
-    zone_id = data.aws_lb.prod_frankfurt_sumo.zone_id
+    name                   = data.aws_lb.prod_frankfurt_sumo.dns_name
+    zone_id                = data.aws_lb.prod_frankfurt_sumo.zone_id
     evaluate_target_health = false
   }
 }
@@ -26,8 +26,8 @@ resource "aws_route53_record" "stage-frankfurt_sumo_mozit_cloud" {
   name    = "stage-frankfurt.sumo.mozit.cloud"
   type    = "A"
   alias {
-    name = data.aws_lb.stage_frankfurt_sumo.dns_name
-    zone_id = data.aws_lb.stage_frankfurt_sumo.zone_id
+    name                   = data.aws_lb.stage_frankfurt_sumo.dns_name
+    zone_id                = data.aws_lb.stage_frankfurt_sumo.zone_id
     evaluate_target_health = false
   }
 }
