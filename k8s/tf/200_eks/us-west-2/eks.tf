@@ -29,11 +29,13 @@ module "eks-us-west-2" {
   vpc_id           = data.terraform_remote_state.vpc.outputs.vpc_id
   cluster_subnets  = data.terraform_remote_state.vpc.outputs.public_subnets
   cluster_features = local.cluster_features
+
   admin_users_arn = [
     "arn:aws:iam::783633885093:role/maws-admin",
     "arn:aws:iam::517826968395:role/itsre-admin",
     "arn:aws:iam::095732026120:role/maws-sumo-poweruser"
   ]
+
   region         = "us-west-2"
   node_groups    = local.node_groups
   enable_logging = true
