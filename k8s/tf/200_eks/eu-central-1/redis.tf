@@ -1,12 +1,12 @@
 resource "aws_elasticache_replication_group" "prod" {
-  replication_group_id          = "sumo-redis-prod-env"
-  replication_group_description = "SUMO Redis prod cluster"
-  node_type                     = "cache.m5.large"
-  number_cache_clusters         = 3
-  port                          = 6379
-  engine_version                = "5.0.5"
-  automatic_failover_enabled    = true
-  multi_az_enabled              = true
+  replication_group_id       = "sumo-redis-prod-env"
+  description                = "SUMO Redis prod cluster"
+  node_type                  = "cache.m5.large"
+  num_cache_clusters         = 3
+  port                       = 6379
+  engine_version             = "5.0.5"
+  automatic_failover_enabled = true
+  multi_az_enabled           = true
 
   subnet_group_name  = "sumo-backup"
   security_group_ids = [data.aws_security_group.sumo-eks-eu-central-1.id]
