@@ -86,5 +86,6 @@ variable "it_vpn_cidr" {
 }
 
 variable "cloud_sql_cidr" {
-  description = "IP address of Cloud SQL replica"
+  description = "IP addresses of Cloud SQL replicas of SUMO Database. See https://mana.mozilla.org/wiki/pages/viewpage.action?pageId=169419933"
+  type        = list(string)
 }
