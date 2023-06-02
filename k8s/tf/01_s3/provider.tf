@@ -1,6 +1,5 @@
 provider "aws" {
   region  = var.region
-  version = "~> 2"
 }
 
 terraform {
@@ -9,5 +8,13 @@ terraform {
     key    = "terraform/sumo-infra-s3"
     region = "us-west-2"
   }
-}
 
+  required_version = ">= 0.12"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.1"
+    }
+  }
+}
