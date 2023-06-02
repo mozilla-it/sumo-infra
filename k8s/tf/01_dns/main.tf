@@ -31,35 +31,6 @@ resource "aws_route53_zone" "master-zone" {
   }
 }
 
-module "us-west-2" {
-  source      = "./hosted_zone"
-  region      = "us-west-2"
-  domain_name = var.domain_name
-  zone_id     = aws_route53_zone.master-zone.id
-}
-
-module "us-west-2a" {
-  source      = "./hosted_zone"
-  region      = "us-west-2a"
-  domain_name = var.domain_name
-  zone_id     = aws_route53_zone.master-zone.id
-}
-
-module "us-west-2b" {
-  source      = "./hosted_zone"
-  region      = "us-west-2b"
-  domain_name = var.domain_name
-  zone_id     = aws_route53_zone.master-zone.id
-}
-
-module "eu-central-1a" {
-  source      = "./hosted_zone"
-  region      = "eu-central-1a"
-  domain_name = var.domain_name
-  zone_id     = aws_route53_zone.master-zone.id
-}
-
 resource "aws_route53_zone" "cdn" {
   name = "itsre-sumo.mozilla.net"
 }
-
