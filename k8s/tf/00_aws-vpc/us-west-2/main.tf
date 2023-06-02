@@ -1,18 +1,4 @@
 # Setup main infra in aws for sumo
-
-provider "aws" {
-  region  = var.region
-  version = "~> 3"
-}
-
-terraform {
-  backend "s3" {
-    bucket = "sumo-state-095732026120"
-    key    = "terraform/sumo-infra"
-    region = "us-west-2"
-  }
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 2"

@@ -5,7 +5,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket = "sumo-state-095732026120"
-    key    = "terraform/sumo-infra-eu-central-1"
+    key    = "terraform/sumo-infra"
     region = "us-west-2"
   }
 
