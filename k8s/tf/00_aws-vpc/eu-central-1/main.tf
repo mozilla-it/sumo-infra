@@ -33,7 +33,7 @@ module "vpc" {
   )
   public_subnet_tags = merge(
     {
-      "Purpose" = "kubernetes",
+      "Purpose"                                     = "kubernetes",
       "kubernetes.io/cluster/sumo-eks-eu-central-1" = "shared"
     },
     var.base_tags,
