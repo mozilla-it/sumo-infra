@@ -1,7 +1,0 @@
-terraform {
-  backend "s3" {
-    bucket = "sumo-state-095732026120"
-    key    = "terraform/us-west-2/terraform.tfstate"
-    region = "us-west-2"
-  }
-}
