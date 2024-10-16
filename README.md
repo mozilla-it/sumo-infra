@@ -1,3 +1,6 @@
+> [!NOTE]
+> This repository was used for the old AWS infrastructure for SUMO. The new infrastructure code for the GCP deployment is private.
+
 # SUMO Infra
 This repo has source code for building SUMO infrastructure in AWS including networking, kubernetes clusters and CI/CD
 
